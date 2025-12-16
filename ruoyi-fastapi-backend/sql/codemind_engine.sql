@@ -1,42 +1,28 @@
--- 智码引擎数据库表结构 SQL
--- 基于 RuoYi-FastAPI 现有数据库进行扩展
+-- 智码引擎数据库表结构 (基于RuoYi-FastAPI扩展)
+-- 生成时间: 2025-12-16
 
--- =======================================
--- 1. 复用现有表，无需创建
--- =======================================
--- sys_user: 用户信息表 (替代 users 表，需要添加字段)
--- sys_dept: 部门表 (可作为团队结构的补充)
--- sys_role: 角色信息表 (权限管理)
--- sys_menu: 菜单权限表 (系统菜单)
--- sys_post: 岗位信息表 (用户职位)
--- sys_dict_type: 字典类型表
--- sys_dict_data: 字典数据表
--- sys_oper_log: 操作日志表
-
-
--- =======================================
--- 2. 现有表结构扩展 (添加必要字段)
--- =======================================
--- 扩展用户表，添加智码引擎需要的字段
+-- ===========================================
+-- 1. 扩展现有用户表 (sys_user)
+-- ===========================================
 ALTER TABLE sys_user
 ADD COLUMN display_name VARCHAR(100) COMMENT '显示名称',
 ADD COLUMN avatar_url TEXT COMMENT '头像地址',
 ADD COLUMN role VARCHAR(50) DEFAULT 'user' COMMENT '用户角色 (user, admin, super_admin)',
 ADD COLUMN email_verified BOOLEAN DEFAULT FALSE COMMENT '邮箱是否验证',
-ADD COLUMN last_login_at DATETIME COMMENT '最后登录时间',
-ADD COLUMN uuid CHAR(36) UNIQUE DEFAULT (UUID()) COMMENT 'UUID 标识';
+ADD COLUMN uuid CHAR(36) UNIQUE DEFAULT (UUID()) COMMENT 'UUID 标识',
+ADD COLUMN last_login_at DATETIME COMMENT '最后登录时间';
 
+-- ===========================================
+-- 2. 团队与组织管理表
+-- ===========================================
 
--- =======================================
--- 3. 新创建的智码引擎核心表
--- =======================================
 -- 团队表
 CREATE TABLE teams (
     id CHAR(36) PRIMARY KEY DEFAULT (UUID()),
     name VARCHAR(200) NOT NULL COMMENT '团队名称',
     slug VARCHAR(100) UNIQUE NOT NULL COMMENT '团队URL标识',
     description TEXT COMMENT '团队描述',
-    logo_url TEXT COMMENT '团队logo地址',
+    logo_url TEXT COMMENT '团队logo',
     subscription_plan VARCHAR(50) DEFAULT 'free' COMMENT '订阅计划 (free, team, enterprise)',
     subscription_status VARCHAR(20) DEFAULT 'active' COMMENT '订阅状态 (active, canceled, past_due)',
     subscription_ends_at DATETIME NULL COMMENT '订阅到期时间',
@@ -74,19 +60,23 @@ CREATE TABLE invitations (
     role VARCHAR(50) DEFAULT 'member' COMMENT '邀请角色',
     invited_by_user_id BIGINT(20) COMMENT '邀请者用户ID',
     expires_at DATETIME NOT NULL COMMENT '邀请过期时间',
-    accepted_at DATETIME NULL COMMENT '接受邀请时间',
+    accepted_at DATETIME NULL COMMENT '接受时间',
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     UNIQUE KEY uk_invitations_team_email (team_id, email),
     FOREIGN KEY (team_id) REFERENCES teams(id) ON DELETE CASCADE,
     FOREIGN KEY (invited_by_user_id) REFERENCES sys_user(user_id) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT = '邀请表';
 
+-- ===========================================
+-- 3. 项目与蓝图管理表
+-- ===========================================
+
 -- 项目表
 CREATE TABLE projects (
     id CHAR(36) PRIMARY KEY DEFAULT (UUID()),
     team_id CHAR(36) NOT NULL COMMENT '团队ID',
     name VARCHAR(200) NOT NULL COMMENT '项目名称',
-    slug VARCHAR(100) NOT NULL COMMENT '项目标识，团队内唯一',
+    slug VARCHAR(100) NOT NULL COMMENT '项目标识（团队内唯一）',
     description TEXT COMMENT '项目描述',
     tech_stack JSON COMMENT '技术栈配置 {"frontend": "vue3", "backend": "nestjs", "ui": "ant-design-vue"}',
     status VARCHAR(20) DEFAULT 'active' COMMENT '项目状态 (active, archived, deleted)',
@@ -103,15 +93,15 @@ CREATE TABLE projects (
     FOREIGN KEY (created_by_user_id) REFERENCES sys_user(user_id) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT = '项目表';
 
--- 蓝图表（存储在独立文档存储，这里只存储元数据）
+-- 蓝图表
 CREATE TABLE blueprints (
     id CHAR(36) PRIMARY KEY DEFAULT (UUID()),
     project_id CHAR(36) NOT NULL COMMENT '项目ID',
     name VARCHAR(200) NOT NULL COMMENT '蓝图名称',
     description TEXT COMMENT '蓝图描述',
-    version_tag VARCHAR(50) NOT NULL COMMENT '版本标识 (如 "v1.0.0", "draft-1")',
+    version_tag VARCHAR(50) NOT NULL COMMENT '版本标签（如 v1.0.0, draft-1）',
     spec_document_id VARCHAR(100) COMMENT '独立文档存储中的文档ID',
-    spec_summary JSON COMMENT '蓝图的摘要信息，用于快速查询',
+    spec_summary JSON COMMENT '蓝图摘要信息',
     is_draft BOOLEAN DEFAULT TRUE COMMENT '是否为草稿',
     parent_blueprint_id CHAR(36) COMMENT '父蓝图ID',
     created_by_user_id BIGINT(20) COMMENT '创建者用户ID',
@@ -126,12 +116,12 @@ CREATE TABLE blueprints (
     FOREIGN KEY (created_by_user_id) REFERENCES sys_user(user_id) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT = '蓝图表';
 
--- 蓝图变更记录
+-- 蓝图变更记录表
 CREATE TABLE blueprint_changes (
     id CHAR(36) PRIMARY KEY DEFAULT (UUID()),
     blueprint_id CHAR(36) NOT NULL COMMENT '蓝图ID',
     change_type VARCHAR(50) COMMENT '变更类型 (create, update, delete)',
-    field_path VARCHAR(500) COMMENT '变更字段路径 (如 "dataModels.User.fields")',
+    field_path VARCHAR(500) COMMENT '变更字段路径 如 "dataModels.User.fields"',
     old_value JSON COMMENT '旧值',
     new_value JSON COMMENT '新值',
     changed_by_user_id BIGINT(20) COMMENT '变更者用户ID',
@@ -140,6 +130,10 @@ CREATE TABLE blueprint_changes (
     FOREIGN KEY (blueprint_id) REFERENCES blueprints(id) ON DELETE CASCADE,
     FOREIGN KEY (changed_by_user_id) REFERENCES sys_user(user_id) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT = '蓝图变更记录表';
+
+-- ===========================================
+-- 4. 生成与任务管理表
+-- ===========================================
 
 -- 生成任务表
 CREATE TABLE generation_jobs (
@@ -153,7 +147,7 @@ CREATE TABLE generation_jobs (
     started_at DATETIME NULL COMMENT '开始时间',
     completed_at DATETIME NULL COMMENT '完成时间',
     error_message TEXT COMMENT '错误信息',
-    logs JSON COMMENT '生成过程中的关键日志',
+    logs JSON COMMENT '生成日志',
     qa_report JSON COMMENT '质量检查报告',
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     INDEX idx_generation_jobs_project (project_id),
@@ -170,11 +164,11 @@ CREATE TABLE generated_artifacts (
     job_id CHAR(36) NOT NULL COMMENT '生成任务ID',
     artifact_type VARCHAR(50) NOT NULL COMMENT '产物类型 (source_zip, qa_report, deploy_config, api_docs)',
     artifact_name VARCHAR(255) NOT NULL COMMENT '产物名称',
-    storage_type VARCHAR(50) DEFAULT 'local' COMMENT '存储类型 (local, s3, oss)',
+    storage_type VARCHAR(50) DEFAULT 'local' COMMENT '存储类型 (s3, oss, local)',
     storage_path TEXT NOT NULL COMMENT '存储路径',
     storage_url TEXT COMMENT '访问URL',
     file_size_bytes BIGINT COMMENT '文件大小 (字节)',
-    mime_type VARCHAR(100) COMMENT 'MIME类型',
+    mime_type VARCHAR(100) COMMENT '文件类型',
     checksum VARCHAR(255) COMMENT '校验和',
     is_compressed BOOLEAN DEFAULT TRUE COMMENT '是否压缩',
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
@@ -187,9 +181,9 @@ CREATE TABLE deployment_configs (
     id CHAR(36) PRIMARY KEY DEFAULT (UUID()),
     project_id CHAR(36) NOT NULL COMMENT '项目ID',
     name VARCHAR(200) NOT NULL COMMENT '配置名称',
-    environment VARCHAR(50) NOT NULL COMMENT '环境 (development, staging, production)',
-    config JSON NOT NULL COMMENT '具体的部署配置',
-    is_active BOOLEAN DEFAULT TRUE COMMENT '是否激活',
+    environment VARCHAR(50) NOT NULL COMMENT '部署环境 (development, staging, production)',
+    config JSON NOT NULL COMMENT '部署配置内容',
+    is_active BOOLEAN DEFAULT TRUE COMMENT '是否启用',
     deployed_job_id CHAR(36) COMMENT '已部署的任务ID',
     deployed_at DATETIME NULL COMMENT '部署时间',
     deployed_by_user_id BIGINT(20) COMMENT '部署者用户ID',
@@ -201,13 +195,17 @@ CREATE TABLE deployment_configs (
     FOREIGN KEY (deployed_by_user_id) REFERENCES sys_user(user_id) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT = '部署配置表';
 
+-- ===========================================
+-- 5. 模板与插件管理表
+-- ===========================================
+
 -- 模板表
 CREATE TABLE templates (
     id CHAR(36) PRIMARY KEY DEFAULT (UUID()),
     name VARCHAR(200) NOT NULL COMMENT '模板名称',
     slug VARCHAR(100) UNIQUE NOT NULL COMMENT '模板标识',
     description TEXT COMMENT '模板描述',
-    category VARCHAR(100) NOT NULL COMMENT '分类 (ui_component, api_layer, project_scaffold, workflow)',
+    category VARCHAR(100) NOT NULL COMMENT '模板分类 (ui_component, api_layer, project_scaffold, workflow)',
     target_framework VARCHAR(100) COMMENT '目标框架 (vue3, react, nestjs, spring_boot)',
     complexity_level VARCHAR(20) DEFAULT 'basic' COMMENT '复杂度 (basic, intermediate, advanced)',
     is_official BOOLEAN DEFAULT FALSE COMMENT '是否官方模板',
@@ -229,11 +227,11 @@ CREATE TABLE templates (
 CREATE TABLE template_versions (
     id CHAR(36) PRIMARY KEY DEFAULT (UUID()),
     template_id CHAR(36) NOT NULL COMMENT '模板ID',
-    version VARCHAR(50) NOT NULL COMMENT '版本',
+    version VARCHAR(50) NOT NULL COMMENT '版本号',
     changelog TEXT COMMENT '更新日志',
-    template_content JSON NOT NULL COMMENT '模板的JSON定义',
+    template_content JSON NOT NULL COMMENT '模板JSON定义',
     example_blueprint JSON COMMENT '示例蓝图',
-    is_active BOOLEAN DEFAULT TRUE COMMENT '是否激活',
+    is_active BOOLEAN DEFAULT TRUE COMMENT '是否启用',
     published_at DATETIME NULL COMMENT '发布时间',
     published_by_user_id BIGINT(20) COMMENT '发布者用户ID',
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
@@ -250,13 +248,17 @@ CREATE TABLE plugins (
     target_framework VARCHAR(100) COMMENT '目标框架',
     version VARCHAR(50) DEFAULT '1.0.0' COMMENT '版本',
     author_user_id BIGINT(20) COMMENT '作者用户ID',
-    is_approved BOOLEAN DEFAULT FALSE COMMENT '是否通过审核',
+    is_approved BOOLEAN DEFAULT FALSE COMMENT '是否已审核',
     install_count INTEGER DEFAULT 0 COMMENT '安装次数',
-    config_schema JSON COMMENT '插件配置的JSON Schema',
+    config_schema JSON COMMENT '插件配置JSON Schema',
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
     FOREIGN KEY (author_user_id) REFERENCES sys_user(user_id) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT = '插件表';
+
+-- ===========================================
+-- 6. 资产管理表
+-- ===========================================
 
 -- API访问令牌表
 CREATE TABLE api_tokens (
@@ -266,10 +268,10 @@ CREATE TABLE api_tokens (
     name VARCHAR(200) NOT NULL COMMENT '令牌名称',
     token_hash VARCHAR(255) UNIQUE NOT NULL COMMENT '令牌哈希值',
     token_prefix VARCHAR(10) NOT NULL COMMENT '令牌前缀',
-    scopes JSON NOT NULL COMMENT '权限范围数组',
+    scopes JSON NOT NULL COMMENT '权限范围',
     expires_at DATETIME NULL COMMENT '过期时间',
     last_used_at DATETIME NULL COMMENT '最后使用时间',
-    is_active BOOLEAN DEFAULT TRUE COMMENT '是否激活',
+    is_active BOOLEAN DEFAULT TRUE COMMENT '是否启用',
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     INDEX idx_api_tokens_user (user_id),
     FOREIGN KEY (user_id) REFERENCES sys_user(user_id) ON DELETE CASCADE,
@@ -297,9 +299,9 @@ CREATE TABLE subscriptions (
     team_id CHAR(36) NOT NULL COMMENT '团队ID',
     plan VARCHAR(50) NOT NULL COMMENT '订阅计划',
     status VARCHAR(20) DEFAULT 'active' COMMENT '订阅状态',
-    current_period_start DATETIME NULL COMMENT '当前周期开始时间',
-    current_period_end DATETIME NULL COMMENT '当前周期结束时间',
-    cancel_at_period_end BOOLEAN DEFAULT FALSE COMMENT '周期结束后是否取消',
+    current_period_start DATETIME NULL COMMENT '当前订阅周期开始时间',
+    current_period_end DATETIME NULL COMMENT '当前订阅周期结束时间',
+    cancel_at_period_end BOOLEAN DEFAULT FALSE COMMENT '是否在周期结束时取消',
     canceled_at DATETIME NULL COMMENT '取消时间',
     stripe_customer_id VARCHAR(255) COMMENT 'Stripe客户ID',
     stripe_subscription_id VARCHAR(255) COMMENT 'Stripe订阅ID',
@@ -308,6 +310,10 @@ CREATE TABLE subscriptions (
     UNIQUE KEY uk_subscriptions_team (team_id),
     FOREIGN KEY (team_id) REFERENCES teams(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT = '订阅与支付表';
+
+-- ===========================================
+-- 7. 日志与审计表
+-- ===========================================
 
 -- 系统日志表
 CREATE TABLE system_logs (
@@ -318,7 +324,7 @@ CREATE TABLE system_logs (
     team_id CHAR(36) COMMENT '团队ID',
     project_id CHAR(36) COMMENT '项目ID',
     action VARCHAR(200) NOT NULL COMMENT '操作描述',
-    details JSON COMMENT '详细信息',
+    details JSON COMMENT '操作详情',
     ip_address VARCHAR(45) COMMENT 'IP地址',
     user_agent TEXT COMMENT '用户代理',
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
@@ -336,10 +342,10 @@ CREATE TABLE api_logs (
     api_token_id CHAR(36) COMMENT 'API令牌ID',
     endpoint VARCHAR(500) NOT NULL COMMENT '请求端点',
     method VARCHAR(10) NOT NULL COMMENT '请求方法',
-    status_code INTEGER COMMENT '状态码',
+    status_code INTEGER COMMENT '响应状态码',
     request_body JSON COMMENT '请求体',
     response_body JSON COMMENT '响应体',
-    duration_ms INTEGER COMMENT '响应时间 (毫秒)',
+    duration_ms INTEGER COMMENT '请求耗时 (ms)',
     ip_address VARCHAR(45) COMMENT 'IP地址',
     user_agent TEXT COMMENT '用户代理',
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
@@ -368,6 +374,10 @@ CREATE TABLE audit_logs (
     FOREIGN KEY (team_id) REFERENCES teams(id) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT = '审计日志表';
 
+-- ===========================================
+-- 8. 消息与通知表
+-- ===========================================
+
 -- 通知表
 CREATE TABLE notifications (
     id CHAR(36) PRIMARY KEY DEFAULT (UUID()),
@@ -376,7 +386,7 @@ CREATE TABLE notifications (
     title VARCHAR(200) NOT NULL COMMENT '通知标题',
     message TEXT NOT NULL COMMENT '通知内容',
     is_read BOOLEAN DEFAULT FALSE COMMENT '是否已读',
-    metadata JSON COMMENT '元数据',
+    metadata JSON COMMENT '附加信息',
     expires_at DATETIME NULL COMMENT '过期时间',
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     INDEX idx_notifications_user (user_id),
@@ -405,18 +415,24 @@ CREATE TABLE messages (
     FOREIGN KEY (parent_message_id) REFERENCES messages(id) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT = '站内消息表';
 
--- =======================================
--- 4. 初始化数据
--- =======================================
--- 初始化团队表数据
-INSERT INTO teams (id, name, slug, description, created_by_user_id) VALUES
-(UUID(), '默认团队', 'default', '系统默认团队', 1);
+-- ===========================================
+-- 数据库配置说明
+-- ===========================================
+/*
+MySQL适配要点：
+1. 主键类型：使用CHAR(36)存储UUID，默认值使用UUID()函数生成
+2. JSON类型：MySQL 5.7+支持JSON类型，用于存储结构化配置数据
+3. 时间戳：使用DATETIME类型，ON UPDATE CURRENT_TIMESTAMP自动更新
+4. 字符集：使用utf8mb4支持完整的Unicode字符（包括emoji）
+5. 外键约束：明确指定ON DELETE规则（CASCADE/SET NULL）
+6. 索引优化：为频繁查询的字段创建索引
+7. 存储引擎：统一使用InnoDB支持事务和外键
 
--- 初始化项目表数据
-INSERT INTO projects (id, team_id, name, slug, description, created_by_user_id) VALUES
-(UUID(), (SELECT id FROM teams WHERE slug = 'default'), '示例项目', 'demo-project', '智码引擎示例项目', 1);
-
--- 初始化模板表数据
-INSERT INTO templates (id, name, slug, description, category, is_official, author_user_id) VALUES
-(UUID(), 'Vue3 基础模板', 'vue3-base', 'Vue3 + Element Plus 基础项目模板', 'project_scaffold', TRUE, 1),
-(UUID(), 'RESTful API 模板', 'rest-api', 'RESTful API 服务模板', 'api_layer', TRUE, 1);
+表关系说明：
+- 用户(sys_user)：系统基础用户，已扩展字段
+- 团队(teams)：用户组织单位
+- 项目(projects)：团队下的具体项目
+- 蓝图表(blueprints)：项目的应用蓝图版本
+- 生成任务(generation_jobs)：蓝图到代码的生成任务
+- 模板系统(templates/template_versions)：可复用的代码生成模板
+*/
