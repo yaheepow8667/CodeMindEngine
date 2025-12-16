@@ -1,0 +1,1043 @@
+<!doctype html>
+<html lang="zh-CN">
+ <head> 
+  <meta charset="UTF-8"> 
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+  <title>智能生成向导 - 智码引擎</title> 
+  <link href="./generationWizard/all.min.css" rel="stylesheet"> 
+  <script src="../javascript/reload.js"></script> 
+  <script src="./generationWizard/resource_7337310000.js"></script> 
+  <script src="https://cdn.bootcdn.net/ajax/libs/echarts/5.4.3/echarts.min.js"></script> 
+  <script>tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        primary: '#1677ff',
+        secondary: '#40a9ff',
+        success: '#52c41a',
+        warning: '#faad14',
+        danger: '#ff4d4f',
+        info: '#1890ff',
+        light: '#f5f5f5',
+        dark: '#141414',
+        'primary-light': '#e6f7ff',
+        'primary-dark': '#0958d9',
+        'text-primary': '#333333',
+        'text-secondary': '#666666',
+        'text-tertiary': '#999999',
+        'border-color': '#e8e8e8',
+        'neutral-bg': '#f5f5f5',
+        'neutral-light': '#fafafa',
+        'neutral-dark': '#e8e8e8'
+      },
+      fontFamily: {
+        inter: ['Inter', 'system-ui', 'sans-serif']
+      },
+      spacing: {
+        '5.5': '1.375rem',
+        '128': '32rem'
+      },
+      boxShadow: {
+        'card': '0 2px 8px rgba(0, 0, 0, 0.09)',
+        'dropdown': '0 4px 16px rgba(0, 0, 0, 0.12)',
+        'step': '0 1px 2px rgba(0, 0, 0, 0.05)'
+      }
+    }
+  }
+};</script> 
+  <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .scrollbar-hide {
+                -ms-overflow-style: none;
+                scrollbar-width: none;
+            }
+            .scrollbar-hide::-webkit-scrollbar {
+                display: none;
+            }
+            .transition-all-300 {
+                transition: all 0.3s ease;
+            }
+            .text-balance {
+                text-wrap: balance;
+            }
+            .step-active {
+                @apply text-primary border-primary;
+            }
+            .step-line-active {
+                @apply bg-primary;
+            }
+            .step-content-active {
+                @apply block;
+            }
+            .step-content-inactive {
+                @apply hidden;
+            }
+            .form-focus {
+                @apply border-primary ring-1 ring-primary/30;
+            }
+        }
+        /* 全局样式 */
+        body {
+            @apply font-inter bg-neutral-bg text-text-primary;
+        }
+        /* 步骤条样式 */
+        .step-item {
+            @apply flex items-center relative;
+        }
+        .step-item .step-number {
+            @apply w-8 h-8 rounded-full border-2 flex items-center justify-center text-sm font-medium transition-all duration-300 border-text-tertiary text-text-tertiary;
+        }
+        .step-item .step-title {
+            @apply ml-3 text-sm font-medium text-text-tertiary transition-all duration-300;
+        }
+        .step-item .step-line {
+            @apply absolute top-4 left-4 w-full h-0.5 bg-neutral-dark transition-all duration-300 z-0;
+        }
+        /* 按钮样式 */
+        .btn {
+            @apply px-4 py-2 rounded-md transition-all duration-200 font-medium focus:outline-none focus:ring-2 focus:ring-offset-2;
+        }
+        .btn-primary {
+            @apply bg-primary text-white hover:bg-primary-dark focus:ring-primary/50;
+        }
+        .btn-outline {
+            @apply border border-primary text-primary hover:bg-primary-light focus:ring-primary/50;
+        }
+        .btn-secondary {
+            @apply bg-white text-text-primary border border-border-color hover:bg-neutral-light focus:ring-border-color;
+        }
+        /* 卡片样式 */
+        .card {
+            @apply bg-white rounded-lg shadow-card p-5 mb-5 transition-all duration-300 hover:shadow-lg;
+        }
+        /* 表单样式 */
+        .form-label {
+            @apply block text-sm font-medium text-text-primary mb-1.5;
+        }
+        .form-control {
+            @apply w-full px-3 py-2 border border-border-color rounded-md transition-all duration-200 focus:outline-none focus:form-focus;
+        }
+        /* 动画效果 */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fadeIn {
+            animation: fadeIn 0.3s ease forwards;
+        }
+        .fade-enter {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+        .fade-enter-active {
+            opacity: 1;
+            transform: translateY(0);
+            transition: opacity 0.3s, transform 0.3s;
+        }
+        /* 进度条动画 */
+        @keyframes progress {
+            from { width: 0%; }
+            to { width: 100%; }
+        }
+        .progress-animate {
+            animation: progress 2s ease-in-out;
+        }
+    </style> 
+ </head> 
+ <body class="p-4 md:p-6"> 
+  <div class="max-w-7xl mx-auto"> 
+   <!-- 页面标题 --> 
+   <div class="mb-8"> 
+    <h1 class="text-[clamp(1.5rem,3vw,2rem)] font-bold text-text-primary"> 智能生成向导 </h1> 
+    <p class="text-text-secondary mt-1"> 通过简单几步，快速生成符合您需求的应用代码 </p> 
+   </div> 
+   <!-- 步骤导航 --> 
+   <div class="mb-10"> 
+    <div class="flex flex-wrap md:flex-nowrap justify-between relative"> 
+     <!-- 步骤线 --> 
+     <div class="absolute top-4 left-4 right-4 h-0.5 bg-neutral-dark z-0"> 
+      <div id="step-progress" class="h-full bg-primary transition-all duration-500" style="width: 0%"> 
+      </div> 
+     </div> 
+     <!-- 步骤1 --> 
+     <div class="step-item relative z-10 flex flex-col items-center w-1/4 md:w-auto" data-step="1"> 
+      <div class="step-number step-active">
+        1 
+      </div> 
+      <div class="step-title mt-2 step-active text-center">
+        需求输入 
+      </div> 
+     </div> 
+     <!-- 步骤2 --> 
+     <div class="step-item relative z-10 flex flex-col items-center w-1/4 md:w-auto" data-step="2"> 
+      <div class="step-number">
+        2 
+      </div> 
+      <div class="step-title mt-2 text-center">
+        技术栈选择 
+      </div> 
+     </div> 
+     <!-- 步骤3 --> 
+     <div class="step-item relative z-10 flex flex-col items-center w-1/4 md:w-auto" data-step="3"> 
+      <div class="step-number">
+        3 
+      </div> 
+      <div class="step-title mt-2 text-center">
+        蓝图预览 
+      </div> 
+     </div> 
+     <!-- 步骤4 --> 
+     <div class="step-item relative z-10 flex flex-col items-center w-1/4 md:w-auto" data-step="4"> 
+      <div class="step-number">
+        4 
+      </div> 
+      <div class="step-title mt-2 text-center">
+        生成结果 
+      </div> 
+     </div> 
+    </div> 
+   </div> 
+   <!-- 步骤内容区域 --> 
+   <div class="bg-white rounded-lg shadow-card p-6 md:p-8 mb-6 min-h-[calc(100vh-280px)]"> 
+    <!-- 步骤1：需求输入 --> 
+    <div id="step-1" class="step-content-active animate-fadeIn"> 
+     <div class="mb-6"> 
+      <h2 class="text-xl font-bold text-text-primary"> 描述您的应用需求 </h2> 
+      <p class="text-text-secondary mt-1"> 用自然语言描述您想要创建的应用，越详细越好 </p> 
+     </div> 
+     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6"> 
+      <!-- 左侧：需求输入区域 --> 
+      <div class="lg:col-span-2 space-y-6"> 
+       <div> 
+        <label class="form-label"> 需求描述 </label> 
+        <textarea class="form-control min-h-[200px] resize-y" placeholder="例如：创建一个用户管理系统，包含用户列表（显示姓名、邮箱、状态）、支持增删改查和按状态筛选，并有数据看板展示统计。">
+        </textarea> 
+        <p class="text-xs text-text-tertiary mt-1.5"> 提示：描述应用功能、页面、数据和交互等关键信息，越详细生成效果越好 </p> 
+       </div> 
+       <div> 
+        <label class="form-label"> 附加输入 </label> 
+        <div class="border border-dashed border-border-color rounded-md p-6 text-center hover:border-primary transition-all duration-300 cursor-pointer"> 
+         <i class="fas fa-cloud-upload-alt text-3xl text-text-tertiary mb-2"> </i> 
+         <p class="text-text-secondary"> 拖拽图片或点击上传需求草图（可选） </p> 
+         <p class="text-xs text-text-tertiary mt-1"> 支持JPG、PNG格式，最大2MB </p> 
+        </div> 
+       </div> 
+       <div class="flex flex-wrap gap-3 pt-2"> 
+        <button class="btn btn-outline flex items-center"> <i class="fas fa-file-alt mr-2"> </i> 从模板示例载入 </button> 
+        <button class="btn btn-outline flex items-center"> <i class="fas fa-file-code mr-2"> </i> 从PRD文档解析 </button> 
+        <button class="btn btn-outline flex items-center"> <i class="fas fa-microphone mr-2"> </i> 语音输入 </button> 
+       </div> 
+      </div> 
+      <!-- 右侧：需求解析预览 --> 
+      <div class="lg:col-span-1"> 
+       <div class="card sticky top-4"> 
+        <h3 class="text-lg font-semibold mb-4 flex items-center"> <i class="fas fa-lightbulb text-warning mr-2"> </i> 需求解析预览 </h3> 
+        <div class="space-y-4"> 
+         <div> 
+          <h4 class="text-sm font-medium text-text-secondary mb-2"> 关键实体 </h4> 
+          <div class="flex flex-wrap gap-2"> 
+           <span class="px-2 py-1 bg-primary-light/30 text-primary text-xs rounded-full"> 用户(User) </span> 
+           <span class="px-2 py-1 bg-primary-light/30 text-primary text-xs rounded-full"> 数据看板(Dashboard) </span> 
+          </div> 
+         </div> 
+         <div> 
+          <h4 class="text-sm font-medium text-text-secondary mb-2"> 主要功能 </h4> 
+          <ul class="space-y-1.5"> 
+           <li class="flex items-start"> <i class="fas fa-check-circle text-success mt-0.5 mr-2 text-xs"> </i> <span class="text-sm"> 用户列表展示（姓名、邮箱、状态） </span> </li> 
+           <li class="flex items-start"> <i class="fas fa-check-circle text-success mt-0.5 mr-2 text-xs"> </i> <span class="text-sm"> 用户增删改查操作 </span> </li> 
+           <li class="flex items-start"> <i class="fas fa-check-circle text-success mt-0.5 mr-2 text-xs"> </i> <span class="text-sm"> 状态筛选功能 </span> </li> 
+           <li class="flex items-start"> <i class="fas fa-check-circle text-success mt-0.5 mr-2 text-xs"> </i> <span class="text-sm"> 数据统计看板 </span> </li> 
+          </ul> 
+         </div> 
+         <div class="pt-2"> 
+          <div class="w-full bg-neutral-dark rounded-full h-1.5"> 
+           <div class="bg-success h-1.5 rounded-full" style="width: 75%"> 
+           </div> 
+          </div> 
+          <p class="text-xs text-text-tertiary mt-1.5 text-right"> 解析完成度：75% </p> 
+         </div> 
+        </div> 
+       </div> 
+      </div> 
+     </div> 
+    </div> 
+    <!-- 步骤2：架构与技术栈选择 --> 
+    <div id="step-2" class="step-content-inactive"> 
+     <div class="mb-6"> 
+      <h2 class="text-xl font-bold text-text-primary"> 选择您的技术偏好 </h2> 
+      <p class="text-text-secondary mt-1"> 选择适合您项目的技术栈组合 </p> 
+     </div> 
+     <div class="grid grid-cols-1 md:grid-cols-2 gap-8"> 
+      <!-- 左侧：主要技术选择 --> 
+      <div class="space-y-6"> 
+       <div> 
+        <label class="form-label"> 前端框架 </label> 
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3"> 
+         <div class="border border-border-color rounded-md p-4 cursor-pointer hover:border-primary hover:bg-primary-light/30 transition-all duration-300"> 
+          <div class="flex items-center"> 
+           <input type="radio" name="frontend" id="frontend-vue" class="mr-3 text-primary"> 
+           <label for="frontend-vue" class="flex items-center cursor-pointer"> <i class="fab fa-vuejs text-2xl text-green-500 mr-3"> </i> 
+            <div> 
+             <div class="font-medium">
+               Vue 3 
+             </div> 
+             <div class="text-xs text-text-tertiary">
+               Composition API, SFC 
+             </div> 
+            </div> </label> 
+          </div> 
+         </div> 
+         <div class="border border-border-color rounded-md p-4 cursor-pointer hover:border-primary hover:bg-primary-light/30 transition-all duration-300"> 
+          <div class="flex items-center"> 
+           <input type="radio" name="frontend" id="frontend-react" class="mr-3 text-primary"> 
+           <label for="frontend-react" class="flex items-center cursor-pointer"> <i class="fab fa-react text-2xl text-blue-400 mr-3"> </i> 
+            <div> 
+             <div class="font-medium">
+               React 
+             </div> 
+             <div class="text-xs text-text-tertiary">
+               Hooks, JSX 
+             </div> 
+            </div> </label> 
+          </div> 
+         </div> 
+        </div> 
+       </div> 
+       <div> 
+        <label class="form-label"> UI组件库 </label> 
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3"> 
+         <div class="border border-border-color rounded-md p-4 cursor-pointer hover:border-primary hover:bg-primary-light/30 transition-all duration-300"> 
+          <div class="flex items-center"> 
+           <input type="radio" name="uilib" id="uilib-antd" class="mr-3 text-primary"> 
+           <label for="uilib-antd" class="flex items-center cursor-pointer"> <i class="fab fa-android text-2xl text-primary mr-3"> </i> 
+            <div> 
+             <div class="font-medium">
+               Ant Design 
+             </div> 
+             <div class="text-xs text-text-tertiary">
+               企业级UI设计语言 
+             </div> 
+            </div> </label> 
+          </div> 
+         </div> 
+         <div class="border border-border-color rounded-md p-4 cursor-pointer hover:border-primary hover:bg-primary-light/30 transition-all duration-300"> 
+          <div class="flex items-center"> 
+           <input type="radio" name="uilib" id="uilib-element" class="mr-3 text-primary"> 
+           <label for="uilib-element" class="flex items-center cursor-pointer"> <i class="fab fa-elementor text-2xl text-purple-500 mr-3"> </i> 
+            <div> 
+             <div class="font-medium">
+               Element UI 
+             </div> 
+             <div class="text-xs text-text-tertiary">
+               桌面端组件库 
+             </div> 
+            </div> </label> 
+          </div> 
+         </div> 
+        </div> 
+       </div> 
+       <div> 
+        <label class="form-label"> 后端框架 </label> 
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3"> 
+         <div class="border border-border-color rounded-md p-4 cursor-pointer hover:border-primary hover:bg-primary-light/30 transition-all duration-300"> 
+          <div class="flex items-center"> 
+           <input type="radio" name="backend" id="backend-nest" class="mr-3 text-primary"> 
+           <label for="backend-nest" class="flex items-center cursor-pointer"> <i class="fab fa-node-js text-2xl text-red-500 mr-3"> </i> 
+            <div> 
+             <div class="font-medium">
+               NestJS 
+             </div> 
+             <div class="text-xs text-text-tertiary">
+               Node.js后端框架 
+             </div> 
+            </div> </label> 
+          </div> 
+         </div> 
+         <div class="border border-border-color rounded-md p-4 cursor-pointer hover:border-primary hover:bg-primary-light/30 transition-all duration-300"> 
+          <div class="flex items-center"> 
+           <input type="radio" name="backend" id="backend-spring" class="mr-3 text-primary"> 
+           <label for="backend-spring" class="flex items-center cursor-pointer"> <i class="fab fa-java text-2xl text-orange-500 mr-3"> </i> 
+            <div> 
+             <div class="font-medium">
+               Spring Boot 
+             </div> 
+             <div class="text-xs text-text-tertiary">
+               Java后端框架 
+             </div> 
+            </div> </label> 
+          </div> 
+         </div> 
+        </div> 
+       </div> 
+       <div> 
+        <label class="form-label"> 数据库 </label> 
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3"> 
+         <div class="border border-border-color rounded-md p-4 cursor-pointer hover:border-primary hover:bg-primary-light/30 transition-all duration-300"> 
+          <div class="flex items-center"> 
+           <input type="radio" name="database" id="db-mysql" class="mr-3 text-primary"> 
+           <label for="db-mysql" class="flex items-center cursor-pointer"> <i class="fas fa-database text-2xl text-blue-600 mr-3"> </i> 
+            <div class="text-sm font-medium">
+              MySQL 
+            </div> </label> 
+          </div> 
+         </div> 
+         <div class="border border-border-color rounded-md p-4 cursor-pointer hover:border-primary hover:bg-primary-light/30 transition-all duration-300"> 
+          <div class="flex items-center"> 
+           <input type="radio" name="database" id="db-postgres" class="mr-3 text-primary"> 
+           <label for="db-postgres" class="flex items-center cursor-pointer"> <i class="fas fa-database text-2xl text-blue-700 mr-3"> </i> 
+            <div class="text-sm font-medium">
+              PostgreSQL 
+            </div> </label> 
+          </div> 
+         </div> 
+         <div class="border border-border-color rounded-md p-4 cursor-pointer hover:border-primary hover:bg-primary-light/30 transition-all duration-300"> 
+          <div class="flex items-center"> 
+           <input type="radio" name="database" id="db-mongodb" class="mr-3 text-primary"> 
+           <label for="db-mongodb" class="flex items-center cursor-pointer"> <i class="fas fa-database text-2xl text-green-600 mr-3"> </i> 
+            <div class="text-sm font-medium">
+              MongoDB 
+            </div> </label> 
+          </div> 
+         </div> 
+        </div> 
+       </div> 
+      </div> 
+      <!-- 右侧：推荐组合和高级配置 --> 
+      <div class="space-y-6"> 
+       <div class="card"> 
+        <h3 class="text-lg font-semibold mb-4"> 推荐组合 </h3> 
+        <div class="space-y-4"> 
+         <div class="border border-primary-light bg-primary-light/20 rounded-md p-4 cursor-pointer hover:bg-primary-light/40 transition-all duration-300"> 
+          <div class="flex items-start"> 
+           <div class="mr-3 mt-1"> 
+            <i class="fas fa-star text-warning"> </i> 
+           </div> 
+           <div> 
+            <div class="font-medium">
+              Vue 3 + Ant Design Vue + NestJS 
+            </div> 
+            <p class="text-sm text-text-secondary mt-1"> 全栈TypeScript，开发体验一致，适合企业级应用 </p> 
+            <div class="flex flex-wrap gap-2 mt-2"> 
+             <span class="text-xs bg-primary-light text-primary px-2 py-0.5 rounded-full"> 热门选择 </span> 
+             <span class="text-xs bg-success/10 text-success px-2 py-0.5 rounded-full"> 高效开发 </span> 
+            </div> 
+           </div> 
+          </div> 
+         </div> 
+         <div class="border border-border-color rounded-md p-4 cursor-pointer hover:border-primary hover:bg-primary-light/30 transition-all duration-300"> 
+          <div class="font-medium">
+            React + Ant Design Pro + Spring Boot 
+          </div> 
+          <p class="text-sm text-text-secondary mt-1"> 成熟稳定组合，适合大型商业应用 </p> 
+         </div> 
+        </div> 
+       </div> 
+       <!-- 高级配置 --> 
+       <div> 
+        <div class="flex items-center justify-between cursor-pointer" id="advanced-toggle"> 
+         <h3 class="text-lg font-semibold flex items-center"> <i class="fas fa-sliders-h mr-2 text-text-secondary"> </i> 高级配置 </h3> 
+         <i class="fas fa-chevron-down text-text-tertiary transition-transform duration-300"> </i> 
+        </div> 
+        <div class="mt-4 space-y-4 hidden" id="advanced-config"> 
+         <div> 
+          <label class="form-label"> 状态管理 </label> 
+          <select class="form-control"> <option> Pinia (Vue3推荐) </option> <option> Vuex </option> <option> Redux </option> <option> Zustand </option> </select> 
+         </div> 
+         <div> 
+          <label class="form-label"> API风格 </label> 
+          <div class="grid grid-cols-2 gap-3"> 
+           <div class="border border-border-color rounded-md p-3 cursor-pointer hover:border-primary hover:bg-primary-light/30 transition-all duration-300"> 
+            <div class="flex items-center"> 
+             <input type="radio" name="api-style" id="api-rest" class="mr-3 text-primary"> 
+             <label for="api-rest" class="cursor-pointer"> RESTful API </label> 
+            </div> 
+           </div> 
+           <div class="border border-border-color rounded-md p-3 cursor-pointer hover:border-primary hover:bg-primary-light/30 transition-all duration-300"> 
+            <div class="flex items-center"> 
+             <input type="radio" name="api-style" id="api-graphql" class="mr-3 text-primary"> 
+             <label for="api-graphql" class="cursor-pointer"> GraphQL </label> 
+            </div> 
+           </div> 
+          </div> 
+         </div> 
+         <div> 
+          <label class="form-label"> 代码规范 </label> 
+          <select class="form-control"> <option> Airbnb规范 </option> <option> Standard规范 </option> <option> Google规范 </option> <option> 自定义规范 </option> </select> 
+         </div> 
+        </div> 
+       </div> 
+      </div> 
+     </div> 
+    </div> 
+    <!-- 步骤3：蓝图预览与调整 --> 
+    <div id="step-3" class="step-content-inactive"> 
+     <div class="mb-6"> 
+      <h2 class="text-xl font-bold text-text-primary"> 应用蓝图预览与调整 </h2> 
+      <p class="text-text-secondary mt-1"> 查看并调整AI生成的应用结构和配置 </p> 
+     </div> 
+     <div class="flex flex-col lg:flex-row gap-6"> 
+      <!-- 左侧：树形导航 --> 
+      <div class="lg:w-64 flex-shrink-0"> 
+       <div class="card h-full sticky top-4"> 
+        <h3 class="text-lg font-semibold mb-4"> 应用蓝图 </h3> 
+        <div class="border border-border-color rounded-md overflow-hidden"> 
+         <div class="bg-neutral-light px-3 py-2 border-b border-border-color font-medium text-sm">
+           用户管理系统 
+         </div> 
+         <div class="p-1"> 
+          <!-- 数据模型 --> 
+          <div class="tree-item py-1 px-2 rounded-md hover:bg-primary-light/30 cursor-pointer"> 
+           <div class="flex items-center"> 
+            <i class="fas fa-database text-text-tertiary mr-2"> </i> 
+            <span> 数据模型 </span> 
+            <i class="fas fa-chevron-down text-xs ml-auto text-text-tertiary"> </i> 
+           </div> 
+           <div class="ml-6 mt-1 space-y-1"> 
+            <div class="py-1 px-2 rounded-md hover:bg-primary-light/50 text-primary font-medium">
+              User 
+            </div> 
+            <div class="py-1 px-2 rounded-md hover:bg-primary-light/50">
+              Role 
+            </div> 
+            <div class="py-1 px-2 rounded-md hover:bg-primary-light/50">
+              Permission 
+            </div> 
+           </div> 
+          </div> 
+          <!-- 页面 --> 
+          <div class="tree-item py-1 px-2 rounded-md hover:bg-primary-light/30 cursor-pointer"> 
+           <div class="flex items-center"> 
+            <i class="fas fa-file-alt text-text-tertiary mr-2"> </i> 
+            <span> 页面 </span> 
+            <i class="fas fa-chevron-down text-xs ml-auto text-text-tertiary"> </i> 
+           </div> 
+           <div class="ml-6 mt-1 space-y-1"> 
+            <div class="py-1 px-2 rounded-md hover:bg-primary-light/50">
+              用户列表页 
+            </div> 
+            <div class="py-1 px-2 rounded-md hover:bg-primary-light/50">
+              用户详情页 
+            </div> 
+            <div class="py-1 px-2 rounded-md hover:bg-primary-light/50">
+              用户编辑页 
+            </div> 
+            <div class="py-1 px-2 rounded-md hover:bg-primary-light/50">
+              数据看板页 
+            </div> 
+           </div> 
+          </div> 
+          <!-- API接口 --> 
+          <div class="tree-item py-1 px-2 rounded-md hover:bg-primary-light/30 cursor-pointer"> 
+           <div class="flex items-center"> 
+            <i class="fas fa-exchange-alt text-text-tertiary mr-2"> </i> 
+            <span> API接口 </span> 
+            <i class="fas fa-chevron-right text-xs ml-auto text-text-tertiary"> </i> 
+           </div> 
+          </div> 
+          <!-- 业务流程 --> 
+          <div class="tree-item py-1 px-2 rounded-md hover:bg-primary-light/30 cursor-pointer"> 
+           <div class="flex items-center"> 
+            <i class="fas fa-project-diagram text-text-tertiary mr-2"> </i> 
+            <span> 业务流程 </span> 
+            <i class="fas fa-chevron-right text-xs ml-auto text-text-tertiary"> </i> 
+           </div> 
+          </div> 
+          <!-- 部署配置 --> 
+          <div class="tree-item py-1 px-2 rounded-md hover:bg-primary-light/30 cursor-pointer"> 
+           <div class="flex items-center"> 
+            <i class="fas fa-cloud-upload-alt text-text-tertiary mr-2"> </i> 
+            <span> 部署配置 </span> 
+            <i class="fas fa-chevron-right text-xs ml-auto text-text-tertiary"> </i> 
+           </div> 
+          </div> 
+         </div> 
+        </div> 
+        <div class="mt-6"> 
+         <button class="btn btn-primary w-full flex items-center justify-center"> <i class="fas fa-magic mr-2"> </i> 智能优化建议 </button> 
+        </div> 
+       </div> 
+      </div> 
+      <!-- 右侧：详情编辑区 --> 
+      <div class="flex-1"> 
+       <!-- 数据模型详情 --> 
+       <div class="card"> 
+        <div class="flex items-center justify-between mb-6"> 
+         <h3 class="text-lg font-semibold"> 数据模型详情：User </h3> 
+         <div class="flex gap-2"> 
+          <button class="btn btn-secondary text-sm"> <i class="fas fa-copy mr-1"> </i> 复制模型 </button> 
+          <button class="btn btn-secondary text-sm"> <i class="fas fa-trash-alt mr-1"> </i> 删除 </button> 
+         </div> 
+        </div> 
+        <div class="mb-6"> 
+         <div class="flex flex-wrap gap-3 mb-4"> 
+          <div class="flex items-center"> 
+           <span class="text-sm text-text-secondary mr-2"> 模型名称： </span> 
+           <input type="text" value="User" class="form-control w-40"> 
+          </div> 
+          <div class="flex items-center"> 
+           <span class="text-sm text-text-secondary mr-2"> 数据库表名： </span> 
+           <input type="text" value="users" class="form-control w-40"> 
+          </div> 
+          <div class="flex items-center"> 
+           <span class="text-sm text-text-secondary mr-2"> 描述： </span> 
+           <input type="text" value="系统用户信息" class="form-control flex-1 max-w-md"> 
+          </div> 
+         </div> 
+        </div> 
+        <div class="overflow-x-auto"> 
+         <table class="min-w-full"> 
+          <thead> 
+           <tr class="border-b border-border-color"> 
+            <th class="text-left py-3 px-4 font-semibold text-sm"> 字段名 </th> 
+            <th class="text-left py-3 px-4 font-semibold text-sm"> 显示名称 </th> 
+            <th class="text-left py-3 px-4 font-semibold text-sm"> 数据类型 </th> 
+            <th class="text-left py-3 px-4 font-semibold text-sm"> 约束 </th> 
+            <th class="text-left py-3 px-4 font-semibold text-sm"> 默认值 </th> 
+            <th class="text-left py-3 px-4 font-semibold text-sm"> 操作 </th> 
+           </tr> 
+          </thead> 
+          <tbody> 
+           <tr class="border-b border-border-color hover:bg-neutral-light"> 
+            <td class="py-3 px-4 font-medium"> id </td> 
+            <td class="py-3 px-4"> ID </td> 
+            <td class="py-3 px-4"> Number </td> 
+            <td class="py-3 px-4"> <span class="text-xs bg-danger/10 text-danger px-1.5 py-0.5 rounded mr-1"> 主键 </span> <span class="text-xs bg-primary/10 text-primary px-1.5 py-0.5 rounded"> 自增 </span> </td> 
+            <td class="py-3 px-4"> - </td> 
+            <td class="py-3 px-4"> <button class="text-text-tertiary hover:text-primary"> <i class="fas fa-edit"> </i> </button> </td> 
+           </tr> 
+           <tr class="border-b border-border-color hover:bg-neutral-light"> 
+            <td class="py-3 px-4 font-medium"> username </td> 
+            <td class="py-3 px-4"> 用户名 </td> 
+            <td class="py-3 px-4"> String </td> 
+            <td class="py-3 px-4"> <span class="text-xs bg-danger/10 text-danger px-1.5 py-0.5 rounded mr-1"> 必填 </span> <span class="text-xs bg-warning/10 text-warning px-1.5 py-0.5 rounded"> 唯一 </span> </td> 
+            <td class="py-3 px-4"> - </td> 
+            <td class="py-3 px-4"> <button class="text-text-tertiary hover:text-primary"> <i class="fas fa-edit"> </i> </button> <button class="text-text-tertiary hover:text-danger ml-3"> <i class="fas fa-trash-alt"> </i> </button> </td> 
+           </tr> 
+           <tr class="border-b border-border-color hover:bg-neutral-light"> 
+            <td class="py-3 px-4 font-medium"> email </td> 
+            <td class="py-3 px-4"> 邮箱 </td> 
+            <td class="py-3 px-4"> String </td> 
+            <td class="py-3 px-4"> <span class="text-xs bg-danger/10 text-danger px-1.5 py-0.5 rounded mr-1"> 必填 </span> <span class="text-xs bg-warning/10 text-warning px-1.5 py-0.5 rounded"> 唯一 </span> <span class="text-xs bg-info/10 text-info px-1.5 py-0.5 rounded"> 邮箱格式 </span> </td> 
+            <td class="py-3 px-4"> - </td> 
+            <td class="py-3 px-4"> <button class="text-text-tertiary hover:text-primary"> <i class="fas fa-edit"> </i> </button> <button class="text-text-tertiary hover:text-danger ml-3"> <i class="fas fa-trash-alt"> </i> </button> </td> 
+           </tr> 
+           <tr class="border-b border-border-color hover:bg-neutral-light"> 
+            <td class="py-3 px-4 font-medium"> status </td> 
+            <td class="py-3 px-4"> 状态 </td> 
+            <td class="py-3 px-4"> Enum </td> 
+            <td class="py-3 px-4"> <span class="text-xs bg-danger/10 text-danger px-1.5 py-0.5 rounded"> 必填 </span> </td> 
+            <td class="py3 px-4"> active </td> 
+            <td class="py-3 px-4"> <button class="text-text-tertiary hover:text-primary"> <i class="fas fa-edit"> </i> </button> <button class="text-text-tertiary hover:text-danger ml-3"> <i class="fas fa-trash-alt"> </i> </button> </td> 
+           </tr> 
+           <tr class="hover:bg-neutral-light"> 
+            <td class="py-3 px-4 font-medium"> createdAt </td> 
+            <td class="py-3 px-4"> 创建时间 </td> 
+            <td class="py-3 px-4"> DateTime </td> 
+            <td class="py-3 px-4"> <span class="text-xs bg-primary/10 text-primary px-1.5 py-0.5 rounded"> 自动填充 </span> </td> 
+            <td class="py-3 px-4"> CURRENT_TIMESTAMP </td> 
+            <td class="py-3 px-4"> <button class="text-text-tertiary hover:text-primary"> <i class="fas fa-edit"> </i> </button> </td> 
+           </tr> 
+          </tbody> 
+         </table> 
+        </div> 
+        <div class="mt-6 flex justify-end"> 
+         <button class="btn btn-outline flex items-center"> <i class="fas fa-plus mr-2"> </i> 添加字段 </button> 
+         <button class="btn btn-primary ml-3 flex items-center"> <i class="fas fa-save mr-2"> </i> 保存模型 </button> 
+        </div> 
+       </div> 
+      </div> 
+     </div> 
+    </div> 
+    <!-- 步骤4：生成与质量检查 --> 
+    <div id="step-4" class="step-content-inactive"> 
+     <div class="mb-6"> 
+      <h2 class="text-xl font-bold text-text-primary"> 生成代码与质量检查 </h2> 
+      <p class="text-text-secondary mt-1"> 正在为您生成应用代码，请稍候... </p> 
+     </div> 
+     <!-- 初始状态：进度展示 --> 
+     <div id="generation-progress" class="animate-fadeIn"> 
+      <div class="card mb-6"> 
+       <div class="mb-6"> 
+        <div class="flex justify-between mb-2"> 
+         <span class="text-sm font-medium"> 生成进度 </span> 
+         <span class="text-sm text-primary font-medium" id="progress-percent"> 0% </span> 
+        </div> 
+        <div class="w-full bg-neutral-dark rounded-full h-2.5 mb-4"> 
+         <div id="progress-bar" class="bg-primary h-2.5 rounded-full transition-all duration-1000" style="width: 0%"> 
+         </div> 
+        </div> 
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"> 
+         <div class="flex items-center"> 
+          <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white mr-3">
+            1 
+          </div> 
+          <div> 
+           <div class="text-sm font-medium" id="step-text">
+             解析需求中 
+           </div> 
+           <div class="text-xs text-text-tertiary" id="step-desc">
+             正在分析您的需求描述 
+           </div> 
+          </div> 
+         </div> 
+         <div class="flex items-center"> 
+          <div class="w-8 h-8 rounded-full bg-neutral-dark flex items-center justify-center text-text-tertiary mr-3">
+            2 
+          </div> 
+          <div> 
+           <div class="text-sm font-medium text-text-tertiary">
+             生成应用蓝图 
+           </div> 
+           <div class="text-xs text-text-tertiary">
+             构建应用结构和数据模型 
+           </div> 
+          </div> 
+         </div> 
+         <div class="flex items-center"> 
+          <div class="w-8 h-8 rounded-full bg-neutral-dark flex items-center justify-center text-text-tertiary mr-3">
+            3 
+          </div> 
+          <div> 
+           <div class="text-sm font-medium text-text-tertiary">
+             生成代码 
+           </div> 
+           <div class="text-xs text-text-tertiary">
+             生成前后端代码文件 
+           </div> 
+          </div> 
+         </div> 
+         <div class="flex items-center"> 
+          <div class="w-8 h-8 rounded-full bg-neutral-dark flex items-center justify-center text-text-tertiary mr-3">
+            4 
+          </div> 
+          <div> 
+           <div class="text-sm font-medium text-text-tertiary">
+             质量检查 
+           </div> 
+           <div class="text-xs text-text-tertiary">
+             代码质量和安全性检查 
+           </div> 
+          </div> 
+         </div> 
+        </div> 
+       </div> 
+       <div class="border border-border-color rounded-md h-40 overflow-y-auto p-4 bg-neutral-light/50 text-sm font-mono text-text-secondary"> 
+        <div id="log-container"> 
+         <div class="mb-1">
+           2023-11-01 10:00:00 [INFO] 开始解析需求描述... 
+         </div> 
+         <div class="mb-1">
+           2023-11-01 10:00:02 [INFO] 已识别核心实体: User, Role, Permission 
+         </div> 
+         <div class="mb-1">
+           2023-11-01 10:00:05 [INFO] 已识别主要功能: 用户管理、权限控制 
+         </div> 
+        </div> 
+       </div> 
+      </div> 
+     </div> 
+     <!-- 结果状态：成功 --> 
+     <div id="generation-success" class="hidden"> 
+      <div class="card text-center py-8 mb-6"> 
+       <div class="w-16 h-16 bg-success/10 rounded-full flex items-center justify-center mx-auto mb-4"> 
+        <i class="fas fa-check text-2xl text-success"> </i> 
+       </div> 
+       <h3 class="text-xl font-bold mb-2"> 生成成功！ </h3> 
+       <p class="text-text-secondary max-w-2xl mx-auto"> 您的应用代码已成功生成，质量检查通过，可以下载或直接在在线IDE中打开。 </p> 
+      </div> 
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8"> 
+       <div class="card"> 
+        <h4 class="text-sm font-medium text-text-secondary mb-3"> 项目概览 </h4> 
+        <div class="space-y-3"> 
+         <div class="flex justify-between"> 
+          <span class="text-text-secondary"> 项目名称 </span> 
+          <span class="font-medium"> 用户管理系统 </span> 
+         </div> 
+         <div class="flex justify-between"> 
+          <span class="text-text-secondary"> 技术栈 </span> 
+          <span class="font-medium"> Vue3 + NestJS </span> 
+         </div> 
+         <div class="flex justify-between"> 
+          <span class="text-text-secondary"> 生成时间 </span> 
+          <span class="font-medium"> 2023-11-01 10:15:30 </span> 
+         </div> 
+         <div class="flex justify-between"> 
+          <span class="text-text-secondary"> 代码行数 </span> 
+          <span class="font-medium"> 约 5,280 行 </span> 
+         </div> 
+        </div> 
+       </div> 
+       <div class="card"> 
+        <h4 class="text-sm font-medium text-text-secondary mb-3"> 质量报告 </h4> 
+        <div class="space-y-4"> 
+         <div> 
+          <div class="flex justify-between mb-1"> 
+           <span class="text-sm text-text-secondary"> 代码质量评分 </span> 
+           <span class="font-medium text-success"> 92/100 </span> 
+          </div> 
+          <div class="w-full bg-neutral-dark rounded-full h-2"> 
+           <div class="bg-success h-2 rounded-full" style="width: 92%"> 
+           </div> 
+          </div> 
+         </div> 
+         <div class="grid grid-cols-3 gap-2 text-center"> 
+          <div> 
+           <div class="text-2xl font-bold text-success">
+             0 
+           </div> 
+           <div class="text-xs text-text-tertiary">
+             错误 
+           </div> 
+          </div> 
+          <div> 
+           <div class="text-2xl font-bold text-warning">
+             3 
+           </div> 
+           <div class="text-xs text-text-tertiary">
+             警告 
+           </div> 
+          </div> 
+          <div> 
+           <div class="text-2xl font-bold text-primary">
+             12 
+           </div> 
+           <div class="text-xs text-text-tertiary">
+             建议 
+           </div> 
+          </div> 
+         </div> 
+        </div> 
+       </div> 
+       <div class="card"> 
+        <h4 class="text-sm font-medium text-text-secondary mb-3"> 生成内容 </h4> 
+        <div class="space-y-3"> 
+         <div class="flex items-center"> 
+          <i class="fas fa-file-code text-primary mr-2"> </i> 
+          <span class="text-sm"> 3 个数据模型 </span> 
+         </div> 
+         <div class="flex items-center"> 
+          <i class="fas fa-file-alt text-primary mr-2"> </i> 
+          <span class="text-sm"> 8 个页面 </span> 
+         </div> 
+         <div class="flex items-center"> 
+          <i class="fas fa-exchange-alt text-primary mr-2"> </i> 
+          <span class="text-sm"> 15 个API接口 </span> 
+         </div> 
+         <div class="flex items-center"> 
+          <i class="fas fa-project-diagram text-primary mr-2"> </i> 
+          <span class="text-sm"> 2 个业务流程 </span> 
+         </div> 
+        </div> 
+       </div> 
+      </div> 
+      <div class="flex flex-wrap justify-center gap-4 pt-4"> 
+       <button class="btn btn-primary flex items-center"> <i class="fas fa-download mr-2"> </i> 立即下载代码 (ZIP) </button> 
+       <button class="btn btn-outline flex items-center"> <i class="fas fa-code mr-2"> </i> 在在线IDE中打开 </button> 
+       <button class="btn btn-outline flex items-center"> <i class="fas fa-cloud-upload-alt mr-2"> </i> 部署到测试环境 </button> 
+       <button class="btn btn-secondary flex items-center"> <i class="fas fa-arrow-left mr-2"> </i> 返回工作台 </button> 
+      </div> 
+     </div> 
+    </div> 
+   </div> 
+   <!-- 步骤导航按钮 --> 
+   <div class="flex justify-between mt-8"> 
+    <button id="prev-btn" class="btn btn-secondary hidden"> <i class="fas fa-arrow-left mr-2"> </i> 上一步 </button> 
+    <div class="flex-1"> 
+    </div> 
+    <button id="next-btn" class="btn btn-primary"> 下一步 <i class="fas fa-arrow-right ml-2"> </i> </button> 
+    <button id="generate-btn" class="btn btn-primary hidden"> 开始生成 <i class="fas fa-rocket ml-2"> </i> </button> 
+   </div> 
+  </div> 
+  <script>// 当前步骤
+var currentStep = 1;
+var totalSteps = 4;
+
+// DOM元素
+var stepItems = document.querySelectorAll('.step-item');
+var stepContents = document.querySelectorAll('[id^="step-"]');
+var prevBtn = document.getElementById('prev-btn');
+var nextBtn = document.getElementById('next-btn');
+var generateBtn = document.getElementById('generate-btn');
+var stepProgress = document.getElementById('step-progress');
+var advancedToggle = document.getElementById('advanced-toggle');
+var advancedConfig = document.getElementById('advanced-config');
+
+// 页面加载完成后初始化
+document.addEventListener('DOMContentLoaded', function () {
+  // 初始化步骤进度
+  updateStepProgress();
+
+  // 高级配置切换
+  advancedToggle.addEventListener('click', function () {
+    var icon = advancedToggle.querySelector('i.fas');
+    advancedConfig.classList.toggle('hidden');
+    icon.classList.toggle('rotate-180');
+  });
+
+  // 步骤点击事件
+  stepItems.forEach(function (item) {
+    item.addEventListener('click', function () {
+      var step = parseInt(item.dataset.step);
+      if (step <= currentStep) {
+        goToStep(step);
+      }
+    });
+  });
+
+  // 上一步按钮
+  prevBtn.addEventListener('click', function () {
+    if (currentStep > 1) {
+      goToStep(currentStep - 1);
+    }
+  });
+
+  // 下一步按钮
+  nextBtn.addEventListener('click', function () {
+    if (currentStep < totalSteps) {
+      goToStep(currentStep + 1);
+    }
+  });
+
+  // 生成按钮
+  generateBtn.addEventListener('click', startGeneration);
+
+  // 通知父页面调整iframe大小
+  ytSendPageSize();
+});
+
+// 切换到指定步骤
+function goToStep(step) {
+  // 更新当前步骤
+  currentStep = step;
+
+  // 更新步骤显示
+  stepItems.forEach(function (item, index) {
+    var stepNum = index + 1;
+    var numberEl = item.querySelector('.step-number');
+    var titleEl = item.querySelector('.step-title');
+    if (stepNum === currentStep) {
+      numberEl.classList.add('step-active');
+      titleEl.classList.add('step-active');
+    } else if (stepNum < currentStep) {
+      numberEl.classList.add('step-active');
+      titleEl.classList.add('step-active');
+    } else {
+      numberEl.classList.remove('step-active');
+      titleEl.classList.remove('step-active');
+    }
+  });
+
+  // 更新内容显示
+  stepContents.forEach(function (content) {
+    var contentStep = parseInt(content.id.split('-')[1]);
+    if (contentStep === currentStep) {
+      content.classList.remove('step-content-inactive');
+      content.classList.add('step-content-active');
+      content.classList.add('animate-fadeIn');
+    } else {
+      content.classList.add('step-content-inactive');
+      content.classList.remove('step-content-active');
+    }
+  });
+
+  // 更新按钮状态
+  if (currentStep === 1) {
+    prevBtn.classList.add('hidden');
+  } else {
+    prevBtn.classList.remove('hidden');
+  }
+  if (currentStep === totalSteps) {
+    nextBtn.classList.add('hidden');
+    generateBtn.classList.remove('hidden');
+  } else {
+    nextBtn.classList.remove('hidden');
+    generateBtn.classList.add('hidden');
+  }
+
+  // 更新进度条
+  updateStepProgress();
+
+  // 通知父页面调整iframe大小
+  ytSendPageSize();
+}
+
+// 更新步骤进度条
+function updateStepProgress() {
+  var progress = (currentStep - 1) / (totalSteps - 1) * 100;
+  stepProgress.style.width = "".concat(progress, "%");
+}
+
+// 模拟生成过程
+function startGeneration() {
+  // 隐藏生成按钮
+  generateBtn.classList.add('hidden');
+
+  // 模拟进度更新
+  var progress = 0;
+  var progressBar = document.getElementById('progress-bar');
+  var progressPercent = document.getElementById('progress-percent');
+  var stepText = document.getElementById('step-text');
+  var stepDesc = document.getElementById('step-desc');
+  var logContainer = document.getElementById('log-container');
+
+  // 步骤信息
+  var steps = [{
+    text: '解析需求中',
+    desc: '正在分析您的需求描述'
+  }, {
+    text: '生成应用蓝图',
+    desc: '构建应用结构和数据模型'
+  }, {
+    text: '生成前端代码',
+    desc: '创建Vue组件和页面'
+  }, {
+    text: '生成后端代码',
+    desc: '创建NestJS控制器和服务'
+  }, {
+    text: '运行质量检查',
+    desc: '代码规范和安全性检查'
+  }];
+
+  // 日志信息
+  var logs = ['2023-11-01 10:00:10 [INFO] 需求解析完成，识别到3个核心实体', '2023-11-01 10:00:15 [INFO] 开始生成应用蓝图...', '2023-11-01 10:00:20 [INFO] 已创建数据模型: User, Role, Permission', '2023-11-01 10:00:30 [INFO] 已创建页面结构: 8个页面', '2023-11-01 10:00:45 [INFO] 开始生成前端代码...', '2023-11-01 10:01:10 [INFO] 已生成用户列表页组件', '2023-11-01 10:01:25 [INFO] 已生成用户详情页组件', '2023-11-01 10:01:40 [INFO] 已生成权限管理组件', '2023-11-01 10:02:00 [INFO] 开始生成后端代码...', '2023-11-01 10:02:20 [INFO] 已生成用户API控制器', '2023-11-01 10:02:35 [INFO] 已生成权限验证服务', '2023-11-01 10:03:00 [INFO] 开始运行质量检查...', '2023-11-01 10:03:15 [INFO] 代码规范检查通过', '2023-11-01 10:03:30 [INFO] 安全性检查通过，发现3个优化建议', '2023-11-01 10:03:45 [INFO] 生成完成！总耗时: 3分35秒'];
+
+  // 更新进度
+  var interval = setInterval(function () {
+    progress += 1;
+    progressBar.style.width = "".concat(progress, "%");
+    progressPercent.textContent = "".concat(progress, "%");
+
+    // 更新步骤文本
+    var stepIndex = Math.min(Math.floor(progress / 25), steps.length - 1);
+    stepText.textContent = steps[stepIndex].text;
+    stepDesc.textContent = steps[stepIndex].desc;
+
+    // 添加日志
+    var logIndex = Math.min(Math.floor(progress / 7), logs.length - 1);
+    if (logIndex >= 0 && logContainer.children.length <= logIndex) {
+      var logEl = document.createElement('div');
+      logEl.className = 'mb-1';
+      logEl.textContent = logs[logIndex];
+      logContainer.appendChild(logEl);
+      logContainer.scrollTop = logContainer.scrollHeight;
+    }
+
+    // 完成生成
+    if (progress >= 100) {
+      clearInterval(interval);
+      setTimeout(function () {
+        document.getElementById('generation-progress').classList.add('hidden');
+        document.getElementById('generation-success').classList.remove('hidden');
+        ytSendPageSize(); // 通知父页面调整iframe大小
+      }, 1000);
+    }
+  }, 50);
+}
+
+// 通知父页面调整iframe大小
+ytSendPageSize();</script>  
+ </body>
+</html>

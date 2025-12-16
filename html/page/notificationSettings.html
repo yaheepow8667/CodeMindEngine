@@ -1,0 +1,471 @@
+<!doctype html>
+<html lang="zh-CN">
+ <head> 
+  <meta charset="UTF-8"> 
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+  <title>通知偏好设置 - 设置中心</title> 
+  <!-- 引入 Font Awesome --> 
+  <link href="./notificationSettings/all.min.css" rel="stylesheet"> 
+  <!-- 引入 Tailwind CSS --> 
+  <script src="../javascript/reload.js"></script> 
+  <script src="./notificationSettings/resource_7599710000.js"></script> 
+  <script>tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        primary: '#1677ff',
+        secondary: '#40a9ff',
+        success: '#52c41a',
+        warning: '#faad14',
+        danger: '#ff4d4f',
+        info: '#1890ff',
+        light: '#f5f5f5',
+        dark: '#141414',
+        'primary-light': '#e6f7ff',
+        'primary-dark': '#0958d9',
+        'text-primary': '#333333',
+        'text-secondary': '#666666',
+        'text-tertiary': '#999999',
+        'border-color': '#e8e8e8'
+      },
+      fontFamily: {
+        inter: ['Inter', 'system-ui', 'sans-serif']
+      },
+      spacing: {
+        '128': '32rem'
+      },
+      boxShadow: {
+        'card': '0 2px 8px rgba(0, 0, 0, 0.09)',
+        'dropdown': '0 4px 16px rgba(0, 0, 0, 0.12)'
+      }
+    }
+  }
+};</script> 
+  <style>
+        /* 全局样式继承自公共页面 */
+        body {
+            @apply font-inter bg-light text-text-primary;
+        }
+        /* 确保内容区域有足够的内边距，与公共页面iframe容器的p-4 md:p-6对应 */
+        .notification-settings-container {
+            padding: 1rem; /* md:p-4 */
+        }
+        @media (min-width: 768px) {
+            .notification-settings-container {
+                padding: 1.5rem; /* md:p-6 */
+            }
+        }
+        /* 样式微调 */
+        .ant-card-header {
+            @apply text-lg font-semibold border-b border-border-color pb-3 mb-3;
+        }
+        .switch-loading:before {
+            content: '';
+            display: inline-block;
+            width: 1rem;
+            height: 1rem;
+            border: 2px solid currentColor;
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 0.75s linear infinite;
+            margin-right: 0.5rem;
+        }
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+    </style> 
+ </head> 
+ <body class="h-full overflow-y-auto scrollbar-hide"> 
+  <div class="notification-settings-container min-h-full"> 
+   <!-- 顶部标题区域 --> 
+   <div class="pb-4 mb-6 border-b border-border-color"> 
+    <h3 class="text-2xl font-semibold text-text-primary"> 设置中心 </h3> 
+    <!-- 面包屑导航（模拟，因为iframe环境不直接使用Antd组件） --> 
+    <div class="text-sm text-text-secondary mt-1"> 
+     <a href="javascript:void(0);" onclick="ytCustomClickRouter(this, event, &quot;settings&quot;)" class="hover:text-primary"> 设置中心 </a> 
+     <span class="mx-1"> / </span> 
+     <span class="text-text-tertiary"> 通知偏好设置 </span> 
+    </div> 
+   </div> 
+   <!-- 通知渠道管理模块 --> 
+   <div class="ant-card mb-8"> 
+    <div class="ant-card-header">
+      通知渠道管理 
+    </div> 
+    <div id="channel-management" class="space-y-4"> 
+     <!-- 站内通知 --> 
+     <div class="flex items-center justify-between p-4 border border-border-color rounded-lg hover:shadow-sm transition-shadow"> 
+      <div class="flex items-center"> 
+       <i class="fas fa-bell text-xl text-primary mr-4"> </i> 
+       <div> 
+        <p class="font-medium"> 站内通知 </p> 
+        <p class="text-sm text-text-secondary"> 系统内所有重要提醒和动态通知。 </p> 
+       </div> 
+      </div> 
+      <div class="flex items-center space-x-4"> 
+       <span id="switch-inApp-status" class="text-sm text-success font-medium"> 已开启 </span> 
+       <label class="relative inline-flex items-center cursor-pointer"> <input type="checkbox" value class="sr-only peer" checked id="switch-inApp"> 
+        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/30 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[&quot;&quot;] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border after:border-gray-300 after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"> 
+        </div> </label> 
+      </div> 
+     </div> 
+     <!-- 邮件通知 --> 
+     <div class="flex items-center justify-between p-4 border border-border-color rounded-lg hover:shadow-sm transition-shadow"> 
+      <div class="flex items-center"> 
+       <i class="fas fa-envelope text-xl text-info mr-4"> </i> 
+       <div> 
+        <p class="font-medium"> 邮件通知 </p> 
+        <p class="text-sm text-text-secondary"> 接收重要安全提醒和项目摘要邮件。当前绑定: <span class="font-mono text-xs bg-light px-1 rounded"> user@example.com </span> </p> 
+       </div> 
+      </div> 
+      <div class="flex items-center space-x-4"> 
+       <span id="switch-email-status" class="text-sm text-success font-medium"> 已开启 </span> 
+       <label class="relative inline-flex items-center cursor-pointer"> <input type="checkbox" value class="sr-only peer" checked id="switch-email"> 
+        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/30 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[&quot;&quot;] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border after:border-gray-300 after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"> 
+        </div> </label> 
+      </div> 
+     </div> 
+     <!-- 企业应用通知 (模拟钉钉/企业微信) --> 
+     <div class="flex items-center justify-between p-4 border border-border-color rounded-lg hover:shadow-sm transition-shadow"> 
+      <div class="flex items-center"> 
+       <i class="fab fa-weixin text-xl text-warning mr-4"> </i> 
+       <div> 
+        <p class="font-medium"> 企业应用通知 </p> 
+        <p class="text-sm text-text-secondary"> 通过企业微信/钉钉接收实时通知。状态: <span id="corp-status" class="text-danger font-medium"> 未配置 </span> </p> 
+       </div> 
+      </div> 
+      <div class="flex items-center space-x-4"> 
+       <button id="corp-config-btn" class="btn btn-outline text-sm py-1 px-3"> <i class="fas fa-cogs mr-1"> </i> 立即配置 </button> 
+       <label class="relative inline-flex items-center cursor-pointer opacity-50 pointer-events-none"> <input type="checkbox" value class="sr-only peer" disabled id="switch-corp"> 
+        <div class="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full after:content-[&quot;&quot;] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border after:border-gray-300 after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"> 
+        </div> </label> 
+      </div> 
+     </div> 
+    </div> 
+   </div> 
+   <!-- 通知类型细分模块 --> 
+   <div class="ant-card"> 
+    <div class="ant-card-header">
+      通知类型细分 
+    </div> 
+    <!-- 快捷操作按钮 --> 
+    <div class="flex justify-end space-x-3 mb-4"> 
+     <button id="btn-enable-all" class="btn btn-outline text-sm"> <i class="fas fa-check-circle mr-1"> </i> 全部开启 </button> 
+     <button id="btn-disable-all" class="btn btn-outline text-sm"> <i class="fas fa-times-circle mr-1"> </i> 全部关闭 </button> 
+    </div> 
+    <!-- 表格容器 --> 
+    <div class="overflow-x-auto"> 
+     <table class="min-w-full divide-y divide-border-color" id="notification-type-table"> 
+      <thead class="bg-light"> 
+       <tr> 
+        <th class="px-4 py-3 text-left text-xs font-medium text-text-tertiary uppercase tracking-wider w-1/4"> 通知类型 </th> 
+        <th class="px-4 py-3 text-center text-xs font-medium text-text-tertiary uppercase tracking-wider"> 站内通知 </th> 
+        <th class="px-4 py-3 text-center text-xs font-medium text-text-tertiary uppercase tracking-wider"> 邮件通知 </th> 
+        <th class="px-4 py-3 text-center text-xs font-medium text-text-tertiary uppercase tracking-wider"> 企业应用 </th> 
+       </tr> 
+      </thead> 
+      <tbody class="bg-white divide-y divide-border-color"> 
+       <!-- 数据行将由JS动态生成 --> 
+      </tbody> 
+     </table> 
+    </div> 
+   </div> 
+   <!-- 恢复默认设置链接 --> 
+   <div class="mt-6 text-center"> 
+    <a href="javascript:void(0);" id="btn-restore-default" class="text-sm text-text-secondary hover:text-danger transition-colors duration-200"> <i class="fas fa-undo-alt mr-1"> </i> 恢复默认设置 </a> 
+   </div> 
+  </div> 
+  <script>// 模拟数据结构
+var notificationTypes = [{
+  id: 1,
+  name: '项目通知',
+  icon: 'fa-folder-open',
+  desc: '项目创建、更新、代码合并等',
+  inApp: true,
+  email: true,
+  corp: true
+}, {
+  id: 2,
+  name: '团队协作',
+  icon: 'fa-users',
+  desc: '成员邀请、权限变更',
+  inApp: true,
+  email: false,
+  corp: true
+}, {
+  id: 3,
+  name: '系统公告',
+  icon: 'fa-bullhorn',
+  desc: '平台维护、新功能发布',
+  inApp: true,
+  email: true,
+  corp: false
+}, {
+  id: 4,
+  name: '生成任务状态',
+  icon: 'fa-magic',
+  desc: '生成任务开始、完成、失败',
+  inApp: true,
+  email: true,
+  corp: true
+}, {
+  id: 5,
+  name: '营销资讯',
+  icon: 'fa-newspaper',
+  desc: '产品更新、活动推广',
+  inApp: false,
+  email: true,
+  corp: false
+}];
+// 模拟企业渠道状态
+var isCorpConfigured = false;
+// -----------------------------------------------------------------
+// 1. 核心功能：渲染通知类型表格
+// -----------------------------------------------------------------
+function renderNotificationTable() {
+  var tbody = document.querySelector('#notification-type-table tbody');
+  tbody.innerHTML = '';
+  notificationTypes.forEach(function (type) {
+    var row = document.createElement('tr');
+    row.className = 'hover:bg-primary-light/30 transition-colors duration-150';
+
+    // 构造第一列：通知类型
+    var typeCell = document.createElement('td');
+    typeCell.className = 'px-4 py-3 whitespace-nowrap';
+    typeCell.innerHTML = "<div class=\"flex items-center\">\n                        <i class=\"fas".concat(type.icon, "text-base text-text-secondary mr-3 w-4 text-center\"></i>\n                        <div>\n                            <p class=\"font-medium text-sm\">").concat(type.name, "</p>\n                            <p class=\"text-xs text-text-tertiary\">").concat(type.desc, "</p>\n                        </div>\n                    </div>");
+    row.appendChild(typeCell);
+    // 构造开关列
+    ['inApp', 'email', 'corp'].forEach(function (channelKey) {
+      var cell = document.createElement('td');
+      cell.className = 'px-4 py-3 text-center whitespace-nowrap';
+      var isEnabled = type[channelKey];
+      var isDisabled = channelKey === 'corp' && !isCorpConfigured || channelKey === 'email' && !document.getElementById('switch-email').checked;
+      var switchHtml = "<label class=\"relative inline-flex items-center cursor-pointer\">\n                            <input type=\"checkbox\" value=\"\" class=\"sr-only peer\" data-id=\"".concat(type.id, "\" data-channel=\"").concat(channelKey, "\"").concat(isEnabled ? 'checked' : '', "").concat(isDisabled ? 'disabled' : '', ">\n                            <div class=\"w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border after:border-gray-300 after:rounded-full after:h-5 after:w-5 after:transition-all").concat(isDisabled ? 'opacity-50' : 'peer-checked:bg-primary', "\"></div>\n                        </label>");
+      if (isDisabled) {
+        cell.innerHTML = "<span class=\"text-text-tertiary text-xs\">(\u6E20\u9053\u5173\u95ED)</span>";
+      } else {
+        cell.innerHTML = switchHtml;
+      }
+      row.appendChild(cell);
+    });
+    tbody.appendChild(row);
+  });
+  attachTableEventListeners();
+}
+// -----------------------------------------------------------------
+// 2. 交互逻辑：开关事件绑定
+// -----------------------------------------------------------------
+function attachTableEventListeners() {
+  document.querySelectorAll('#notification-type-table input[type="checkbox"]').forEach(function (checkbox) {
+    checkbox.onchange = function () {
+      handleSwitchChange(this);
+    };
+  });
+}
+function handleSwitchChange(checkbox) {
+  var typeId = parseInt(checkbox.dataset.id);
+  var channel = checkbox.dataset.channel;
+  var isChecked = checkbox.checked;
+
+  // 模拟API调用和反馈
+  var row = checkbox.closest('tr');
+  var cell = checkbox.closest('td');
+
+  // 1. 显示Loading状态
+  cell.innerHTML = "<div class=\"flex justify-center items-center\"><div class=\"switch-loading text-primary\"></div></div>";
+  setTimeout(function () {
+    // 2. 模拟API成功
+    var typeIndex = notificationTypes.findIndex(function (t) {
+      return t.id === typeId;
+    });
+    if (typeIndex !== -1) {
+      notificationTypes[typeIndex][channel] = isChecked;
+    }
+
+    // 3. 重新渲染该行或整个表格以更新状态和依赖（简化处理，直接重新渲染）
+    renderNotificationTable();
+
+    // 4. 显示成功反馈 (使用公共通知函数模拟)
+    if (typeof ytNotificationSuccess === 'function') {
+      ytNotificationSuccess('设置已更新', "".concat(notificationTypes.find(function (t) {
+        return t.id === typeId;
+      }).name, "\u7684").concat(channel, "\u901A\u77E5\u5DF2").concat(isChecked ? '开启' : '关闭'));
+    } else {
+      console.log("[\u6A21\u62DF\u901A\u77E5]".concat(notificationTypes.find(function (t) {
+        return t.id === typeId;
+      }).name, "-").concat(channel, ":").concat(isChecked ? '开启' : '关闭'));
+    }
+
+    // 5. 重新检查企业应用渠道状态，如果邮件关闭，则企业应用列的开关也应禁用
+    updateChannelDependencies();
+  }, 800); // 模拟网络延迟
+}
+// -----------------------------------------------------------------
+// 3. 渠道依赖更新
+// -----------------------------------------------------------------
+function updateChannelDependencies() {
+  var isEmailEnabled = document.getElementById('switch-email').checked;
+  var corpCellElements = document.querySelectorAll('#notification-type-table input[data-channel="corp"]');
+  corpCellElements.forEach(function (checkbox) {
+    var isDisabled = !isCorpConfigured || !isEmailEnabled;
+    checkbox.disabled = isDisabled;
+    var parentCell = checkbox.closest('td');
+    // 重新渲染该单元格，以应用禁用状态的样式
+    if (isDisabled && !checkbox.checked) {
+      parentCell.innerHTML = "<span class=\"text-text-tertiary text-xs\">(\u6E20\u9053\u5173\u95ED)</span>";
+    } else if (isDisabled && checkbox.checked) {
+      parentCell.innerHTML = "<span class=\"text-text-tertiary text-xs\">(\u6E20\u9053\u5173\u95ED)</span>";
+    } else if (!isDisabled && !checkbox.checked) {
+      parentCell.innerHTML = "<label class=\"relative inline-flex items-center cursor-pointer\">\n                            <input type=\"checkbox\" value=\"\" class=\"sr-only peer\" data-id=\"".concat(checkbox.dataset.id, "\" data-channel=\"corp\" checked=\"false\">\n                            <div class=\"w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border after:border-gray-300 after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary\"></div>\n                        </label>");
+      attachTableEventListeners(); // 重新绑定事件
+    }
+  });
+
+  // 更新企业应用卡片状态
+  var corpStatusSpan = document.getElementById('corp-status');
+  var corpConfigBtn = document.getElementById('corp-config-btn');
+  var corpSwitchLabel = document.querySelector('#channel-management > div:nth-child(3) label');
+  if (isCorpConfigured) {
+    corpStatusSpan.textContent = '已连接';
+    corpStatusSpan.classList.remove('text-danger');
+    corpStatusSpan.classList.add('text-success');
+    corpConfigBtn.innerHTML = '<i class="fas fa-cog mr-1"></i>管理';
+    corpSwitchLabel.classList.remove('opacity-50', 'pointer-events-none');
+  } else {
+    corpStatusSpan.textContent = '未配置';
+    corpStatusSpan.classList.add('text-danger');
+    corpConfigBtn.innerHTML = '<i class="fas fa-cogs mr-1"></i>立即配置';
+    corpSwitchLabel.classList.add('opacity-50', 'pointer-events-none');
+  }
+
+  // 重新渲染表格以反映邮件开关对企业应用列的影响
+  renderNotificationTable();
+}
+// -----------------------------------------------------------------
+// 4. 渠道开关事件绑定
+// -----------------------------------------------------------------
+function setupChannelSwitchListeners() {
+  // 站内通知开关
+  var switchInApp = document.getElementById('switch-inApp');
+  var statusInApp = document.getElementById('switch-inApp-status');
+  switchInApp.onchange = function () {
+    var isChecked = this.checked;
+    statusInApp.textContent = isChecked ? '已开启' : '已关闭';
+    statusInApp.className = "text-sm font-medium".concat(isChecked ? 'text-success' : 'text-text-tertiary');
+
+    // 影响表格中站内通知列的禁用状态
+    notificationTypes.forEach(function (t) {
+      return t.inApp = isChecked;
+    });
+    renderNotificationTable();
+    if (typeof ytNotificationSuccess === 'function') {
+      ytNotificationSuccess('渠道状态更新', "\u7AD9\u5185\u901A\u77E5\u6E20\u9053\u5DF2".concat(isChecked ? '开启' : '关闭'));
+    }
+  };
+  // 邮件通知开关
+  var switchEmail = document.getElementById('switch-email');
+  var statusEmail = document.getElementById('switch-email-status');
+  switchEmail.onchange = function () {
+    var isChecked = this.checked;
+    statusEmail.textContent = isChecked ? '已开启' : '已关闭';
+    statusEmail.className = "text-sm font-medium".concat(isChecked ? 'text-success' : 'text-text-tertiary');
+
+    // 影响表格中邮件通知列的禁用状态
+    notificationTypes.forEach(function (t) {
+      return t.email = isChecked;
+    });
+    updateChannelDependencies(); // 重新检查依赖
+
+    if (typeof ytNotificationSuccess === 'function') {
+      ytNotificationSuccess('渠道状态更新', "\u90AE\u4EF6\u901A\u77E5\u6E20\u9053\u5DF2".concat(isChecked ? '开启' : '关闭'));
+    }
+  };
+
+  // 企业应用配置按钮
+  document.getElementById('corp-config-btn').onclick = function () {
+    isCorpConfigured = !isCorpConfigured;
+    updateChannelDependencies();
+    if (typeof ytNotificationInfo === 'function') {
+      ytNotificationInfo('模拟配置', isCorpConfigured ? '已模拟连接企业应用，请前往管理页面进行实际配置。' : '已模拟断开企业应用连接。');
+    }
+  };
+
+  // 快捷按钮
+  document.getElementById('btn-enable-all').onclick = function () {
+    document.querySelectorAll('#notification-type-table input[data-channel="inApp"], #notification-type-table input[data-channel="email"], #notification-type-table input[data-channel="corp"]').forEach(function (cb) {
+      if (!cb.disabled) {
+        cb.checked = true;
+        // 模拟触发onchange，但为了避免递归，我们手动更新数据
+        var typeId = parseInt(cb.dataset.id);
+        var channel = cb.dataset.channel;
+        var typeIndex = notificationTypes.findIndex(function (t) {
+          return t.id === typeId;
+        });
+        if (typeIndex !== -1) notificationTypes[typeIndex][channel] = true;
+      }
+    });
+    renderNotificationTable();
+    if (typeof ytNotificationSuccess === 'function') ytNotificationSuccess('快捷操作', '所有可用的通知类型已全部开启。');
+  };
+  document.getElementById('btn-disable-all').onclick = function () {
+    document.querySelectorAll('#notification-type-table input[data-channel="inApp"], #notification-type-table input[data-channel="email"], #notification-type-table input[data-channel="corp"]').forEach(function (cb) {
+      if (!cb.disabled) {
+        cb.checked = false;
+        // 模拟触发onchange，但为了避免递归，我们手动更新数据
+        var typeId = parseInt(cb.dataset.id);
+        var channel = cb.dataset.channel;
+        var typeIndex = notificationTypes.findIndex(function (t) {
+          return t.id === typeId;
+        });
+        if (typeIndex !== -1) notificationTypes[typeIndex][channel] = false;
+      }
+    });
+    renderNotificationTable();
+    if (typeof ytNotificationSuccess === 'function') ytNotificationSuccess('快捷操作', '所有可用的通知类型已全部关闭。');
+  };
+
+  // 恢复默认
+  document.getElementById('btn-restore-default').onclick = function () {
+    if (typeof ytNotificationConfirm === 'function') {
+      ytNotificationConfirm('确认恢复', '确定要将所有通知偏好恢复为系统默认设置吗？此操作不可撤销。', function () {
+        // 模拟恢复默认逻辑
+        notificationTypes.forEach(function (t) {
+          t.inApp = t.id !== 5; // 营销资讯默认关闭
+          t.email = true;
+          t.corp = t.id !== 3 && t.id !== 5;
+        });
+        // 恢复主渠道开关（模拟默认开启）
+        document.getElementById('switch-inApp').checked = true;
+        document.getElementById('switch-email').checked = true;
+        document.getElementById('switch-inApp').onchange();
+        document.getElementById('switch-email').onchange();
+        renderNotificationTable();
+        if (typeof ytNotificationSuccess === 'function') ytNotificationSuccess('恢复成功', '通知偏好已恢复到默认设置。');
+      });
+    } else {
+      console.log("[模拟] 恢复默认设置");
+    }
+  };
+}
+// -----------------------------------------------------------------
+// 5. 初始化
+// -----------------------------------------------------------------
+document.addEventListener('DOMContentLoaded', function () {
+  // 初始渲染表格
+  renderNotificationTable();
+
+  // 绑定所有事件监听器
+  setupChannelSwitchListeners();
+
+  // 初始检查企业应用状态
+  updateChannelDependencies();
+
+  // 页面加载完成后通知父页面调整高度
+  if (typeof ytSendPageSize === 'function') {
+    ytSendPageSize();
+  }
+});</script>  
+ </body>
+</html>

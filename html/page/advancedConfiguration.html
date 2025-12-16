@@ -1,0 +1,708 @@
+<!doctype html>
+<html lang="zh-CN">
+ <head> 
+  <meta charset="UTF-8"> 
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+  <title>高级生成配置与规则引擎 - 智码引擎</title> 
+  <link href="./advancedConfiguration/all.min.css" rel="stylesheet"> 
+  <script src="../javascript/reload.js"></script> 
+  <script src="./advancedConfiguration/resource_6376710000.js"></script> 
+  <script>tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        primary: '#1677ff',
+        secondary: '#40a9ff',
+        success: '#52c41a',
+        warning: '#faad14',
+        danger: '#ff4d4f',
+        info: '#1890ff',
+        light: '#f5f5f5',
+        dark: '#141414',
+        'primary-light': '#e6f7ff',
+        'primary-dark': '#0958d9',
+        'text-primary': '#333333',
+        'text-secondary': '#666666',
+        'text-tertiary': '#999999',
+        'border-color': '#e8e8e8',
+        'card-bg': '#ffffff',
+        'hover-bg': '#f0f7ff'
+      },
+      fontFamily: {
+        inter: ['Inter', 'system-ui', 'sans-serif']
+      },
+      boxShadow: {
+        'card': '0 2px 8px rgba(0, 0, 0, 0.08)',
+        'card-hover': '0 4px 16px rgba(0, 0, 0, 0.12)'
+      },
+      spacing: {
+        '5.5': '1.375rem'
+      }
+    }
+  }
+};</script> 
+  <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .scrollbar-hide {
+                -ms-overflow-style: none;
+                scrollbar-width: none;
+            }
+            .scrollbar-hide::-webkit-scrollbar {
+                display: none;
+            }
+            .transition-all-300 {
+                transition: all 0.3s ease;
+            }
+            .text-balance {
+                text-wrap: balance;
+            }
+            .form-item {
+                @apply mb-4;
+            }
+            .form-label {
+                @apply block text-text-primary font-medium mb-2;
+            }
+            .form-control {
+                @apply w-full px-3 py-2 border border-border-color rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all duration-200;
+            }
+            .collapse-header {
+                @apply flex items-center justify-between py-4 px-0 cursor-pointer;
+            }
+            .collapse-content {
+                @apply overflow-hidden transition-all duration-300 ease-in-out;
+            }
+            .switch {
+                @apply relative inline-block w-10 h-5 rounded-full transition-colors duration-200 cursor-pointer;
+            }
+            .switch-checked {
+                @apply bg-primary;
+            }
+            .switch-unchecked {
+                @apply bg-gray-300;
+            }
+            .switch-dot {
+                @apply absolute left-1 top-1 bg-white w-3 h-3 rounded-full transition-transform duration-200;
+            }
+            .switch-checked .switch-dot {
+                @apply transform translate-x-5;
+            }
+            .radio-option {
+                @apply flex items-center p-3 border border-border-color rounded-md cursor-pointer hover:bg-hover-bg transition-all duration-200;
+            }
+            .radio-option-checked {
+                @apply border-primary bg-primary-light/20;
+            }
+            .upload-area {
+                @apply border-2 border-dashed border-border-color rounded-md p-6 text-center hover:border-primary transition-colors duration-200;
+            }
+            .rule-item {
+                @apply flex items-center justify-between p-3 border border-border-color rounded-md mb-3 bg-card-bg hover:bg-hover-bg transition-all duration-200;
+            }
+            .rule-item-actions {
+                @apply opacity-0 group-hover:opacity-100 transition-opacity duration-200;
+            }
+        }
+        body {
+            @apply font-inter bg-light text-text-primary;
+        }
+        .ant-card {
+            @apply bg-card-bg rounded-lg shadow-card p-5 mb-5 transition-all duration-300 hover:shadow-card-hover;
+        }
+        .btn {
+            @apply px-4 py-2 rounded-md transition-all duration-200 font-medium focus:outline-none focus:ring-2 focus:ring-offset-2;
+        }
+        .btn-primary {
+            @apply bg-primary text-white hover:bg-primary-dark focus:ring-primary/50;
+        }
+        .btn-outline {
+            @apply border border-primary text-primary hover:bg-primary-light focus:ring-primary/50;
+        }
+        .btn-text {
+            @apply text-primary hover:text-primary-dark hover:bg-primary-light/50 focus:ring-primary/50;
+        }
+        .btn-sm {
+            @apply px-3 py-1 text-sm;
+        }
+    </style> 
+ </head> 
+ <body class="p-4 md:p-6"> 
+  <div class="max-w-6xl mx-auto"> 
+   <!-- 页面标题 --> 
+   <div class="mb-6 animate-fade-in"> 
+    <h1 class="text-[clamp(1.5rem,3vw,2rem)] font-bold text-text-primary flex items-center"> <i class="fas fa-sliders-h mr-3 text-primary"> </i> 高级生成配置与规则引擎 </h1> 
+    <p class="text-text-tertiary mt-1 max-w-3xl text-balance"> 自定义代码生成规则和系统行为，满足特定项目需求，提升开发效率与代码质量 </p> 
+   </div> 
+   <!-- 配置卡片 --> 
+   <div class="ant-card transform hover:translate-y-[-2px] transition-all duration-300"> 
+    <!-- 操作按钮区 --> 
+    <div class="flex flex-wrap justify-between items-center mb-6 gap-4"> 
+     <div class="text-text-secondary flex items-center"> 
+      <i class="fas fa-info-circle mr-1 text-primary"> </i> 
+      <span> 配置将应用于所有新生成的项目和代码 </span> 
+     </div> 
+     <div class="flex space-x-3"> 
+      <button class="btn btn-outline" id="reset-btn" aria-label="重置默认配置"> <i class="fas fa-undo mr-1"> </i> 重置默认 </button> 
+      <button class="btn btn-primary" id="save-btn" aria-label="保存配置"> <i class="fas fa-save mr-1"> </i> 保存配置 </button> 
+     </div> 
+    </div> 
+    <!-- 折叠面板区域 --> 
+    <div class="space-y-5"> 
+     <!-- 代码规范配置 --> 
+     <div class="border border-border-color rounded-lg overflow-hidden bg-card-bg shadow-sm"> 
+      <div class="collapse-header" data-target="code-style-collapse" aria-expanded="true"> 
+       <div class="flex items-center"> 
+        <i class="fas fa-code text-primary mr-3 text-xl"> </i> 
+        <h2 class="text-lg font-semibold"> 代码规范配置 </h2> 
+       </div> 
+       <i class="fas fa-chevron-down text-text-tertiary transition-transform duration-300" id="code-style-icon" style="transform: rotate(180deg);"> </i> 
+      </div> 
+      <div class="collapse-content border-t border-border-color" id="code-style-collapse" style="max-height: 1000px;"> 
+       <div class="px-0 pb-4"> 
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6"> 
+         <div> 
+          <div class="form-item"> 
+           <div class="flex items-center justify-between"> 
+            <label class="form-label" for="single-quote-switch"> 使用单引号 </label> 
+            <div class="switch switch-checked" id="single-quote-switch" role="switch" aria-checked="true"> 
+             <div class="switch-dot"> 
+             </div> 
+            </div> 
+           </div> 
+           <p class="text-text-tertiary text-sm mt-1"> 生成的代码中使用单引号而非双引号 </p> 
+          </div> 
+          <div class="form-item"> 
+           <div class="flex items-center justify-between"> 
+            <label class="form-label" for="jsdoc-switch"> 自动生成JsDoc注释 </label> 
+            <div class="switch switch-checked" id="jsdoc-switch" role="switch" aria-checked="true"> 
+             <div class="switch-dot"> 
+             </div> 
+            </div> 
+           </div> 
+           <p class="text-text-tertiary text-sm mt-1"> 为函数、类和组件自动生成文档注释 </p> 
+          </div> 
+          <div class="form-item"> 
+           <div class="flex items-center justify-between"> 
+            <label class="form-label" for="semicolon-switch"> 使用分号结尾 </label> 
+            <div class="switch switch-unchecked" id="semicolon-switch" role="switch" aria-checked="false"> 
+             <div class="switch-dot"> 
+             </div> 
+            </div> 
+           </div> 
+           <p class="text-text-tertiary text-sm mt-1"> 在语句结尾添加分号 </p> 
+          </div> 
+          <div class="form-item"> 
+           <div class="flex items-center justify-between"> 
+            <label class="form-label" for="eslint-switch"> 启用ESLint规则 </label> 
+            <div class="switch switch-checked" id="eslint-switch" role="switch" aria-checked="true"> 
+             <div class="switch-dot"> 
+             </div> 
+            </div> 
+           </div> 
+           <p class="text-text-tertiary text-sm mt-1"> 生成符合ESLint标准的代码 </p> 
+          </div> 
+         </div> 
+         <div> 
+          <div class="form-item"> 
+           <label class="form-label" for="indentation-select"> 缩进空格数 </label> 
+           <select class="form-control" id="indentation-select" aria-label="选择缩进空格数"> <option value="2"> 2个空格 </option> <option value="4" selected> 4个空格 </option> <option value="tab"> 使用Tab </option> </select> 
+          </div> 
+          <div class="form-item"> 
+           <label class="form-label"> 函数括号风格 </label> 
+           <div class="grid grid-cols-2 gap-3"> 
+            <label class="radio-option radio-option-checked" tabindex="0" aria-checked="true"> <input type="radio" name="brace-style" value="same-line" checked class="mr-2" aria-label="同一行 (K&amp;R风格)"> <span> 同一行 (K&amp;R风格) </span> </label> 
+            <label class="radio-option" tabindex="0" aria-checked="false"> <input type="radio" name="brace-style" value="new-line" class="mr-2" aria-label="新行 (Allman风格)"> <span> 新行 (Allman风格) </span> </label> 
+           </div> 
+          </div> 
+          <div class="form-item"> 
+           <label class="form-label"> 命名规范 </label> 
+           <div class="grid grid-cols-2 gap-3"> 
+            <label class="radio-option radio-option-checked" tabindex="0" aria-checked="true"> <input type="radio" name="naming-convention" value="camelCase" checked class="mr-2" aria-label="camelCase"> <span> camelCase </span> </label> 
+            <label class="radio-option" tabindex="0" aria-checked="false"> <input type="radio" name="naming-convention" value="snake_case" class="mr-2" aria-label="snake_case"> <span> snake_case </span> </label> 
+           </div> 
+          </div> 
+         </div> 
+        </div> 
+       </div> 
+      </div> 
+     </div> 
+     <!-- 安全规则配置 --> 
+     <div class="border border-border-color rounded-lg overflow-hidden bg-card-bg shadow-sm"> 
+      <div class="collapse-header" data-target="security-rules-collapse" aria-expanded="false"> 
+       <div class="flex items-center"> 
+        <i class="fas fa-shield-alt text-primary mr-3 text-xl"> </i> 
+        <h2 class="text-lg font-semibold"> 安全规则配置 </h2> 
+       </div> 
+       <i class="fas fa-chevron-down text-text-tertiary transition-transform duration-300" id="security-rules-icon"> </i> 
+      </div> 
+      <div class="collapse-content border-t border-border-color hidden" id="security-rules-collapse" style="max-height: 0px;"> 
+       <div class="px-0 pb-4"> 
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6"> 
+         <div> 
+          <div class="form-item"> 
+           <div class="flex items-center justify-between"> 
+            <label class="form-label" for="input-validation-switch"> 自动生成输入验证 </label> 
+            <div class="switch switch-checked" id="input-validation-switch" role="switch" aria-checked="true"> 
+             <div class="switch-dot"> 
+             </div> 
+            </div> 
+           </div> 
+           <p class="text-text-tertiary text-sm mt-1"> 为所有API接口生成输入验证逻辑 </p> 
+          </div> 
+          <div class="form-item"> 
+           <div class="flex items-center justify-between"> 
+            <label class="form-label" for="confirm-dialog-switch"> 敏感操作二次确认 </label> 
+            <div class="switch switch-checked" id="confirm-dialog-switch" role="switch" aria-checked="true"> 
+             <div class="switch-dot"> 
+             </div> 
+            </div> 
+           </div> 
+           <p class="text-text-tertiary text-sm mt-1"> 为删除、修改等敏感操作添加确认对话框 </p> 
+          </div> 
+          <div class="form-item"> 
+           <div class="flex items-center justify-between"> 
+            <label class="form-label" for="xss-protection-switch"> XSS防护 </label> 
+            <div class="switch switch-checked" id="xss-protection-switch" role="switch" aria-checked="true"> 
+             <div class="switch-dot"> 
+             </div> 
+            </div> 
+           </div> 
+           <p class="text-text-tertiary text-sm mt-1"> 自动对用户输入进行XSS过滤 </p> 
+          </div> 
+         </div> 
+         <div> 
+          <div class="form-item"> 
+           <div class="flex items-center justify-between"> 
+            <label class="form-label" for="password-encrypt-switch"> 密码字段加密传输 </label> 
+            <div class="switch switch-checked" id="password-encrypt-switch" role="switch" aria-checked="true"> 
+             <div class="switch-dot"> 
+             </div> 
+            </div> 
+           </div> 
+           <p class="text-text-tertiary text-sm mt-1"> 密码在传输前进行加密处理 </p> 
+          </div> 
+          <div class="form-item"> 
+           <label class="form-label" for="log-level-select"> 敏感操作日志记录 </label> 
+           <select class="form-control" id="log-level-select" aria-label="选择敏感操作日志记录级别"> <option value="none"> 不记录 </option> <option value="basic"> 基本信息 </option> <option value="detailed" selected> 详细记录 </option> </select> 
+          </div> 
+          <div class="form-item"> 
+           <label class="form-label" for="rate-limit-switch"> API访问限流 </label> 
+           <div class="flex items-center justify-between"> 
+            <span> 启用API请求频率限制 </span> 
+            <div class="switch switch-unchecked" id="rate-limit-switch" role="switch" aria-checked="false"> 
+             <div class="switch-dot"> 
+             </div> 
+            </div> 
+           </div> 
+          </div> 
+         </div> 
+        </div> 
+       </div> 
+      </div> 
+     </div> 
+     <!-- 性能优化配置 --> 
+     <div class="border border-border-color rounded-lg overflow-hidden bg-card-bg shadow-sm"> 
+      <div class="collapse-header" data-target="performance-collapse" aria-expanded="false"> 
+       <div class="flex items-center"> 
+        <i class="fas fa-tachometer-alt text-primary mr-3 text-xl"> </i> 
+        <h2 class="text-lg font-semibold"> 性能优化配置 </h2> 
+       </div> 
+       <i class="fas fa-chevron-down text-text-tertiary transition-transform duration-300" id="performance-icon"> </i> 
+      </div> 
+      <div class="collapse-content border-t border-border-color hidden" id="performance-collapse" style="max-height: 0px;"> 
+       <div class="px-0 pb-4"> 
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6"> 
+         <div> 
+          <div class="form-item"> 
+           <label class="form-label"> 前端组件懒加载 </label> 
+           <div class="grid grid-cols-1 gap-3"> 
+            <label class="radio-option" tabindex="0" aria-checked="false"> <input type="radio" name="lazy-load" value="none" class="mr-2" aria-label="不启用"> <span> 不启用 </span> </label> 
+            <label class="radio-option radio-option-checked" tabindex="0" aria-checked="true"> <input type="radio" name="lazy-load" value="route" checked class="mr-2" aria-label="路由级别懒加载"> <span> 路由级别懒加载 </span> </label> 
+            <label class="radio-option" tabindex="0" aria-checked="false"> <input type="radio" name="lazy-load" value="component" class="mr-2" aria-label="组件级别懒加载"> <span> 组件级别懒加载 </span> </label> 
+           </div> 
+          </div> 
+          <div class="form-item"> 
+           <label class="form-label" for="image-optimization-switch"> 图片优化 </label> 
+           <div class="flex items-center justify-between"> 
+            <span> 自动生成响应式图片 </span> 
+            <div class="switch switch-checked" id="image-optimization-switch" role="switch" aria-checked="true"> 
+             <div class="switch-dot"> 
+             </div> 
+            </div> 
+           </div> 
+          </div> 
+         </div> 
+         <div> 
+          <div class="form-item"> 
+           <label class="form-label"> 表格数据处理策略 </label> 
+           <div class="form-item"> 
+            <label class="form-label" for="pagination-threshold"> 分页阈值 </label> 
+            <div class="flex items-center"> 
+             <input type="number" class="form-control w-24" id="pagination-threshold" value="100" min="10" max="1000" aria-label="分页阈值数量"> 
+             <span class="mx-2 text-text-tertiary"> 条数据 </span> 
+            </div> 
+            <p class="text-text-tertiary text-sm mt-1"> 超过此数量自动启用分页 </p> 
+           </div> 
+           <div class="form-item"> 
+            <label class="form-label" for="virtual-scroll-threshold"> 虚拟滚动阈值 </label> 
+            <div class="flex items-center"> 
+             <input type="number" class="form-control w-24" id="virtual-scroll-threshold" value="500" min="100" max="2000" aria-label="虚拟滚动阈值数量"> 
+             <span class="mx-2 text-text-tertiary"> 条数据 </span> 
+            </div> 
+            <p class="text-text-tertiary text-sm mt-1"> 超过此数量自动启用虚拟滚动 </p> 
+           </div> 
+          </div> 
+          <div class="form-item"> 
+           <div class="flex items-center justify-between"> 
+            <label class="form-label" for="db-index-switch"> 生成数据库索引建议 </label> 
+            <div class="switch switch-checked" id="db-index-switch" role="switch" aria-checked="true"> 
+             <div class="switch-dot"> 
+             </div> 
+            </div> 
+           </div> 
+          </div> 
+         </div> 
+        </div> 
+       </div> 
+      </div> 
+     </div> 
+     <!-- 自定义模板注入点 --> 
+     <div class="border border-border-color rounded-lg overflow-hidden bg-card-bg shadow-sm"> 
+      <div class="collapse-header" data-target="template-collapse" aria-expanded="false"> 
+       <div class="flex items-center"> 
+        <i class="fas fa-file-code text-primary mr-3 text-xl"> </i> 
+        <h2 class="text-lg font-semibold"> 自定义模板注入点 </h2> 
+       </div> 
+       <i class="fas fa-chevron-down text-text-tertiary transition-transform duration-300" id="template-icon"> </i> 
+      </div> 
+      <div class="collapse-content border-t border-border-color hidden" id="template-collapse" style="max-height: 0px;"> 
+       <div class="px-0 pb-4"> 
+        <p class="text-text-tertiary mb-4"> 上传自定义模板文件，覆盖平台默认生成的代码结构 </p> 
+        <div class="space-y-6"> 
+         <div class="form-item"> 
+          <label class="form-label" for="service-template-upload"> Service层基类模板 </label> 
+          <div class="upload-area" id="service-template-upload-area"> 
+           <i class="fas fa-upload text-2xl text-text-tertiary mb-2"> </i> 
+           <p class="text-text-tertiary mb-3"> 拖放文件到此处或点击上传 </p> 
+           <button class="btn btn-outline" id="service-template-btn"> 选择文件 </button> 
+           <input type="file" id="service-template-upload" class="hidden" accept=".js,.ts,.vue" aria-label="选择Service层基类模板文件"> 
+           <p class="text-text-tertiary text-xs mt-2"> 支持 .js, .ts, .vue 文件，最大 5MB </p> 
+          </div> 
+         </div> 
+         <div class="form-item"> 
+          <label class="form-label" for="api-template-upload"> API响应格式模板 </label> 
+          <div class="upload-area" id="api-template-upload-area"> 
+           <i class="fas fa-upload text-2xl text-text-tertiary mb-2"> </i> 
+           <p class="text-text-tertiary mb-3"> 拖放文件到此处或点击上传 </p> 
+           <button class="btn btn-outline" id="api-template-btn"> 选择文件 </button> 
+           <input type="file" id="api-template-upload" class="hidden" accept=".js,.ts,.json" aria-label="选择API响应格式模板文件"> 
+           <p class="text-text-tertiary text-xs mt-2"> 支持 .js, .ts, .json 文件，最大 5MB </p> 
+          </div> 
+         </div> 
+         <div class="form-item"> 
+          <label class="form-label" for="template-vars-switch"> 自定义模板变量 </label> 
+          <div class="flex items-center justify-between mb-2"> 
+           <span class="text-text-primary"> 启用自定义变量替换 </span> 
+           <div class="switch switch-checked" id="template-vars-switch" role="switch" aria-checked="true"> 
+            <div class="switch-dot"> 
+            </div> 
+           </div> 
+          </div> 
+          <div class="bg-gray-50 p-4 rounded-md text-sm text-text-secondary border border-border-color"> 
+           <p class="font-medium text-text-primary mb-2"> 可用变量: </p> 
+           <ul class="space-y-1 grid grid-cols-1 md:grid-cols-2 gap-y-2"> 
+            <li class="flex items-center"> <code class="bg-white px-1.5 py-0.5 rounded text-xs font-mono mr-2"> ${PROJECT_NAME} </code> <span class="text-sm"> - 项目名称 </span> </li> 
+            <li class="flex items-center"> <code class="bg-white px-1.5 py-0.5 rounded text-xs font-mono mr-2"> ${AUTHOR} </code> <span class="text-sm"> - 作者信息 </span> </li> 
+            <li class="flex items-center"> <code class="bg-white px-1.5 py-0.5 rounded text-xs font-mono mr-2"> ${CREATION_DATE} </code> <span class="text-sm"> - 创建日期 </span> </li> 
+            <li class="flex items-center"> <code class="bg-white px-1.5 py-0.5 rounded text-xs font-mono mr-2"> ${MODULE_NAME} </code> <span class="text-sm"> - 模块名称 </span> </li> 
+           </ul> 
+          </div> 
+         </div> 
+        </div> 
+       </div> 
+      </div> 
+     </div> 
+     <!-- 业务规则库 --> 
+     <div class="border border-border-color rounded-lg overflow-hidden bg-card-bg shadow-sm"> 
+      <div class="collapse-header" data-target="business-rules-collapse" aria-expanded="false"> 
+       <div class="flex items-center"> 
+        <i class="fas fa-list-check text-primary mr-3 text-xl"> </i> 
+        <h2 class="text-lg font-semibold"> 业务规则库 </h2> 
+       </div> 
+       <div class="flex items-center"> 
+        <button class="btn btn-primary btn-sm mr-2" id="add-rule-btn" aria-label="添加新规则"> <i class="fas fa-plus mr-1"> </i> 添加规则 </button> 
+        <i class="fas fa-chevron-down text-text-tertiary transition-transform duration-300" id="business-rules-icon"> </i> 
+       </div> 
+      </div> 
+      <div class="collapse-content border-t border-border-color hidden" id="business-rules-collapse" style="max-height: 0px;"> 
+       <div class="px-0 pb-4"> 
+        <p class="text-text-tertiary mb-4"> 管理可复用的业务逻辑规则，可在生成蓝图时引用 </p> 
+        <div class="space-y-3" id="rules-container"> 
+         <div class="rule-item group"> 
+          <div class="flex items-center"> 
+           <i class="fas fa-shield-alt text-primary mr-3"> </i> 
+           <div> 
+            <h4 class="font-medium"> 状态为"审核中"的记录不可删除 </h4> 
+            <p class="text-text-tertiary text-sm"> 适用于所有包含"状态"字段的实体 </p> 
+           </div> 
+          </div> 
+          <div class="rule-item-actions flex space-x-2"> 
+           <button class="text-text-secondary hover:text-primary p-1 transition-colors duration-200" aria-label="编辑规则"> <i class="fas fa-edit"> </i> </button> 
+           <button class="text-text-secondary hover:text-danger p-1 transition-colors duration-200" aria-label="删除规则"> <i class="fas fa-trash"> </i> </button> 
+          </div> 
+         </div> 
+         <div class="rule-item group"> 
+          <div class="flex items-center"> 
+           <i class="fas fa-calendar-alt text-primary mr-3"> </i> 
+           <div> 
+            <h4 class="font-medium"> 创建时间自动填充当前时间 </h4> 
+            <p class="text-text-tertiary text-sm"> 适用于所有包含"创建时间"字段的实体 </p> 
+           </div> 
+          </div> 
+          <div class="rule-item-actions flex space-x-2"> 
+           <button class="text-text-secondary hover:text-primary p-1 transition-colors duration-200" aria-label="编辑规则"> <i class="fas fa-edit"> </i> </button> 
+           <button class="text-text-secondary hover:text-danger p-1 transition-colors duration-200" aria-label="删除规则"> <i class="fas fa-trash"> </i> </button> 
+          </div> 
+         </div> 
+         <div class="rule-item group"> 
+          <div class="flex items-center"> 
+           <i class="fas fa-user text-primary mr-3"> </i> 
+           <div> 
+            <h4 class="font-medium"> 创建人自动关联当前登录用户 </h4> 
+            <p class="text-text-tertiary text-sm"> 适用于所有包含"创建人"字段的实体 </p> 
+           </div> 
+          </div> 
+          <div class="rule-item-actions flex space-x-2"> 
+           <button class="text-text-secondary hover:text-primary p-1 transition-colors duration-200" aria-label="编辑规则"> <i class="fas fa-edit"> </i> </button> 
+           <button class="text-text-secondary hover:text-danger p-1 transition-colors duration-200" aria-label="删除规则"> <i class="fas fa-trash"> </i> </button> 
+          </div> 
+         </div> 
+         <div class="rule-item group"> 
+          <div class="flex items-center"> 
+           <i class="fas fa-money-bill-wave text-primary mr-3"> </i> 
+           <div> 
+            <h4 class="font-medium"> 金额字段自动保留两位小数 </h4> 
+            <p class="text-text-tertiary text-sm"> 适用于所有包含"金额"字段的实体 </p> 
+           </div> 
+          </div> 
+          <div class="rule-item-actions flex space-x-2"> 
+           <button class="text-text-secondary hover:text-primary p-1 transition-colors duration-200" aria-label="编辑规则"> <i class="fas fa-edit"> </i> </button> 
+           <button class="text-text-secondary hover:text-danger p-1 transition-colors duration-200" aria-label="删除规则"> <i class="fas fa-trash"> </i> </button> 
+          </div> 
+         </div> 
+        </div> 
+        <div class="mt-4 text-center"> 
+         <button class="btn btn-text" id="load-more-rules" aria-label="加载更多规则"> <i class="fas fa-angle-down mr-1"> </i> 加载更多规则 </button> 
+        </div> 
+       </div> 
+      </div> 
+     </div> 
+    </div> 
+   </div> 
+  </div> 
+  <script>// 页面加载时初始化
+document.addEventListener('DOMContentLoaded', function () {
+  // 折叠面板功能
+  var collapseHeaders = document.querySelectorAll('.collapse-header');
+  collapseHeaders.forEach(function (header) {
+    header.addEventListener('click', function () {
+      var targetId = header.getAttribute('data-target');
+      var content = document.getElementById(targetId);
+      var icon = document.getElementById("".concat(targetId.split('-')[0], "-icon"));
+      var isExpanded = header.getAttribute('aria-expanded') === 'true';
+      if (isExpanded) {
+        // 收起面板
+        content.style.maxHeight = '0';
+        icon.style.transform = 'rotate(0)';
+        header.setAttribute('aria-expanded', 'false');
+        setTimeout(function () {
+          content.classList.add('hidden');
+        }, 300);
+      } else {
+        // 展开面板
+        content.classList.remove('hidden');
+        content.style.maxHeight = content.scrollHeight + 'px';
+        icon.style.transform = 'rotate(180deg)';
+        header.setAttribute('aria-expanded', 'true');
+      }
+    });
+  });
+
+  // 初始化第一个折叠面板为打开状态
+  var firstCollapse = document.getElementById('code-style-collapse');
+  firstCollapse.style.maxHeight = firstCollapse.scrollHeight + 'px';
+
+  // 开关按钮功能
+  var switches = document.querySelectorAll('.switch');
+  switches.forEach(function (switchEl) {
+    switchEl.addEventListener('click', function () {
+      var isChecked = switchEl.classList.contains('switch-checked');
+      var ariaChecked = switchEl.getAttribute('aria-checked') === 'true';
+      if (isChecked) {
+        switchEl.classList.remove('switch-checked');
+        switchEl.classList.add('switch-unchecked');
+        switchEl.setAttribute('aria-checked', 'false');
+      } else {
+        switchEl.classList.remove('switch-unchecked');
+        switchEl.classList.add('switch-checked');
+        switchEl.setAttribute('aria-checked', 'true');
+      }
+    });
+  });
+
+  // 单选按钮样式增强
+  var radioOptions = document.querySelectorAll('.radio-option');
+  radioOptions.forEach(function (option) {
+    // 点击事件
+    option.addEventListener('click', function () {
+      var radio = this.querySelector('input[type="radio"]');
+      if (!radio.checked) {
+        // 清除同组选中状态
+        var name = radio.getAttribute('name');
+        document.querySelectorAll("input[name=\"".concat(name, "\"]")).forEach(function (r) {
+          r.closest('.radio-option').classList.remove('radio-option-checked');
+          r.closest('.radio-option').setAttribute('aria-checked', 'false');
+        });
+
+        // 设置当前选中状态
+        radio.checked = true;
+        this.classList.add('radio-option-checked');
+        this.setAttribute('aria-checked', 'true');
+      }
+    });
+
+    // 键盘支持
+    option.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' || e.key === "") {
+        e.preventDefault();
+        this.click();
+      }
+    });
+  });
+
+  // 文件上传区域点击触发文件选择
+  var serviceTemplateBtn = document.getElementById('service-template-btn');
+  var serviceTemplateUpload = document.getElementById('service-template-upload');
+  if (serviceTemplateBtn && serviceTemplateUpload) {
+    serviceTemplateBtn.addEventListener('click', function () {
+      serviceTemplateUpload.click();
+    });
+  }
+
+  // 拖放上传区域效果
+  var uploadAreas = document.querySelectorAll('.upload-area');
+  uploadAreas.forEach(function (area) {
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(function (eventName) {
+      area.addEventListener(eventName, preventDefaults, false);
+    });
+    function preventDefaults(e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    ['dragenter', 'dragover'].forEach(function (eventName) {
+      area.addEventListener(eventName, highlight, false);
+    });
+    ['dragleave', 'drop'].forEach(function (eventName) {
+      area.addEventListener(eventName, unhighlight, false);
+    });
+    function highlight() {
+      area.classList.add('border-primary');
+      area.classList.add('bg-primary-light/10');
+    }
+    function unhighlight() {
+      area.classList.remove('border-primary');
+      area.classList.remove('bg-primary-light/10');
+    }
+    area.addEventListener('drop', handleDrop, false);
+    function handleDrop(e) {
+      var dt = e.dataTransfer;
+      var files = dt.files;
+      if (files.length > 0) {
+        handleFiles(files);
+      }
+    }
+  });
+  function handleFiles(files) {
+    // 这里处理上传的文件
+    console.log('Files uploaded:', files);
+    // 实际应用中这里会有文件上传逻辑
+  }
+
+  // 保存按钮点击事件
+  var saveBtn = document.getElementById('save-btn');
+  if (saveBtn) {
+    saveBtn.addEventListener('click', function () {
+      // 模拟保存成功提示
+      var originalText = saveBtn.innerHTML;
+      var originalClasses = saveBtn.className;
+      saveBtn.innerHTML = '<i class="fas fa-check mr-1"></i> 保存成功';
+      saveBtn.className = 'btn bg-success text-white';
+
+      // 添加成功动画
+      saveBtn.classList.add('animate-pulse');
+      setTimeout(function () {
+        saveBtn.innerHTML = originalText;
+        saveBtn.className = originalClasses;
+        saveBtn.classList.remove('animate-pulse');
+      }, 2000);
+
+      // 通知父页面调整iframe高度
+      ytSendPageSize();
+    });
+  }
+
+  // 重置按钮点击事件
+  var resetBtn = document.getElementById('reset-btn');
+  if (resetBtn) {
+    resetBtn.addEventListener('click', function () {
+      if (confirm('确定要重置所有配置为默认值吗？此操作不可撤销。')) {
+        // 模拟重置成功提示
+        var originalText = resetBtn.innerHTML;
+        resetBtn.innerHTML = '<i class="fas fa-check mr-1"></i> 已重置';
+        resetBtn.classList.add('bg-success', 'text-white', 'border-success');
+        resetBtn.classList.remove('border-primary', 'text-primary', 'hover:bg-primary-light');
+        setTimeout(function () {
+          resetBtn.innerHTML = originalText;
+          resetBtn.classList.remove('bg-success', 'text-white', 'border-success');
+          resetBtn.classList.add('border-primary', 'text-primary', 'hover:bg-primary-light');
+        }, 2000);
+      }
+    });
+  }
+
+  // 添加规则按钮点击事件
+  var addRuleBtn = document.getElementById('add-rule-btn');
+  if (addRuleBtn) {
+    addRuleBtn.addEventListener('click', function () {
+      alert('规则添加功能将在后续版本中推出，敬请期待！');
+    });
+  }
+
+  // 加载更多规则按钮点击事件
+  var loadMoreRulesBtn = document.getElementById('load-more-rules');
+  if (loadMoreRulesBtn) {
+    loadMoreRulesBtn.addEventListener('click', function () {
+      var _this = this;
+      this.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i> 加载中...';
+
+      // 模拟加载延迟
+      setTimeout(function () {
+        _this.innerHTML = '<i class="fas fa-check mr-1"></i> 已加载全部规则';
+        _this.disabled = true;
+        _this.classList.add('opacity-70', 'cursor-not-allowed');
+      }, 1500);
+    });
+  }
+
+  // 通知父页面调整iframe高度
+  ytSendPageSize();
+
+  // 监听窗口大小变化，调整iframe高度
+  window.addEventListener('resize', function () {
+    ytSendPageSize();
+  });
+});</script>  
+ </body>
+</html>

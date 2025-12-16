@@ -1,0 +1,832 @@
+<!doctype html>
+<html lang="zh-CN">
+ <head> 
+  <meta charset="UTF-8"> 
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+  <title>团队协作空间 - 智码引擎</title> 
+  <link href="./teamCollaboration/all.min.css" rel="stylesheet"> 
+  <script src="../javascript/reload.js"></script> 
+  <script src="./teamCollaboration/resource_1838710000.js"></script> 
+  <script>tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        primary: '#1677ff',
+        secondary: '#40a9ff',
+        success: '#52c41a',
+        warning: '#faad14',
+        danger: '#ff4d4f',
+        info: '#1890ff',
+        light: '#f5f5f5',
+        dark: '#141414',
+        'primary-light': '#e6f7ff',
+        'primary-dark': '#0958d9',
+        'text-primary': '#333333',
+        'text-secondary': '#666666',
+        'text-tertiary': '#999999',
+        'border-color': '#e8e8e8'
+      },
+      fontFamily: {
+        inter: ['Inter', 'system-ui', 'sans-serif']
+      },
+      spacing: {
+        '128': '32rem'
+      },
+      boxShadow: {
+        'card': '0 2px 8px rgba(0, 0, 0, 0.09)',
+        'dropdown': '0 4px 16px rgba(0, 0, 0, 0.12)'
+      }
+    }
+  }
+};</script> 
+  <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .scrollbar-hide {
+                -ms-overflow-style: none;
+                scrollbar-width: none;
+            }
+            .scrollbar-hide::-webkit-scrollbar {
+                display: none;
+            }
+            .transition-all-300 {
+                transition: all 0.3s ease;
+            }
+            .text-balance {
+                text-wrap: balance;
+            }
+            .tab-active {
+                @apply border-b-2 border-primary text-primary font-medium;
+            }
+            .permission-cell {
+                @apply py-2 px-3 rounded border border-border-color cursor-pointer hover:bg-primary-light/30 transition-all-300;
+            }
+            .permission-cell-active {
+                @apply bg-primary-light text-primary border-primary;
+            }
+        }
+        /* 全局样式 */
+        body {
+            @apply font-inter bg-light text-text-primary;
+        }
+        /* 卡片样式 */
+        .ant-card {
+            @apply bg-white rounded-lg shadow-card p-5 mb-5 transition-all duration-300 hover:shadow-lg;
+        }
+        /* 按钮样式 */
+        .btn {
+            @apply px-4 py-2 rounded-md transition-all duration-200 font-medium focus:outline-none focus:ring-2 focus:ring-offset-2;
+        }
+        .btn-primary {
+            @apply bg-primary text-white hover:bg-primary-dark focus:ring-primary/50;
+        }
+        .btn-outline {
+            @apply border border-primary text-primary hover:bg-primary-light focus:ring-primary/50;
+        }
+        .btn-sm {
+            @apply px-3 py-1 text-sm;
+        }
+        /* 标签页样式 */
+        .ant-tabs-nav {
+            @apply flex border-b border-border-color mb-5;
+        }
+        .ant-tabs-tab {
+            @apply py-3 px-6 text-text-secondary hover:text-primary transition-all-300 border-b-2 border-transparent;
+        }
+        /* 表单样式 */
+        .form-label {
+            @apply block text-text-secondary mb-2 font-medium;
+        }
+        .form-control {
+            @apply w-full px-3 py-2 border border-border-color rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all duration-200;
+        }
+        /* 表格样式 */
+        .ant-table {
+            @apply w-full border-collapse;
+        }
+        .ant-table th {
+            @apply py-3 px-4 text-left text-text-secondary font-medium border-b border-border-color;
+        }
+        .ant-table td {
+            @apply py-3 px-4 border-b border-border-color;
+        }
+        .ant-table tr:hover {
+            @apply bg-primary-light/20;
+        }
+        /* 徽章样式 */
+        .badge {
+            @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+        }
+        .badge-primary {
+            @apply bg-primary-light text-primary;
+        }
+        .badge-success {
+            @apply bg-success/10 text-success;
+        }
+        .badge-warning {
+            @apply bg-warning/10 text-warning;
+        }
+        .badge-danger {
+            @apply bg-danger/10 text-danger;
+        }
+    </style> 
+ </head> 
+ <body class="p-4 md:p-6"> 
+  <!-- 团队协作空间页面 --> 
+  <div class="max-w-7xl mx-auto"> 
+   <!-- 页面标题 --> 
+   <div class="mb-6"> 
+    <h1 class="text-[clamp(1.5rem,3vw,2rem)] font-bold text-text-primary"> 团队协作空间 </h1> 
+    <p class="text-text-tertiary mt-1"> 管理团队成员、项目和权限 </p> 
+   </div> 
+   <!-- 标签页导航 --> 
+   <div class="ant-tabs-nav mb-6" id="team-tabs"> 
+    <div class="ant-tabs-tab tab-active" data-tab="team-home">
+      团队首页 
+    </div> 
+    <div class="ant-tabs-tab" data-tab="team-settings">
+      团队设置 
+    </div> 
+   </div> 
+   <!-- 团队首页内容 --> 
+   <div class="tab-content" id="team-home-content"> 
+    <!-- 团队信息卡片 --> 
+    <div class="ant-card mb-6"> 
+     <div class="flex flex-col md:flex-row md:items-center justify-between"> 
+      <div class="flex items-center mb-4 md:mb-0"> 
+       <div class="w-16 h-16 rounded-full bg-primary-light flex items-center justify-center mr-4"> 
+        <i class="fas fa-users text-primary text-2xl"> </i> 
+       </div> 
+       <div> 
+        <h2 class="text-xl font-bold"> 前端开发精英团队 </h2> 
+        <p class="text-text-tertiary"> 创建于 2023-05-15 · 5 名成员 </p> 
+       </div> 
+      </div> 
+      <div class="flex space-x-3"> 
+       <button class="btn btn-outline"> <i class="fas fa-user-plus mr-2"> </i> 邀请成员 </button> 
+       <button class="btn btn-primary"> <i class="fas fa-cog mr-2"> </i> 团队设置 </button> 
+      </div> 
+     </div> 
+     <div class="mt-5 pt-5 border-t border-border-color"> 
+      <h3 class="text-lg font-semibold mb-3"> 团队描述 </h3> 
+      <p class="text-text-secondary"> 专注于企业级前端应用开发的精英团队，致力于打造高质量、高性能的用户界面和交互体验。我们使用现代化的前端技术栈，包括React、Vue和Angular等主流框架，为客户提供卓越的Web应用解决方案。 </p> 
+     </div> 
+    </div> 
+    <!-- 团队成员列表 --> 
+    <div class="ant-card mb-6"> 
+     <div class="flex justify-between items-center mb-5"> 
+      <h2 class="text-lg font-semibold"> 团队成员 </h2> 
+      <button class="btn btn-outline btn-sm"> <i class="fas fa-user-plus mr-1"> </i> 添加成员 </button> 
+     </div> 
+     <div class="overflow-x-auto"> 
+      <table class="ant-table"> 
+       <thead> 
+        <tr> 
+         <th> 成员 </th> 
+         <th> 角色 </th> 
+         <th> 加入时间 </th> 
+         <th> 最近活跃 </th> 
+         <th> 操作 </th> 
+        </tr> 
+       </thead> 
+       <tbody> 
+        <tr> 
+         <td class="flex items-center"> <img src="./teamCollaboration/7e2bbbd0c77d50fb9748b5819f4215af.png" alt="张开发" class="w-10 h-10 rounded-full mr-3 object-cover"> 
+          <div> 
+           <div class="font-medium">
+             张开发 
+           </div> 
+           <div class="text-sm text-text-tertiary">
+             zhang@example.com 
+           </div> 
+          </div> </td> 
+         <td> <span class="badge badge-primary"> 管理员 </span> </td> 
+         <td> 2023-05-15 </td> 
+         <td> 今天 14:30 </td> 
+         <td> 
+          <div class="flex space-x-2"> 
+           <button class="text-text-secondary hover:text-primary transition-all-300" title="编辑成员"> <i class="fas fa-edit"> </i> </button> 
+           <button class="text-text-secondary hover:text-danger transition-all-300" title="移除成员" disabled> <i class="fas fa-trash-alt"> </i> </button> 
+          </div> </td> 
+        </tr> 
+        <tr> 
+         <td class="flex items-center"> <img src="./teamCollaboration/3ed675b7a93073049b13613988e20a8b.png" alt="李架构" class="w-10 h-10 rounded-full mr-3 object-cover"> 
+          <div> 
+           <div class="font-medium">
+             李架构 
+           </div> 
+           <div class="text-sm text-text-tertiary">
+             li@example.com 
+           </div> 
+          </div> </td> 
+         <td> <span class="badge badge-success"> 高级开发者 </span> </td> 
+         <td> 2023-06-02 </td> 
+         <td> 昨天 09:15 </td> 
+         <td> 
+          <div class="flex space-x-2"> 
+           <button class="text-text-secondary hover:text-primary transition-all-300" title="编辑成员"> <i class="fas fa-edit"> </i> </button> 
+           <button class="text-text-secondary hover:text-danger transition-all-300" title="移除成员"> <i class="fas fa-trash-alt"> </i> </button> 
+          </div> </td> 
+        </tr> 
+        <tr> 
+         <td class="flex items-center"> <img src="./teamCollaboration/75ca9e0303cc796eea6725e9967347e8.png" alt="王前端" class="w-10 h-10 rounded-full mr-3 object-cover"> 
+          <div> 
+           <div class="font-medium">
+             王前端 
+           </div> 
+           <div class="text-sm text-text-tertiary">
+             wang@example.com 
+           </div> 
+          </div> </td> 
+         <td> <span class="badge badge-success"> 高级开发者 </span> </td> 
+         <td> 2023-06-10 </td> 
+         <td> 今天 10:45 </td> 
+         <td> 
+          <div class="flex space-x-2"> 
+           <button class="text-text-secondary hover:text-primary transition-all-300" title="编辑成员"> <i class="fas fa-edit"> </i> </button> 
+           <button class="text-text-secondary hover:text-danger transition-all-300" title="移除成员"> <i class="fas fa-trash-alt"> </i> </button> 
+          </div> </td> 
+        </tr> 
+        <tr> 
+         <td class="flex items-center"> <img src="./teamCollaboration/242e0d41b3dfc9bccfc4e2914722543a.png" alt="赵设计" class="w-10 h-10 rounded-full mr-3 object-cover"> 
+          <div> 
+           <div class="font-medium">
+             赵设计 
+           </div> 
+           <div class="text-sm text-text-tertiary">
+             zhao@example.com 
+           </div> 
+          </div> </td> 
+         <td> <span class="badge badge-warning"> 开发者 </span> </td> 
+         <td> 2023-07-05 </td> 
+         <td> 昨天 16:20 </td> 
+         <td> 
+          <div class="flex space-x-2"> 
+           <button class="text-text-secondary hover:text-primary transition-all-300" title="编辑成员"> <i class="fas fa-edit"> </i> </button> 
+           <button class="text-text-secondary hover:text-danger transition-all-300" title="移除成员"> <i class="fas fa-trash-alt"> </i> </button> 
+          </div> </td> 
+        </tr> 
+        <tr> 
+         <td class="flex items-center"> <img src="./teamCollaboration/0d20b09370a130f1edbe373bdf8e9d66.png" alt="陈测试" class="w-10 h-10 rounded-full mr-3 object-cover"> 
+          <div> 
+           <div class="font-medium">
+             陈测试 
+           </div> 
+           <div class="text-sm text-text-tertiary">
+             chen@example.com 
+           </div> 
+          </div> </td> 
+         <td> <span class="badge badge-danger"> 观察者 </span> </td> 
+         <td> 2023-08-12 </td> 
+         <td> 3天前 </td> 
+         <td> 
+          <div class="flex space-x-2"> 
+           <button class="text-text-secondary hover:text-primary transition-all-300" title="编辑成员"> <i class="fas fa-edit"> </i> </button> 
+           <button class="text-text-secondary hover:text-danger transition-all-300" title="移除成员"> <i class="fas fa-trash-alt"> </i> </button> 
+          </div> </td> 
+        </tr> 
+       </tbody> 
+      </table> 
+     </div> 
+    </div> 
+    <!-- 团队项目集 --> 
+    <div class="ant-card"> 
+     <div class="flex justify-between items-center mb-5"> 
+      <h2 class="text-lg font-semibold"> 团队项目 </h2> 
+      <button class="btn btn-primary"> <i class="fas fa-plus mr-2"> </i> 新建项目 </button> 
+     </div> 
+     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"> 
+      <!-- 项目卡片1 --> 
+      <div class="bg-white rounded-lg shadow-card p-4 border border-border-color hover:shadow-lg transition-all duration-300"> 
+       <div class="flex justify-between items-start mb-3"> 
+        <h3 class="font-semibold"> 企业资源管理系统 </h3> 
+        <div class="dropdown relative"> 
+         <button class="text-text-tertiary hover:text-primary"> <i class="fas fa-ellipsis-v"> </i> </button> 
+        </div> 
+       </div> 
+       <div class="flex flex-wrap gap-2 mb-4"> 
+        <span class="badge badge-primary"> React </span> 
+        <span class="badge badge-primary"> Ant Design Pro </span> 
+        <span class="badge badge-success"> 进行中 </span> 
+       </div> 
+       <p class="text-sm text-text-tertiary mb-4 line-clamp-2"> 企业级资源管理平台，包含人力资源、财务、项目管理等核心模块，为企业提供全方位的资源监控和管理解决方案。 </p> 
+       <div class="flex justify-between items-center pt-3 border-t border-border-color"> 
+        <div class="text-sm text-text-tertiary"> 
+         <i class="fas fa-clock mr-1"> </i> 更新于 2023-09-15 
+        </div> 
+        <button class="text-primary hover:text-primary-dark text-sm font-medium"> 查看详情 <i class="fas fa-chevron-right ml-1 text-xs"> </i> </button> 
+       </div> 
+      </div> 
+      <!-- 项目卡片2 --> 
+      <div class="bg-white rounded-lg shadow-card p-4 border border-border-color hover:shadow-lg transition-all duration-300"> 
+       <div class="flex justify-between items-start mb-3"> 
+        <h3 class="font-semibold"> 客户关系管理系统 </h3> 
+        <div class="dropdown relative"> 
+         <button class="text-text-tertiary hover:text-primary"> <i class="fas fa-ellipsis-v"> </i> </button> 
+        </div> 
+       </div> 
+       <div class="flex flex-wrap gap-2 mb-4"> 
+        <span class="badge badge-primary"> Vue 3 </span> 
+        <span class="badge badge-primary"> Element Plus </span> 
+        <span class="badge badge-success"> 进行中 </span> 
+       </div> 
+       <p class="text-sm text-text-tertiary mb-4 line-clamp-2"> 全面的客户关系管理解决方案，帮助企业有效管理客户信息、跟进销售机会、提升客户满意度和忠诚度。 </p> 
+       <div class="flex justify-between items-center pt-3 border-t border-border-color"> 
+        <div class="text-sm text-text-tertiary"> 
+         <i class="fas fa-clock mr-1"> </i> 更新于 2023-09-10 
+        </div> 
+        <button class="text-primary hover:text-primary-dark text-sm font-medium"> 查看详情 <i class="fas fa-chevron-right ml-1 text-xs"> </i> </button> 
+       </div> 
+      </div> 
+      <!-- 项目卡片3 --> 
+      <div class="bg-white rounded-lg shadow-card p-4 border border-border-color hover:shadow-lg transition-all duration-300"> 
+       <div class="flex justify-between items-start mb-3"> 
+        <h3 class="font-semibold"> 数据分析仪表盘 </h3> 
+        <div class="dropdown relative"> 
+         <button class="text-text-tertiary hover:text-primary"> <i class="fas fa-ellipsis-v"> </i> </button> 
+        </div> 
+       </div> 
+       <div class="flex flex-wrap gap-2 mb-4"> 
+        <span class="badge badge-primary"> Vue 3 </span> 
+        <span class="badge badge-primary"> ECharts </span> 
+        <span class="badge badge-primary"> TypeScript </span> 
+        <span class="badge badge-success"> 已完成 </span> 
+       </div> 
+       <p class="text-sm text-text-tertiary mb-4 line-clamp-2"> 高性能数据可视化仪表盘，支持多种图表类型和数据筛选，为决策者提供直观的数据洞察和分析工具。 </p> 
+       <div class="flex justify-between items-center pt-3 border-t border-border-color"> 
+        <div class="text-sm text-text-tertiary"> 
+         <i class="fas fa-clock mr-1"> </i> 更新于 2023-08-20 
+        </div> 
+        <button class="text-primary hover:text-primary-dark text-sm font-medium"> 查看详情 <i class="fas fa-chevron-right ml-1 text-xs"> </i> </button> 
+       </div> 
+      </div> 
+      <!-- 项目卡片4 --> 
+      <div class="bg-white rounded-lg shadow-card p-4 border border-border-color hover:shadow-lg transition-all duration-300"> 
+       <div class="flex justify-between items-start mb-3"> 
+        <h3 class="font-semibold"> 智能办公平台 </h3> 
+        <div class="dropdown relative"> 
+         <button class="text-text-tertiary hover:text-primary"> <i class="fas fa-ellipsis-v"> </i> </button> 
+        </div> 
+       </div> 
+       <div class="flex flex-wrap gap-2 mb-4"> 
+        <span class="badge badge-primary"> React </span> 
+        <span class="badge badge-primary"> Material UI </span> 
+        <span class="badge badge-warning"> 暂停中 </span> 
+       </div> 
+       <p class="text-sm text-text-tertiary mb-4 line-clamp-2"> 集成协作、文档、任务管理的一站式办公平台，提升团队协作效率和工作体验。 </p> 
+       <div class="flex justify-between items-center pt-3 border-t border-border-color"> 
+        <div class="text-sm text-text-tertiary"> 
+         <i class="fas fa-clock mr-1"> </i> 更新于 2023-07-30 
+        </div> 
+        <button class="text-primary hover:text-primary-dark text-sm font-medium"> 查看详情 <i class="fas fa-chevron-right ml-1 text-xs"> </i> </button> 
+       </div> 
+      </div> 
+      <!-- 项目卡片5 --> 
+      <div class="bg-white rounded-lg shadow-card p-4 border border-border-color hover:shadow-lg transition-all duration-300"> 
+       <div class="flex justify-between items-start mb-3"> 
+        <h3 class="font-semibold"> 电商管理后台 </h3> 
+        <div class="dropdown relative"> 
+         <button class="text-text-tertiary hover:text-primary"> <i class="fas fa-ellipsis-v"> </i> </button> 
+        </div> 
+       </div> 
+       <div class="flex flex-wrap gap-2 mb-4"> 
+        <span class="badge badge-primary"> Vue 3 </span> 
+        <span class="badge badge-primary"> Vant </span> 
+        <span class="badge badge-success"> 进行中 </span> 
+       </div> 
+       <p class="text-sm text-text-tertiary mb-4 line-clamp-2"> 全功能电商管理系统，包含商品管理、订单处理、会员管理、营销活动等核心功能模块。 </p> 
+       <div class="flex justify-between items-center pt-3 border-t border-border-color"> 
+        <div class="text-sm text-text-tertiary"> 
+         <i class="fas fa-clock mr-1"> </i> 更新于 2023-09-12 
+        </div> 
+        <button class="text-primary hover:text-primary-dark text-sm font-medium"> 查看详情 <i class="fas fa-chevron-right ml-1 text-xs"> </i> </button> 
+       </div> 
+      </div> 
+      <!-- 项目卡片6 --> 
+      <div class="bg-white rounded-lg shadow-card p-4 border border-border-color hover:shadow-lg transition-all duration-300 flex items-center justify-center h-48 border-dashed cursor-pointer hover:border-primary hover:text-primary"> 
+       <div class="text-center"> 
+        <i class="fas fa-plus-circle text-3xl mb-2"> </i> 
+        <div class="font-medium">
+          创建新项目 
+        </div> 
+       </div> 
+      </div> 
+     </div> 
+    </div> 
+   </div> 
+   <!-- 团队设置内容 --> 
+   <div class="tab-content hidden" id="team-settings-content"> 
+    <!-- 设置标签页导航 --> 
+    <div class="ant-tabs-nav mb-6 border-b border-border-color"> 
+     <div class="ant-tabs-tab tab-active" data-subtab="member-permissions">
+       成员与权限 
+     </div> 
+     <div class="ant-tabs-tab" data-subtab="team-info">
+       团队信息 
+     </div> 
+     <div class="ant-tabs-tab" data-subtab="security-settings">
+       安全设置 
+     </div> 
+    </div> 
+    <!-- 成员与权限设置 --> 
+    <div class="subtab-content" id="member-permissions-content"> 
+     <div class="ant-card mb-6"> 
+      <h2 class="text-lg font-semibold mb-5"> 成员权限管理 </h2> 
+      <p class="text-text-secondary mb-6"> 配置团队成员对各个项目的访问权限，精细化管理团队资源和数据安全。 </p> 
+      <div class="overflow-x-auto"> 
+       <table class="ant-table"> 
+        <thead> 
+         <tr> 
+          <th class="w-48"> 成员 </th> 
+          <th> 企业资源管理系统 </th> 
+          <th> 客户关系管理系统 </th> 
+          <th> 数据分析仪表盘 </th> 
+          <th> 智能办公平台 </th> 
+          <th> 电商管理后台 </th> 
+         </tr> 
+        </thead> 
+        <tbody> 
+         <tr> 
+          <td class="font-medium"> 张开发 (管理员) </td> 
+          <td> 
+           <div class="permission-cell permission-cell-active">
+             管理员 
+           </div> </td> 
+          <td> 
+           <div class="permission-cell permission-cell-active">
+             管理员 
+           </div> </td> 
+          <td> 
+           <div class="permission-cell permission-cell-active">
+             管理员 
+           </div> </td> 
+          <td> 
+           <div class="permission-cell permission-cell-active">
+             管理员 
+           </div> </td> 
+          <td> 
+           <div class="permission-cell permission-cell-active">
+             管理员 
+           </div> </td> 
+         </tr> 
+         <tr> 
+          <td class="font-medium"> 李架构 </td> 
+          <td> 
+           <div class="permission-cell permission-cell-active">
+             可编辑 
+           </div> </td> 
+          <td> 
+           <div class="permission-cell permission-cell-active">
+             可编辑 
+           </div> </td> 
+          <td> 
+           <div class="permission-cell">
+             只读 
+           </div> </td> 
+          <td> 
+           <div class="permission-cell permission-cell-active">
+             可编辑 
+           </div> </td> 
+          <td> 
+           <div class="permission-cell">
+             无权限 
+           </div> </td> 
+         </tr> 
+         <tr> 
+          <td class="font-medium"> 王前端 </td> 
+          <td> 
+           <div class="permission-cell permission-cell-active">
+             可编辑 
+           </div> </td> 
+          <td> 
+           <div class="permission-cell">
+             只读 
+           </div> </td> 
+          <td> 
+           <div class="permission-cell permission-cell-active">
+             可编辑 
+           </div> </td> 
+          <td> 
+           <div class="permission-cell">
+             只读 
+           </div> </td> 
+          <td> 
+           <div class="permission-cell permission-cell-active">
+             可编辑 
+           </div> </td> 
+         </tr> 
+         <tr> 
+          <td class="font-medium"> 赵设计 </td> 
+          <td> 
+           <div class="permission-cell">
+             只读 
+           </div> </td> 
+          <td> 
+           <div class="permission-cell permission-cell-active">
+             可编辑 
+           </div> </td> 
+          <td> 
+           <div class="permission-cell">
+             无权限 
+           </div> </td> 
+          <td> 
+           <div class="permission-cell">
+             只读 
+           </div> </td> 
+          <td> 
+           <div class="permission-cell permission-cell-active">
+             可编辑 
+           </div> </td> 
+         </tr> 
+         <tr> 
+          <td class="font-medium"> 陈测试 </td> 
+          <td> 
+           <div class="permission-cell permission-cell-active">
+             只读 
+           </div> </td> 
+          <td> 
+           <div class="permission-cell permission-cell-active">
+             只读 
+           </div> </td> 
+          <td> 
+           <div class="permission-cell permission-cell-active">
+             只读 
+           </div> </td> 
+          <td> 
+           <div class="permission-cell permission-cell-active">
+             只读 
+           </div> </td> 
+          <td> 
+           <div class="permission-cell permission-cell-active">
+             只读 
+           </div> </td> 
+         </tr> 
+        </tbody> 
+       </table> 
+      </div> 
+      <div class="mt-6 pt-6 border-t border-border-color"> 
+       <h3 class="text-md font-semibold mb-4"> 权限说明 </h3> 
+       <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm"> 
+        <div class="flex items-start"> 
+         <div class="permission-cell mr-3 mt-1 w-24">
+           管理员 
+         </div> 
+         <div>
+           拥有项目的完全控制权，可以管理项目成员、修改项目设置、删除项目等所有操作权限。 
+         </div> 
+        </div> 
+        <div class="flex items-start"> 
+         <div class="permission-cell mr-3 mt-1 w-24">
+           可编辑 
+         </div> 
+         <div>
+           可以查看和编辑项目内容，但不能管理项目成员或删除项目。 
+         </div> 
+        </div> 
+        <div class="flex items-start"> 
+         <div class="permission-cell mr-3 mt-1 w-24">
+           只读 
+         </div> 
+         <div>
+           只能查看项目内容，不能进行任何编辑或管理操作。 
+         </div> 
+        </div> 
+        <div class="flex items-start"> 
+         <div class="permission-cell mr-3 mt-1 w-24">
+           无权限 
+         </div> 
+         <div>
+           无法查看或访问该项目。 
+         </div> 
+        </div> 
+       </div> 
+      </div> 
+      <div class="mt-6 flex justify-end"> 
+       <button class="btn btn-primary"> <i class="fas fa-save mr-2"> </i> 保存权限设置 </button> 
+      </div> 
+     </div> 
+    </div> 
+    <!-- 团队信息设置 --> 
+    <div class="subtab-content hidden" id="team-info-content"> 
+     <div class="ant-card"> 
+      <h2 class="text-lg font-semibold mb-5"> 团队基本信息 </h2> 
+      <form class="space-y-6"> 
+       <div class="grid grid-cols-1 md:grid-cols-2 gap-6"> 
+        <div> 
+         <label class="form-label"> 团队名称 </label> 
+         <input type="text" class="form-control" value="前端开发精英团队"> 
+        </div> 
+        <div> 
+         <label class="form-label"> 团队ID </label> 
+         <input type="text" class="form-control bg-gray-50" value="FE-DEV-20230515" readonly> 
+        </div> 
+       </div> 
+       <div> 
+        <label class="form-label"> 团队描述 </label> 
+        <textarea class="form-control h-32" rows="4">
+        专注于企业级前端应用开发的精英团队，致力于打造高质量、高性能的用户界面和交互体验。我们使用现代化的前端技术栈，包括React、Vue和Angular等主流框架，为客户提供卓越的Web应用解决方案。
+    </textarea> 
+       </div> 
+       <div> 
+        <label class="form-label"> 团队头像 </label> 
+        <div class="mt-2 flex items-center"> 
+         <div class="w-20 h-20 rounded-full overflow-hidden border-2 border-dashed border-border-color mr-4"> 
+          <img src="./teamCollaboration/039abd6ce1f11c9bf04da39178b82b8c.png" alt="团队头像" class="w-full h-full object-cover"> 
+         </div> 
+         <div> 
+          <button class="btn btn-outline mb-2 block"> <i class="fas fa-upload mr-2"> </i> 上传头像 </button> 
+          <p class="text-xs text-text-tertiary"> 支持JPG、PNG格式，建议尺寸200x200像素 </p> 
+         </div> 
+        </div> 
+       </div> 
+       <div class="pt-4 border-t border-border-color flex justify-end space-x-3"> 
+        <button type="button" class="btn btn-outline"> 取消 </button> 
+        <button type="button" class="btn btn-primary"> 保存修改 </button> 
+       </div> 
+      </form> 
+     </div> 
+    </div> 
+    <!-- 安全设置 --> 
+    <div class="subtab-content hidden" id="security-settings-content"> 
+     <div class="ant-card"> 
+      <h2 class="text-lg font-semibold mb-5"> 安全设置 </h2> 
+      <div class="space-y-6"> 
+       <div class="flex items-center justify-between p-4 border border-border-color rounded-lg"> 
+        <div> 
+         <h3 class="font-medium mb-1"> 双因素认证 </h3> 
+         <p class="text-sm text-text-tertiary"> 启用后，团队成员登录时需要额外的验证码验证，提高账户安全性 </p> 
+        </div> 
+        <label class="relative inline-flex items-center cursor-pointer"> <input type="checkbox" value class="sr-only peer" checked> 
+         <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-primary rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[&quot;&quot;] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"> 
+         </div> </label> 
+       </div> 
+       <div class="flex items-center justify-between p-4 border border-border-color rounded-lg"> 
+        <div> 
+         <h3 class="font-medium mb-1"> IP访问限制 </h3> 
+         <p class="text-sm text-text-tertiary"> 限制团队成员只能从指定的IP地址范围访问团队资源 </p> 
+        </div> 
+        <label class="relative inline-flex items-center cursor-pointer"> <input type="checkbox" value class="sr-only peer"> 
+         <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-primary rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[&quot;&quot;] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"> 
+         </div> </label> 
+       </div> 
+       <div class="flex items-center justify-between p-4 border border-border-color rounded-lg"> 
+        <div> 
+         <h3 class="font-medium mb-1"> 操作日志审计 </h3> 
+         <p class="text-sm text-text-tertiary"> 记录团队成员的关键操作，便于安全审计和问题追踪 </p> 
+        </div> 
+        <label class="relative inline-flex items-center cursor-pointer"> <input type="checkbox" value class="sr-only peer" checked> 
+         <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-primary rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[&quot;&quot;] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"> 
+         </div> </label> 
+       </div> 
+       <div class="p-4 border border-border-color rounded-lg"> 
+        <h3 class="font-medium mb-3"> 密码策略 </h3> 
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4"> 
+         <div> 
+          <label class="form-label text-sm"> 密码长度要求 </label> 
+          <select class="form-control"> <option> 至少8位字符 </option> <option selected> 至少10位字符 </option> <option> 至少12位字符 </option> </select> 
+         </div> 
+         <div> 
+          <label class="form-label text-sm"> 密码复杂度要求 </label> 
+          <select class="form-control"> <option> 仅字母和数字 </option> <option selected> 字母、数字和特殊符号 </option> <option> 字母大小写、数字和特殊符号 </option> </select> 
+         </div> 
+        </div> 
+       </div> 
+      </div> 
+      <div class="pt-6 mt-6 border-t border-border-color"> 
+       <h3 class="font-medium mb-4"> 登录日志 </h3> 
+       <div class="overflow-x-auto"> 
+        <table class="ant-table"> 
+         <thead> 
+          <tr> 
+           <th> 成员 </th> 
+           <th> 登录时间 </th> 
+           <th> IP地址 </th> 
+           <th> 设备 </th> 
+           <th> 状态 </th> 
+          </tr> 
+         </thead> 
+         <tbody> 
+          <tr> 
+           <td> 张开发 </td> 
+           <td> 2023-09-18 14:30:22 </td> 
+           <td> 192.168.1.101 </td> 
+           <td> Windows 10 · Chrome 116 </td> 
+           <td> <span class="badge badge-success"> 成功 </span> </td> 
+          </tr> 
+          <tr> 
+           <td> 王前端 </td> 
+           <td> 2023-09-18 10:15:47 </td> 
+           <td> 192.168.1.105 </td> 
+           <td> macOS Monterey · Safari 16 </td> 
+           <td> <span class="badge badge-success"> 成功 </span> </td> 
+          </tr> 
+          <tr> 
+           <td> 李架构 </td> 
+           <td> 2023-09-17 16:42:18 </td> 
+           <td> 192.168.1.103 </td> 
+           <td> Windows 10 · Firefox 117 </td> 
+           <td> <span class="badge badge-success"> 成功 </span> </td> 
+          </tr> 
+          <tr> 
+           <td> 未知用户 </td> 
+           <td> 2023-09-17 03:20:53 </td> 
+           <td> 203.0.113.45 </td> 
+           <td> Linux · Chrome 115 </td> 
+           <td> <span class="badge badge-danger"> 失败（多次密码错误） </span> </td> 
+          </tr> 
+          <tr> 
+           <td> 赵设计 </td> 
+           <td> 2023-09-16 15:10:33 </td> 
+           <td> 192.168.1.107 </td> 
+           <td> macOS Ventura · Chrome 116 </td> 
+           <td> <span class="badge badge-success"> 成功 </span> </td> 
+          </tr> 
+         </tbody> 
+        </table> 
+       </div> 
+      </div> 
+      <div class="pt-6 mt-6 border-t border-border-color flex justify-end space-x-3"> 
+       <button type="button" class="btn btn-outline"> 取消 </button> 
+       <button type="button" class="btn btn-primary"> 保存设置 </button> 
+      </div> 
+     </div> 
+    </div> 
+   </div> 
+  </div> 
+  <script>// 页面加载完成后初始化
+document.addEventListener('DOMContentLoaded', function () {
+  // 标签页切换功能
+  var teamTabs = document.querySelectorAll('#team-tabs .ant-tabs-tab');
+  var tabContents = document.querySelectorAll('.tab-content');
+  teamTabs.forEach(function (tab) {
+    tab.addEventListener('click', function () {
+      // 移除所有标签页的激活状态
+      teamTabs.forEach(function (t) {
+        return t.classList.remove('tab-active');
+      });
+      // 给当前点击的标签页添加激活状态
+      tab.classList.add('tab-active');
+
+      // 隐藏所有内容区域
+      tabContents.forEach(function (content) {
+        return content.classList.add('hidden');
+      });
+      // 显示对应的内容区域
+      var tabId = tab.getAttribute('data-tab');
+      document.getElementById("".concat(tabId, "-content")).classList.remove('hidden');
+
+      // 通知父页面调整iframe高度
+      ytSendPageSize();
+    });
+  });
+
+  // 子标签页切换功能
+  var subtabs = document.querySelectorAll('[data-subtab]');
+  var subtabContents = document.querySelectorAll('.subtab-content');
+  subtabs.forEach(function (subtab) {
+    subtab.addEventListener('click', function () {
+      // 移除所有子标签页的激活状态
+      subtabs.forEach(function (t) {
+        return t.classList.remove('tab-active');
+      });
+      // 给当前点击的子标签页添加激活状态
+      subtab.classList.add('tab-active');
+
+      // 隐藏所有子内容区域
+      subtabContents.forEach(function (content) {
+        return content.classList.add('hidden');
+      });
+      // 显示对应的子内容区域
+      var subtabId = subtab.getAttribute('data-subtab');
+      document.getElementById("".concat(subtabId, "-content")).classList.remove('hidden');
+
+      // 通知父页面调整iframe高度
+      ytSendPageSize();
+    });
+  });
+
+  // 权限单元格点击事件
+  var permissionCells = document.querySelectorAll('.permission-cell');
+  permissionCells.forEach(function (cell) {
+    cell.addEventListener('click', function () {
+      // 这里可以实现权限选择逻辑
+      // 简单示例：切换激活状态
+      cell.classList.toggle('permission-cell-active');
+    });
+  });
+
+  // 通知父页面调整iframe高度
+  ytSendPageSize();
+});
+
+// 当窗口大小变化时，通知父页面调整iframe高度
+window.addEventListener('resize', function () {
+  ytSendPageSize();
+});
+
+// 通知父页面调整iframe高度
+ytSendPageSize();</script>  
+ </body>
+</html>

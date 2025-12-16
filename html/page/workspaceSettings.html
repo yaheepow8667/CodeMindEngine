@@ -1,0 +1,502 @@
+<!doctype html>
+<html lang="zh-CN">
+ <head> 
+  <meta charset="UTF-8"> 
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+  <title>工作空间设置 - 智码引擎</title> 
+  <link href="./workspaceSettings/all.min.css" rel="stylesheet"> 
+  <script src="../javascript/reload.js"></script> 
+  <script src="./workspaceSettings/resource_1054410000.js"></script> 
+  <script>tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        primary: '#1677ff',
+        secondary: '#40a9ff',
+        success: '#52c41a',
+        warning: '#faad14',
+        danger: '#ff4d4f',
+        info: '#1890ff',
+        light: '#f5f5f5',
+        dark: '#141414',
+        'primary-light': '#e6f7ff',
+        'primary-dark': '#0958d9',
+        'text-primary': '#333333',
+        'text-secondary': '#666666',
+        'text-tertiary': '#999999',
+        'border-color': '#e8e8e8'
+      },
+      fontFamily: {
+        inter: ['Inter', 'system-ui', 'sans-serif']
+      },
+      spacing: {
+        '128': '32rem'
+      },
+      boxShadow: {
+        'card': '0 2px 8px rgba(0, 0, 0, 0.09)',
+        'dropdown': '0 4px 16px rgba(0, 0, 0, 0.12)'
+      }
+    }
+  }
+};</script> 
+  <style>
+        /* 基础样式和Ant Design风格模拟 */
+        body {
+            @apply font-inter bg-light text-text-primary;
+        }
+        .ant-card {
+            @apply bg-white rounded-lg shadow-card p-5 mb-6 transition-all duration-300 hover:shadow-lg;
+        }
+        .module-title {
+            @apply text-lg font-semibold text-text-primary mb-4 border-b border-border-color pb-2;
+        }
+        .btn {
+            @apply px-4 py-2 rounded-md transition-all duration-200 font-medium focus:outline-none focus:ring-2 focus:ring-offset-2;
+        }
+        .btn-primary {
+            @apply bg-primary text-white hover:bg-primary-dark focus:ring-primary/50;
+        }
+        .btn-outline {
+            @apply border border-primary text-primary hover:bg-primary-light focus:ring-primary/50;
+        }
+        .switch-active {
+            @apply bg-primary;
+        }
+        .switch-inactive {
+            @apply bg-gray-200;
+        }
+        /* 模拟Slider的样式 */
+        .slider-thumb {
+            @apply w-4 h-4 bg-white border-2 border-primary rounded-full shadow cursor-pointer -mt-1.5;
+        }
+        .slider-track {
+            @apply h-1.5 bg-primary-light rounded-full;
+        }
+        .slider-fill {
+            @apply h-1.5 bg-primary rounded-full;
+        }
+        /* 隐藏原生select箭头 */
+        select {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2212%22%20height%3D%2212%22%20viewBox%3D%220%200%2012%2012%22%3E%3Cpath%20fill%3D%22%23999999%22%20d%3D%22M5.333%208.667L2%205.333h7.333L5.333%208.667z%22%2F%3E%3C%2Fsvg%3E");
+            background-repeat: no-repeat;
+            background-position: right 0.5rem center;
+            background-size: 0.75em auto;
+            padding-right: 2rem;
+        }
+    </style> 
+ </head> 
+ <body class="p-4 md:p-6"> 
+  <!-- 页面标题区域 --> 
+  <div class="mb-6"> 
+   <h3 class="text-2xl font-semibold text-text-primary"> 工作空间设置 </h3> 
+   <div class="border-b border-border-color mt-2"> 
+   </div> 
+   <!-- 面包屑导航模拟 --> 
+   <div class="text-sm text-text-secondary mt-2"> 
+    <a href="javascript:void(0);" onclick="ytCustomClickRouter(this, event, &quot;settings&quot;)" class="hover:text-primary"> 设置中心 </a> / 
+    <span class="text-text-primary"> 工作空间设置 </span> 
+   </div> 
+  </div> 
+  <!-- 工作空间设置内容容器 --> 
+  <div id="workspace-settings-container"> 
+   <!-- 1. 编辑器偏好配置 --> 
+   <div class="ant-card"> 
+    <div class="module-title">
+      编辑器偏好配置 
+    </div> 
+    <!-- 编辑器主题选择 --> 
+    <div class="mb-6 p-4 border border-border-color rounded-lg"> 
+     <h4 class="text-base font-medium mb-3"> 界面外观 </h4> 
+     <div class="flex space-x-4"> 
+      <!-- 浅色主题 --> 
+      <div id="theme-light" onclick="toggleTheme(&quot;light&quot;)" class="flex-1 p-4 border-2 border-primary rounded-lg cursor-pointer transition-all duration-200 bg-white shadow-sm"> 
+       <div class="flex justify-center mb-2"> 
+        <i class="fas fa-sun text-2xl text-warning"> </i> 
+       </div> 
+       <p class="text-center text-sm font-medium"> 浅色主题 </p> 
+       <div class="text-center text-xs text-text-tertiary mt-1">
+         默认亮色界面 
+       </div> 
+      </div> 
+      <!-- 深色主题 --> 
+      <div id="theme-dark" onclick="toggleTheme(&quot;dark&quot;)" class="flex-1 p-4 border-2 border-border-color rounded-lg cursor-pointer transition-all duration-200 bg-gray-50 hover:border-primary"> 
+       <div class="flex justify-center mb-2"> 
+        <i class="fas fa-moon text-2xl text-text-secondary"> </i> 
+       </div> 
+       <p class="text-center text-sm font-medium"> 深色主题 </p> 
+       <div class="text-center text-xs text-text-tertiary mt-1">
+         适合夜间工作 
+       </div> 
+      </div> 
+     </div> 
+    </div> 
+    <!-- 代码编辑器设置 --> 
+    <div class="space-y-4"> 
+     <h4 class="text-base font-medium mb-3"> 代码编辑器 </h4> 
+     <!-- 字体大小 (Slider模拟) --> 
+     <div class="flex items-center space-x-4"> 
+      <label class="w-32 text-sm text-text-secondary"> 字体大小: </label> 
+      <div class="flex-1 relative h-4"> 
+       <div class="slider-track absolute top-1/2 transform -translate-y-1/2 w-full" id="font-size-track"> 
+       </div> 
+       <div class="slider-fill absolute top-1/2 transform -translate-y-1/2 h-1.5 rounded-full" id="font-size-fill" style="width: 30%; left: 0;"> 
+       </div> 
+       <div class="slider-thumb absolute top-1/2 transform -translate-y-1/2 cursor-pointer" id="font-size-thumb" style="left: 30%;"> 
+       </div> 
+      </div> 
+      <span id="font-size-value" class="w-10 text-sm text-right text-primary font-medium"> 16px </span> 
+     </div> 
+     <!-- 主题预设 --> 
+     <div class="flex items-center space-x-4"> 
+      <label class="w-32 text-sm text-text-secondary"> 主题预设: </label> 
+      <select id="editor-theme-select" class="flex-1 border border-border-color rounded-md px-3 py-1.5 text-sm focus:ring-primary focus:border-primary"> <option value="vs-dark"> VSCode Dark+ </option> <option value="vs-light"> VSCode Light+ </option> <option value="monokai"> Monokai </option> <option value="solarized-dark"> Solarized Dark </option> </select> 
+     </div> 
+     <!-- 自动保存 --> 
+     <div class="flex items-center space-x-4"> 
+      <label class="w-32 text-sm text-text-secondary"> 自动保存: </label> 
+      <div class="flex-1 flex items-center space-x-4"> 
+       <div id="auto-save-switch" onclick="toggleSwitch(&quot;auto-save&quot;)" class="w-12 h-6 flex items-center rounded-full p-1 cursor-pointer transition-colors duration-300 bg-primary"> 
+        <div class="bg-white w-4 h-4 rounded-full shadow transform translate-x-full transition-transform duration-300"> 
+        </div> 
+       </div> 
+       <span id="auto-save-label" class="text-sm text-text-secondary"> 开启 (间隔: </span> 
+       <input type="number" id="auto-save-interval" value="5" min="1" max="60" class="w-16 border border-border-color rounded-md px-2 py-0.5 text-sm text-center focus:ring-primary focus:border-primary"> 
+       <span class="text-sm text-text-secondary"> 秒) </span> 
+      </div> 
+     </div> 
+     <!-- 格式化偏好 --> 
+     <div class="flex items-center space-x-4"> 
+      <label class="w-32 text-sm text-text-secondary"> 代码格式化: </label> 
+      <div class="flex-1 space-x-4"> 
+       <label class="inline-flex items-center cursor-pointer"> <input type="radio" name="formatter" value="prettier" checked class="form-radio h-4 w-4 text-primary border-gray-300 focus:ring-primary"> <span class="ml-2 text-sm"> Prettier </span> </label> 
+       <label class="inline-flex items-center cursor-pointer"> <input type="radio" name="formatter" value="eslint" class="form-radio h-4 w-4 text-primary border-gray-300 focus:ring-primary"> <span class="ml-2 text-sm"> ESLint </span> </label> 
+      </div> 
+     </div> 
+    </div> 
+    <div class="mt-6 pt-4 border-t border-border-color flex justify-between items-center"> 
+     <button class="btn btn-primary" onclick="savePreferences()"> 保存更改 </button> 
+     <span id="last-save-time" class="text-xs text-text-tertiary"> 上次保存: 2024-01-01 10:00:00 </span> 
+    </div> 
+   </div> 
+   <!-- 2. 生成默认项配置 --> 
+   <div class="ant-card"> 
+    <div class="module-title">
+      生成默认项配置 
+    </div> 
+    <!-- 默认技术栈 --> 
+    <div class="mb-6"> 
+     <h4 class="text-base font-medium mb-3"> 新建项目默认技术栈 </h4> 
+     <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"> 
+      <!-- 技术栈卡片 --> 
+      <div id="stack-vue-ts" onclick="selectTechStack(&quot;vue-ts&quot;)" class="p-4 border-2 border-primary rounded-lg cursor-pointer transition-all duration-200 bg-primary-light/50 shadow-sm"> 
+       <div class="flex justify-between items-center mb-2"> 
+        <i class="fas fa-code text-2xl text-primary"> </i> 
+        <i class="fas fa-check-circle text-lg text-primary hidden" id="check-vue-ts"> </i> 
+       </div> 
+       <p class="text-base font-semibold"> Vue 3 + TypeScript </p> 
+       <p class="text-xs text-text-secondary"> Vite, Pinia </p> 
+      </div> 
+      <div id="stack-react-ts" onclick="selectTechStack(&quot;react-ts&quot;)" class="p-4 border-2 border-border-color rounded-lg cursor-pointer transition-all duration-200 hover:border-primary"> 
+       <div class="flex justify-between items-center mb-2"> 
+        <i class="fas fa-code text-2xl text-info"> </i> 
+        <i class="fas fa-check-circle text-lg text-primary hidden" id="check-react-ts"> </i> 
+       </div> 
+       <p class="base font-semibold"> React + TypeScript </p> 
+       <p class="text-xs text-text-secondary"> CRA/Vite, Redux </p> 
+      </div> 
+      <div id="stack-node-express" onclick="selectTechStack(&quot;node-express&quot;)" class="p-4 border-2 border-border-color rounded-lg cursor-pointer transition-all duration-200 hover:border-primary"> 
+       <div class="flex justify-between items-center mb-2"> 
+        <i class="fas fa-server text-2xl text-success"> </i> 
+        <i class="fas fa-check-circle text-lg text-primary hidden" id="check-node-express"> </i> 
+       </div> 
+       <p class="base font-semibold"> Node.js + Express </p> 
+       <p class="text-xs text-text-secondary"> REST API </p> 
+      </div> 
+      <div id="stack-spring-boot" onclick="selectTechStack(&quot;spring-boot&quot;)" class="p-4 border-2 border-border-color rounded-lg cursor-pointer transition-all duration-200 hover:border-primary"> 
+       <div class="flex justify-between items-center mb-2"> 
+        <i class="fas fa-leaf text-2xl text-success"> </i> 
+        <i class="fas fa-check-circle text-lg text-primary hidden" id="check-spring-boot"> </i> 
+       </div> 
+       <p class="base font-semibold"> Spring Boot </p> 
+       <p class="text-xs text-text-secondary"> Java Backend </p> 
+      </div> 
+     </div> 
+    </div> 
+    <!-- 代码规范模板 --> 
+    <div> 
+     <h4 class="text-base font-medium mb-3"> 代码规范模板 </h4> 
+     <div class="flex items-center space-x-4"> 
+      <label class="w-32 text-sm text-text-secondary"> 选择模板: </label> 
+      <select id="code-style-select" class="flex-1 border border-border-color rounded-md px-3 py-1.5 text-sm focus:ring-primary focus:border-primary"> <option value="airbnb"> Airbnb (推荐) </option> <option value="standard"> Standard </option> <option value="google"> Google </option> <option value="custom"> 自定义 </option> </select> 
+      <a href="javascript:void(0);" onclick="showStyleDetails()" class="text-sm text-primary hover:text-primary-dark whitespace-nowrap"> 查看规范详情 </a> 
+     </div> 
+    </div> 
+   </div> 
+   <!-- 3. 集成与存储配置 --> 
+   <div class="ant-card"> 
+    <div class="module-title">
+      集成与存储配置 
+    </div> 
+    <!-- Git仓库集成 --> 
+    <div class="mb-6 p-4 border border-border-color rounded-lg"> 
+     <h4 class="text-base font-medium mb-3"> 代码仓库自动同步 </h4> 
+     <div class="flex flex-wrap gap-3 mb-4"> 
+      <span class="text-sm text-text-secondary mr-2"> 已连接提供商: </span> 
+      <span class="inline-flex items-center px-3 py-1 text-xs font-medium bg-success/10 text-success rounded-full"> <i class="fas fa-check-circle mr-1 text-xs"> </i> GitHub </span> 
+      <span class="inline-flex items-center px-3 py-1 text-xs font-medium bg-warning/10 text-warning rounded-full"> <i class="fas fa-exclamation-circle mr-1 text-xs"> </i> GitLab (待授权) </span> 
+     </div> 
+     <button class="btn btn-outline" onclick="connectGit()"> <i class="fas fa-link mr-2"> </i> 连接新仓库 </button> 
+    </div> 
+    <!-- 文件存储设置 --> 
+    <div> 
+     <h4 class="text-base font-medium mb-3"> 生成文件处理方式 </h4> 
+     <div class="space-y-3"> 
+      <label class="flex items-center p-3 border border-border-color rounded-lg cursor-pointer hover:bg-primary-light/30 transition-colors"> <input type="radio" name="storage" value="local" checked class="form-radio h-4 w-4 text-primary border-gray-300 focus:ring-primary"> <i class="fas fa-download ml-3 mr-2 text-lg text-info"> </i> <span class="text-sm font-medium"> 自动下载到本地 </span> <span class="text-xs text-text-tertiary ml-2"> (默认行为) </span> </label> 
+      <label class="flex items-center p-3 border border-border-color rounded-lg cursor-pointer hover:bg-primary-light/30 transition-colors"> <input type="radio" name="storage" value="git" class="form-radio h-4 w-4 text-primary border-gray-300 focus:ring-primary"> <i class="fab fa-git-alt ml-3 mr-2 text-lg text-primary"> </i> <span class="text-sm font-medium"> 自动推送到Git仓库 </span> <span class="text-xs text-text-tertiary ml-2"> (需要已配置仓库) </span> </label> 
+      <label class="flex items-center p-3 border border-border-color rounded-lg cursor-pointer hover:bg-primary-light/30 transition-colors"> <input type="radio" name="storage" value="cloud" class="form-radio h-4 w-4 text-primary border-gray-300 focus:ring-primary"> <i class="fas fa-cloud ml-3 mr-2 text-lg text-secondary"> </i> <span class="text-sm font-medium"> 保存到云端工作区 </span> <span class="text-xs text-text-tertiary ml-2"> (项目空间内持久化) </span> </label> 
+     </div> 
+    </div> 
+   </div> 
+   <!-- 恢复默认按钮 --> 
+   <div class="mt-8 pt-4 border-t border-border-color flex justify-end"> 
+    <button class="text-sm text-danger hover:text-red-700" onclick="resetToDefaults()"> <i class="fas fa-undo-alt mr-1"> </i> 恢复默认设置 </button> 
+   </div> 
+  </div> 
+  <script>// 模拟数据和状态
+var currentTheme = 'light';
+var currentStack = 'vue-ts';
+var isAutoSaveOn = true;
+// --- 模拟公共函数调用 ---
+// 1. 调整Iframe高度
+
+// 2. 路由跳转模拟 (用于面包屑和详情链接)
+
+// --- 模拟公共函数调用结束 ---
+// 页面初始化
+document.addEventListener('DOMContentLoaded', function () {
+  // 1. 初始化设置
+  initializeSettings();
+
+  // 2. 绑定事件
+  bindEventListeners();
+  // 3. 模拟Slider初始化
+  setupSlider('font-size', 16, 12, 24); // 初始值16, 范围12-24
+  // 4. 通知父页面调整高度
+  ytSendPageSize();
+});
+function initializeSettings() {
+  // 恢复默认主题（模拟）
+  toggleTheme(currentTheme, true);
+
+  // 恢复默认技术栈（模拟）
+  document.querySelectorAll('[id^="stack-"]').forEach(function (el) {
+    el.classList.remove('border-primary', 'bg-primary-light/50', 'shadow-sm');
+    el.classList.add('border-border-color', 'hover:border-primary');
+    document.getElementById('check-' + el.id.replace('stack-', '')).classList.add('hidden');
+  });
+  document.getElementById('stack-vue-ts').classList.add('border-primary', 'bg-primary-light/50', 'shadow-sm');
+  document.getElementById('check-vue-ts').classList.remove('hidden');
+  // 恢复自动保存开关状态
+  updateSwitchState('auto-save', isAutoSaveOn);
+
+  // 更新上次保存时间
+  document.getElementById('last-save-time').textContent = "\u4E0A\u6B21\u4FDD\u5B58:" + new Date().toLocaleTimeString();
+}
+function bindEventListeners() {
+  // 监听自动保存间隔输入框变化，实时更新标签
+  var intervalInput = document.getElementById('auto-save-interval');
+  intervalInput.addEventListener('input', function () {
+    if (isAutoSaveOn) {
+      document.getElementById('auto-save-label').textContent = "\u5F00\u542F (\u95F4\u9694:".concat(this.value, "\u79D2)");
+    }
+  });
+}
+// --- 1. 编辑器偏好配置 逻辑 ---
+// 主题切换
+function toggleTheme(theme) {
+  var initial = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+  if (!initial) {
+    currentTheme = theme;
+  }
+  var lightEl = document.getElementById('theme-light');
+  var darkEl = document.getElementById('theme-dark');
+  if (theme === 'light') {
+    lightEl.classList.add('border-primary', 'bg-primary-light/50', 'shadow-sm');
+    lightEl.classList.remove('border-border-color', 'hover:border-primary', 'bg-gray-50');
+    darkEl.classList.remove('border-primary', 'bg-primary-light/50', 'shadow-sm');
+    darkEl.classList.add('border-border-color', 'hover:border-primary', 'bg-gray-50');
+  } else {
+    // dark
+    darkEl.classList.add('border-primary', 'bg-primary-light/50', 'shadow-sm');
+    darkEl.classList.remove('border-border-color', 'hover:border-primary', 'bg-gray-50');
+    lightEl.classList.remove('border-primary', 'bg-primary-light/50', 'shadow-sm');
+    lightEl.classList.add('border-border-color', 'hover:border-primary', 'bg-gray-50');
+  }
+  ytSendPageSize(); // 尺寸可能变化
+}
+// 模拟Switch开关
+function toggleSwitch(id) {
+  if (id === 'auto-save') {
+    isAutoSaveOn = !isAutoSaveOn;
+    updateSwitchState(id, isAutoSaveOn);
+    var label = document.getElementById('auto-save-label');
+    var interval = document.getElementById('auto-save-interval').value;
+    label.textContent = isAutoSaveOn ? "\u5F00\u542F (\u95F4\u9694:".concat(interval, "\u79D2)") : '关闭';
+
+    // 实时反馈（模拟）
+    showNotification(isAutoSaveOn ? 'success' : 'warning', "\u81EA\u52A8\u4FDD\u5B58\u5DF2".concat(isAutoSaveOn ? '开启' : '关闭'));
+  }
+  ytSendPageSize();
+}
+function updateSwitchState(id, isOn) {
+  var switchEl = document.getElementById("".concat(id, "-switch"));
+  var thumb = switchEl.querySelector('div');
+  if (isOn) {
+    switchEl.classList.add('switch-active');
+    switchEl.classList.remove('switch-inactive');
+    thumb.classList.add('translate-x-full');
+  } else {
+    switchEl.classList.remove('switch-active');
+    switchEl.classList.add('switch-inactive');
+    thumb.classList.remove('translate-x-full');
+  }
+}
+// 模拟Slider功能
+function setupSlider(idPrefix, initialValue, min, max) {
+  var track = document.getElementById("".concat(idPrefix, "-track"));
+  var fill = document.getElementById("".concat(idPrefix, "-fill"));
+  var thumb = document.getElementById("".concat(idPrefix, "-thumb"));
+  var valueSpan = document.getElementById("".concat(idPrefix, "-value"));
+  var currentValue = initialValue;
+  var range = max - min;
+  function updatePosition(value) {
+    var percentage = (value - min) / range * 100;
+    currentValue = value;
+    thumb.style.left = "".concat(percentage, "%");
+    fill.style.width = "".concat(percentage, "%");
+    valueSpan.textContent = "".concat(Math.round(value), "px");
+    ytSendPageSize();
+  }
+  updatePosition(initialValue);
+  var isDragging = false;
+  thumb.addEventListener('mousedown', function (e) {
+    isDragging = true;
+    document.addEventListener('mousemove', onMouseMove);
+    document.addEventListener('mouseup', onMouseUp);
+    e.preventDefault();
+  });
+  function onMouseMove(e) {
+    if (!isDragging) return;
+    var rect = track.getBoundingClientRect();
+    var newX = e.clientX - rect.left;
+    var percentage = newX / rect.width * 100;
+
+    // 限制在0%到100%之间
+    percentage = Math.max(0, Math.min(100, percentage));
+    var newValue = min + percentage / 100 * range;
+    updatePosition(newValue);
+  }
+  function onMouseUp() {
+    isDragging = false;
+    document.removeEventListener('mousemove', onMouseMove);
+    document.removeEventListener('mouseup', onMouseUp);
+    // 模拟保存
+    showNotification('info', "\u5B57\u4F53\u5927\u5C0F\u5DF2\u66F4\u65B0\u4E3A".concat(Math.round(currentValue), "px"));
+  }
+}
+// 保存偏好
+function savePreferences() {
+  var saveButton = document.querySelector('.ant-card button.btn-primary');
+  saveButton.disabled = true;
+  saveButton.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> 正在保存...';
+  // 模拟网络延迟
+  setTimeout(function () {
+    document.getElementById('last-save-time').textContent = "\u4E0A\u6B21\u4FDD\u5B58:" + new Date().toLocaleTimeString();
+    saveButton.disabled = false;
+    saveButton.innerHTML = '保存更改';
+    showNotification('success', '编辑器偏好设置已成功保存！');
+  }, 1000);
+}
+// --- 2. 生成默认项配置 逻辑 ---
+function selectTechStack(stackId) {
+  // 移除所有选中状态
+  document.querySelectorAll('[id^="stack-"]').forEach(function (el) {
+    el.classList.remove('border-primary', 'bg-primary-light/50', 'shadow-sm');
+    el.classList.add('border-border-color', 'hover:border-primary');
+    document.getElementById('check-' + el.id.replace('stack-', '')).classList.add('hidden');
+  });
+  // 设置选中状态
+  var selectedEl = document.getElementById("stack-".concat(stackId));
+  var checkIcon = document.getElementById("check-".concat(stackId));
+  if (selectedEl && checkIcon) {
+    selectedEl.classList.add('border-primary', 'bg-primary-light/50', 'shadow-sm');
+    selectedEl.classList.remove('border-border-color', 'hover:border-primary');
+    checkIcon.classList.remove('hidden');
+    currentStack = stackId;
+    showNotification('info', "\u9ED8\u8BA4\u6280\u672F\u6808\u5DF2\u5207\u6362\u4E3A".concat(stackId.toUpperCase()));
+  }
+  ytSendPageSize();
+}
+function showStyleDetails() {
+  // 模拟弹出模态框或跳转到详情页
+  showNotification('info', '模拟打开代码规范详情模态框。');
+  ytSendPageSize();
+}
+// --- 3. 集成与存储配置 逻辑 ---
+function connectGit() {
+  showNotification('info', '模拟开始Git仓库OAuth授权流程...');
+  ytSendPageSize();
+}
+// --- 辅助和全局函数 ---
+function showNotification(type, message) {
+  // 模拟Ant Design notification
+  var container = document.createElement('div');
+  var bgColor, iconClass;
+  switch (type) {
+    case 'success':
+      bgColor = 'bg-success';
+      iconClass = 'fas fa-check-circle';
+      break;
+    case 'warning':
+      bgColor = 'bg-warning';
+      iconClass = 'fas fa-exclamation-triangle';
+      break;
+    case 'error':
+      bgColor = 'bg-danger';
+      iconClass = 'fas fa-times-circle';
+      break;
+    case 'info':
+    default:
+      bgColor = 'bg-primary';
+      iconClass = 'fas fa-info-circle';
+      break;
+  }
+  container.className = "".concat(bgColor, "text-white p-3 rounded-lg shadow-lg fixed top-4 right-4 z-50 flex items-center transition-all duration-300 transform translate-x-full opacity-0");
+  container.innerHTML = "<i class=\"".concat(iconClass, "mr-2 text-lg\"></i>\n                <span class=\"text-sm\">").concat(message, "</span>");
+  document.body.appendChild(container);
+  // 动画入场
+  setTimeout(function () {
+    container.classList.remove('translate-x-full', 'opacity-0');
+    container.classList.add('translate-x-0', 'opacity-100');
+  }, 10);
+  // 动画出场并移除
+  setTimeout(function () {
+    container.classList.remove('translate-x-0', 'opacity-100');
+    container.classList.add('translate-x-full', 'opacity-0');
+    setTimeout(function () {
+      container.remove();
+    }, 300);
+  }, 3000);
+}
+function resetToDefaults() {
+  if (confirm('确定要恢复所有工作空间设置到默认值吗？此操作将立即生效。')) {
+    // 模拟恢复操作
+    initializeSettings();
+    showNotification('warning', '工作空间设置已恢复为平台默认值。');
+  }
+}</script>  
+ </body>
+</html>

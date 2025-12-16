@@ -1,0 +1,762 @@
+<!doctype html>
+<html lang="zh-CN">
+ <head> 
+  <meta charset="UTF-8"> 
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+  <title>账户设置 - 设置中心</title> 
+  <link href="./accountSettings/all.min.css" rel="stylesheet"> 
+  <script src="../javascript/reload.js"></script> 
+  <script src="./accountSettings/resource_8958410000.js"></script> 
+  <script>tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        primary: '#1677ff',
+        secondary: '#40a9ff',
+        success: '#52c41a',
+        warning: '#faad14',
+        danger: '#ff4d4f',
+        info: '#1890ff',
+        light: '#f5f5f5',
+        dark: '#141414',
+        'primary-light': '#e6f7ff',
+        'primary-dark': '#0958d9',
+        'text-primary': '#333333',
+        'text-secondary': '#666666',
+        'text-tertiary': '#999999',
+        'border-color': '#e8e8e8'
+      },
+      fontFamily: {
+        inter: ['Inter', 'system-ui', 'sans-serif']
+      },
+      spacing: {
+        '128': '32rem'
+      },
+      boxShadow: {
+        'card': '0 2px 8px rgba(0, 0, 0, 0.09)',
+        'dropdown': '0 4px 16px rgba(0, 0, 0, 0.12)'
+      }
+    }
+  }
+};</script> 
+  <style>
+        /* 覆盖公共样式中可能与Ant Design风格冲突的部分，确保符合Ant Design的视觉感 */
+        body {
+            @apply font-inter bg-light text-text-primary;
+        }
+        .ant-card {
+            @apply bg-white rounded-lg shadow-card p-5 mb-5 transition-all duration-300 hover:shadow-lg;
+        }
+        .form-label {
+            @apply text-sm font-medium text-text-primary mb-1 block;
+        }
+        .input-base {
+            @apply w-full px-3 py-2 border border-border-color rounded-md focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all duration-200 text-sm;
+        }
+        .btn {
+            @apply px-4 py-2 rounded-md transition-all duration-200 font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 text-sm;
+        }
+        .btn-primary {
+            @apply bg-primary text-white hover:bg-primary-dark focus:ring-primary/50;
+        }
+        .btn-outline {
+            @apply border border-primary text-primary hover:bg-primary-light focus:ring-primary/50;
+        }
+        /* 隐藏select默认箭头 */
+        select {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2212%22%20height%3D%2212%22%20viewBox%3D%220%200%20255%20255%22%3E%3Cpath%20fill%3D%22%23666666%22%20d%3D%22M127.5%20170.1l105.4-105.4c4.7-4.7%2010.9-7.1%2017.1-7.1s12.4%202.4%2017.1%207.1l14.3%2014.3c4.7%204.7%207.1%2010.9%207.1%2017.1s-2.4%2012.4-7.1%2017.1L144.6%20212.5c-4.7%204.7-10.9%207.1-17.1%207.1s-12.4-2.4-17.1-7.1L7.1%2077.1C2.4%2072.4%200%2066.2%200%2060s2.4-12.4%207.1-17.1l14.3-14.3c4.7-4.7%2010.9-7.1%2017.1-7.1s12.4%202.4%2017.1%207.1L127.5%20170.1z%22%2F%3E%3C%2Fsvg%3E");
+            background-repeat: no-repeat;
+            background-position: right 0.75rem center;
+            background-size: 0.75rem;
+        }
+        /* 文本域自适应高度 */
+        textarea.input-base {
+            resize: vertical;
+        }
+    </style> 
+ </head> 
+ <body class="bg-light"> 
+  <!-- 页面容器 --> 
+  <div class="min-h-screen"> 
+   <!-- 顶部标题区域 --> 
+   <div class="bg-white border-b border-border-color pt-6 pb-4 px-4 md:px-6"> 
+    <h3 class="text-xl font-semibold text-text-primary"> 设置中心 </h3> 
+    <!-- 面包屑导航 --> 
+    <nav class="mt-2 text-sm text-text-secondary"> 
+     <a href="javascript:void(0);" onclick="ytCustomClickRouter(this, event, &quot;workbench&quot;)" class="hover:text-primary"> 首页 </a> 
+     <span class="mx-1"> / </span> 
+     <a href="javascript:void(0);" onclick="ytCustomClickRouter(this, event, &quot;settings&quot;)" class="hover:text-primary"> 设置中心 </a> 
+     <span class="mx-1"> / </span> 
+     <span class="text-text-primary"> 账户设置 </span> 
+    </nav> 
+   </div> 
+   <!-- 内容区域：p-4 md:p-6 保证与公共区域iframe内边距一致 --> 
+   <div class="p-4 md:p-6"> 
+    <!-- 整体布局：左侧导航（模拟Antd Menu结构）和右侧内容 --> 
+    <div class="flex flex-col lg:flex-row gap-6"> 
+     <!-- 左侧导航（模拟Antd Menu结构） --> 
+     <aside class="lg:w-64 flex-shrink-0 bg-white rounded-lg shadow-card h-fit lg:sticky lg:top-24"> 
+      <div class="p-4 border-b border-border-color"> 
+       <h4 class="text-base font-semibold text-text-primary"> 设置导航 </h4> 
+      </div> 
+      <nav class="p-2"> 
+       <a href="javascript:void(0);" data-uuid="accountSettings" onclick="ytCustomClickRouter(this, event, &quot;accountSettings&quot;)" class="menu-item active-menu"> <i class="fas fa-user-circle mr-3 text-lg"> </i> <span> 个人设置 </span> </a> 
+       <a href="javascript:void(0);" data-uuid="workspaceSettings" onclick="ytCustomClickRouter(this, event, &quot;workspaceSettings&quot;)" class="menu-item"> <i class="fas fa-cogs mr-3 text-lg"> </i> <span> 工作空间设置 </span> </a> 
+       <a href="javascript:void(0);" data-uuid="notificationSettings" onclick="ytCustomClickRouter(this, event, &quot;notificationSettings&quot;)" class="menu-item"> <i class="fas fa-bell mr-3 text-lg"> </i> <span> 通知偏好 </span> </a> 
+       <!-- 恢复默认设置链接 --> 
+       <a href="javascript:void(0);" onclick="showNotification(&quot;info&quot;, &quot;恢复默认设置&quot;, &quot;此操作将恢复所有设置项至默认值。&quot;)" class="menu-item mt-4 text-danger hover:text-danger/80"> <i class="fas fa-undo mr-3 text-lg"> </i> <span> 恢复默认设置 </span> </a> 
+      </nav> 
+     </aside> 
+     <!-- 右侧内容区 --> 
+     <main class="flex-1 space-y-8"> 
+      <!-- 1. 个人信息模块 --> 
+      <div class="ant-card"> 
+       <h4 class="text-lg font-medium text-text-primary mb-4 border-b pb-2"> 个人信息 </h4> 
+       <!-- 头像区域 --> 
+       <div class="flex flex-col md:flex-row items-center md:items-start mb-6 space-y-4 md:space-y-0 md:space-x-6"> 
+        <!-- 头像 --> 
+        <div class="relative flex-shrink-0"> 
+         <img src="./accountSettings/8cda41a084d5db2f669546a3dd9efe41.png" alt="用户头像" class="w-32 h-32 rounded-full object-cover border-4 border-white shadow-md"> 
+         <!-- 占位上传控件 --> 
+         <label for="avatar-upload" class="absolute bottom-0 right-0 bg-white p-2 rounded-full shadow-lg border border-border-color cursor-pointer hover:bg-primary-light transition-colors duration-200"> <i class="fas fa-camera text-primary text-xl"> </i> <input type="file" id="avatar-upload" accept="image/jpeg, image/png" class="hidden" onchange="handleAvatarUpload(this)"> </label> 
+        </div> 
+        <!-- 提示 --> 
+        <div class="flex flex-col justify-center h-32"> 
+         <p class="text-sm text-text-secondary"> 支持JPG、PNG格式，大小不超过2MB </p> 
+        </div> 
+       </div> 
+       <!-- 基本信息表单 --> 
+       <form id="profile-form" onsubmit="handleProfileSave(event)"> 
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4"> 
+         <!-- 姓名 --> 
+         <div> 
+          <label for="name" class="form-label"> 姓名 <span class="text-danger"> * </span> </label> 
+          <input type="text" id="name" name="name" value="张开发" maxlength="20" class="input-base" required> 
+         </div> 
+         <!-- 显示名称 --> 
+         <div> 
+          <label for="displayName" class="form-label"> 显示名称 </label> 
+          <input type="text" id="displayName" name="displayName" value="Zhang_Dev" class="input-base"> 
+          <p class="text-xs text-text-tertiary mt-1"> 用于在团队中显示的名称 </p> 
+         </div> 
+         <!-- 邮箱 --> 
+         <div> 
+          <label for="email" class="form-label"> 邮箱 <span class="text-danger"> * </span> </label> 
+          <div class="flex items-center"> 
+           <input type="email" id="email" name="email" value="zhang.dev@example.com" class="input-base flex-1 mr-2" readonly> 
+           <button type="button" onclick="toggleEmailEdit(true)" class="btn btn-outline text-primary hover:bg-primary-light/50"> 修改 </button> 
+          </div> 
+          <div id="email-edit-area" class="hidden mt-2 space-y-2"> 
+           <input type="email" id="new-email" name="new-email" placeholder="输入新邮箱" class="input-base"> 
+           <div class="flex space-x-2"> 
+            <input type="text" id="verification-code" placeholder="验证码" class="input-base w-1/2"> 
+            <button type="button" onclick="sendEmailCode()" class="btn btn-outline w-1/2"> 发送验证码 </button> 
+           </div> 
+           <button type="button" onclick="handleEmailUpdate()" class="btn btn-primary w-full"> 确认修改 </button> 
+          </div> 
+          <div id="email-status" class="flex items-center mt-1 text-success"> 
+           <i class="fas fa-check-circle mr-1 text-sm"> </i> 
+           <span class="text-sm"> 验证通过 </span> 
+          </div> 
+         </div> 
+         <!-- 职位 --> 
+         <div> 
+          <label for="position" class="form-label"> 职位 </label> 
+          <input type="text" id="position" name="position" value="前端架构师" class="input-base"> 
+         </div> 
+        </div> 
+        <!-- 个人简介 --> 
+        <div class="mt-4"> 
+         <label for="bio" class="form-label"> 个人简介 </label> 
+         <textarea id="bio" name="bio" rows="3" maxlength="200" class="input-base">
+        专注于AI驱动的低代码平台前端架构设计与实现。
+    </textarea> 
+         <p class="text-xs text-text-tertiary mt-1 text-right"> <span id="bio-count"> 50 </span> /200 </p> 
+        </div> 
+        <!-- 底部操作 --> 
+        <div class="flex justify-end items-center pt-4 border-t mt-4"> 
+         <p id="last-saved" class="text-xs text-text-tertiary mr-4"> 上次保存: 2024-01-15 14:30 </p> 
+         <button type="submit" id="save-profile-btn" class="btn btn-primary"> <i class="fas fa-save mr-1"> </i> 保存更改 </button> 
+        </div> 
+       </form> 
+      </div> 
+      <!-- 2. 账户安全模块 --> 
+      <div class="ant-card"> 
+       <h4 class="text-lg font-medium text-text-primary mb-4 border-b pb-2"> 账户安全 </h4> 
+       <!-- 安全项列表 --> 
+       <div id="security-list"> 
+        <!-- 密码安全 --> 
+        <div class="flex justify-between items-center py-3 border-b last:border-b-0"> 
+         <div class="flex items-center"> 
+          <i class="fas fa-lock text-xl text-primary mr-4"> </i> 
+          <div> 
+           <p class="font-medium"> 登录密码 </p> 
+           <p class="text-xs text-text-secondary"> 用于保护您的账户安全 </p> 
+          </div> 
+         </div> 
+         <div class="flex items-center space-x-4"> 
+          <span class="text-xs text-success font-medium"> 已设置 </span> 
+          <span class="text-xs text-text-tertiary hidden sm:inline"> 最近修改：2023-10-27 </span> 
+          <button type="button" onclick="handleSecurityAction(&quot;password&quot;)" class="btn btn-outline text-primary hover:bg-primary-light/50"> 修改 </button> 
+         </div> 
+        </div> 
+        <!-- 手机绑定 --> 
+        <div class="flex justify-between items-center py-3 border-b last:border-b-0"> 
+         <div class="flex items-center"> 
+          <i class="fas fa-mobile-alt text-xl text-info mr-4"> </i> 
+          <div> 
+           <p class="font-medium"> 绑定手机 </p> 
+           <p class="text-xs text-text-secondary"> 用于接收重要通知和找回密码 </p> 
+          </div> 
+         </div> 
+         <div class="flex items-center space-x-4"> 
+          <span class="text-xs text-text-primary font-medium"> 138****5678 </span> 
+          <button type="button" onclick="handleSecurityAction(&quot;phone&quot;, &quot;更换&quot;)" class="btn btn-outline text-primary hover:bg-primary-light/50"> 更换 </button> 
+          <button type="button" onclick="handleSecurityAction(&quot;phone&quot;, &quot;解绑&quot;)" class="btn btn-outline text-danger hover:bg-danger-light/50"> 解绑 </button> 
+         </div> 
+        </div> 
+        <!-- 邮箱绑定 --> 
+        <div class="flex justify-between items-center py-3 border-b last:border-b-0"> 
+         <div class="flex items-center"> 
+          <i class="fas fa-envelope text-xl text-info mr-4"> </i> 
+          <div> 
+           <p class="font-medium"> 绑定邮箱 </p> 
+           <p class="text-xs text-text-secondary"> 用于接收系统通知和账户活动提醒 </p> 
+          </div> 
+         </div> 
+         <div class="flex items-center space-x-4"> 
+          <span class="text-xs text-text-primary font-medium"> zhang.dev@example.com </span> 
+          <button type="button" onclick="handleSecurityAction(&quot;email&quot;, &quot;更换&quot;)" class="btn btn-outline text-primary hover:bg-primary-light/50"> 更换 </button> 
+         </div> 
+        </div> 
+        <!-- 双重认证 (2FA) --> 
+        <div class="flex justify-between items-center py-3 border-b last:border-b-0"> 
+         <div class="flex items-center"> 
+          <i class="fas fa-shield-alt text-xl text-success mr-4"> </i> 
+          <div> 
+           <p class="font-medium"> 双重认证 (2FA) </p> 
+           <p class="text-xs text-text-secondary"> 增加一层安全保护，推荐开启 </p> 
+          </div> 
+         </div> 
+         <div class="flex items-center space-x-4"> 
+          <div class="flex items-center"> 
+           <input type="checkbox" id="2fa-switch" checked class="w-4 h-4 text-primary bg-gray-100 border-gray-300 rounded focus:ring-primary" onchange="handle2FASwitch(this)"> 
+           <label for="2fa-switch" class="ml-2 text-sm font-medium text-gray-900"> </label> 
+          </div> 
+          <button type="button" id="2fa-action-btn" onclick="handleSecurityAction(&quot;2fa&quot;)" class="btn btn-outline text-primary hover:bg-primary-light/50"> 管理 </button> 
+         </div> 
+        </div> 
+       </div> 
+       <!-- 登录设备管理 --> 
+       <div class="mt-8 pt-4 border-t"> 
+        <h5 class="text-md font-medium mb-3"> 最近登录的设备 </h5> 
+        <!-- Table for Login Devices --> 
+        <div class="overflow-x-auto"> 
+         <table class="min-w-full divide-y divide-border-color"> 
+          <thead class="bg-light"> 
+           <tr> 
+            <th class="px-4 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider w-1/12"> 设备 </th> 
+            <th class="px-4 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider w-2/12"> 设备类型 </th> 
+            <th class="px-4 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider w-2/12"> 浏览器 </th> 
+            <th class="px-4 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider w-3/12"> IP地址 </th> 
+            <th class="px-4 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider w-2/12"> 最后活跃时间 </th> 
+            <th class="px-4 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider w-2/12"> 操作 </th> 
+           </tr> 
+          </thead> 
+          <tbody id="login-devices-body" class="bg-white divide-y divide-border-color"> 
+           <!-- Data rows will be inserted here by JS --> 
+          </tbody> 
+         </table> 
+        </div> 
+        <div class="mt-4 flex justify-end"> 
+         <button type="button" onclick="confirmClearSessions()" class="btn text-danger hover:bg-danger-light/50"> <i class="fas fa-sign-out-alt mr-1"> </i> 清除所有其他会话 </button> 
+        </div> 
+       </div> 
+      </div> 
+      <!-- 3. API 令牌管理模块 --> 
+      <div class="ant-card"> 
+       <h4 class="text-lg font-medium text-text-primary mb-4 border-b pb-2"> API 令牌管理 </h4> 
+       <!-- 创建新令牌区域 --> 
+       <div class="bg-primary-light p-4 rounded-lg mb-6 border border-primary/30"> 
+        <h5 class="font-semibold text-primary mb-3 flex items-center"> <i class="fas fa-key mr-2"> </i> 创建新的访问令牌 </h5> 
+        <form id="token-creation-form" onsubmit="handleTokenCreation(event)"> 
+         <div class="grid grid-cols-1 md:grid-cols-3 gap-4"> 
+          <!-- 令牌名称 --> 
+          <div> 
+           <label for="tokenName" class="form-label"> 令牌名称 <span class="text-danger"> * </span> </label> 
+           <input type="text" id="tokenName" required class="input-base" placeholder="例如: CI/CD Pipeline Access"> 
+          </div> 
+          <!-- 权限范围 --> 
+          <div> 
+           <label for="tokenScopes" class="form-label"> 权限范围 <span class="text-danger"> * </span> </label> 
+           <select id="tokenScopes" multiple required class="input-base h-24"> <option value="read_project"> 项目读取 </option> <option value="write_project"> 项目写入 </option> <option value="generate_task"> 生成任务 </option> <option value="manage_settings"> 管理设置 </option> </select> 
+           <p class="text-xs text-text-tertiary mt-1"> 按住 Ctrl/Cmd 键可多选 </p> 
+          </div> 
+          <!-- 过期时间 --> 
+          <div> 
+           <label for="tokenExpiry" class="form-label"> 过期时间 (可选) </label> 
+           <input type="date" id="tokenExpiry" class="input-base"> 
+          </div> 
+         </div> 
+         <div class="mt-4 flex justify-end"> 
+          <button type="submit" id="generate-token-btn" class="btn btn-primary"> <i class="fas fa-plus mr-1"> </i> 生成令牌 </button> 
+         </div> 
+        </form> 
+       </div> 
+       <!-- 令牌列表 --> 
+       <h5 class="text-md font-medium mb-3"> 已创建的令牌 (共 <span id="token-count"> 3 </span> 个) </h5> 
+       <div class="overflow-x-auto"> 
+        <table class="min-w-full divide-y divide-border-color"> 
+         <thead class="bg-light"> 
+          <tr> 
+           <th class="px-4 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider w-3/12"> 令牌名称 </th> 
+           <th class="px-4 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider w-3/12"> 权限 </th> 
+           <th class="px-4 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider w-2/12"> 创建时间 </th> 
+           <th class="px-4 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider w-2/12"> 最后使用 </th> 
+           <th class="px-4 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider w-2/12"> 状态 </th> 
+          </tr> 
+         </thead> 
+         <tbody id="token-list-body" class="bg-white divide-y divide-border-color"> 
+          <!-- Data rows will be inserted here by JS --> 
+         </tbody> 
+        </table> 
+       </div> 
+      </div> 
+     </main> 
+    </div> 
+   </div> 
+  </div> 
+  <!-- 模态框：查看令牌详情 --> 
+  <div id="token-detail-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden items-center justify-center p-4"> 
+   <div class="bg-white rounded-lg shadow-dropdown w-full max-w-lg transform transition-all duration-300 scale-100"> 
+    <div class="p-5 border-b flex justify-between items-center"> 
+     <h5 class="text-lg font-semibold"> 令牌详情 </h5> 
+     <button onclick="closeModal(&quot;token-detail-modal&quot;)" class="text-text-secondary hover:text-danger"> <i class="fas fa-times"> </i> </button> 
+    </div> 
+    <div class="p-5 space-y-3"> 
+     <p> <strong> 令牌名称: </strong> <span id="modal-token-name"> </span> </p> 
+     <p> <strong> 令牌值 (仅显示一次): </strong> <code id="modal-token-value" class="block break-all bg-light p-2 rounded text-sm text-danger border border-danger/50"> cm_sk_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx </code> <span class="text-xs text-text-tertiary block mt-1"> 注意：令牌创建后仅显示一次，请妥善保管。 </span> </p> 
+     <p> <strong> 权限范围: </strong> <span id="modal-token-scopes"> </span> </p> 
+     <p> <strong> 创建时间: </strong> <span id="modal-token-created"> </span> </p> 
+     <p> <strong> 最后使用: </strong> <span id="modal-token-last-used"> </span> </p> 
+    </div> 
+    <div class="p-4 border-t flex justify-end space-x-3"> 
+     <button onclick="copyTokenToClipboard(&quot;modal-token-value&quot;)" class="btn btn-outline"> <i class="fas fa-copy mr-1"> </i> 复制令牌 </button> 
+     <button onclick="closeModal(&quot;token-detail-modal&quot;)" class="btn btn-primary"> 关闭 </button> 
+    </div> 
+   </div> 
+  </div> 
+  <script>// =========================================================================
+// 公共函数调用 (必须在DOMContentLoaded后执行)
+// =========================================================================
+document.addEventListener('DOMContentLoaded', function () {
+  // 1. 调整iframe大小
+  if (typeof ytSendPageSize === 'function') {
+    ytSendPageSize();
+  } else {
+    console.warn("公共函数 ytSendPageSize 未定义，iframe大小可能无法自适应。");
+  }
+  // 2. 初始化页面数据和事件
+  initializeAccountSettings();
+});
+// =========================================================================
+// 辅助函数：通知和模态框
+// =========================================================================
+/**
+ * 模拟Antd Notification
+ * @param {string} type - success, error, info, warning
+ * @param {string} message - 标题
+ * @param {string} description - 描述
+ */
+function showNotification(type, message, description) {
+  var colorMap = {
+    success: 'bg-success',
+    error: 'bg-danger',
+    info: 'bg-primary',
+    warning: 'bg-warning'
+  };
+  var iconMap = {
+    success: 'fa-check-circle',
+    error: 'fa-times-circle',
+    info: 'fa-info-circle',
+    warning: 'fa-exclamation-triangle'
+  };
+  var container = document.createElement('div');
+  container.className = "fixed top-4 right-4 p-4 rounded-lg shadow-lg text-white z-[100] flex items-center space-x-3 transition-all duration-300 transform translate-x-full opacity-0".concat(colorMap[type]);
+  container.innerHTML = "<i class=\"fas".concat(iconMap[type], "text-xl\"></i>\n                <div>\n                    <div class=\"font-semibold\">").concat(message, "</div>\n                    <div class=\"text-sm\">").concat(description, "</div>\n                </div>");
+  document.body.appendChild(container);
+  // 显示动画
+  setTimeout(function () {
+    container.classList.remove('translate-x-full', 'opacity-0');
+    container.classList.add('translate-x-0', 'opacity-100');
+  }, 10);
+  // 隐藏动画并移除
+  setTimeout(function () {
+    container.classList.remove('translate-x-0', 'opacity-100');
+    container.classList.add('translate-x-full', 'opacity-0');
+    container.addEventListener('transitionend', function () {
+      return container.remove();
+    });
+  }, 3000);
+}
+function openModal(modalId) {
+  var modal = document.getElementById(modalId);
+  if (modal) {
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+  }
+}
+function closeModal(modalId) {
+  var modal = document.getElementById(modalId);
+  if (modal) {
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+  }
+}
+// =========================================================================
+// 1. 个人信息模块逻辑
+// =========================================================================
+function initializeProfileForm() {
+  var bioTextarea = document.getElementById('bio');
+  var bioCountSpan = document.getElementById('bio-count');
+  var maxLen = parseInt(bioTextarea.maxLength);
+  // 实时计算简介字数
+  bioTextarea.addEventListener('input', function () {
+    var currentLen = this.value.length;
+    bioCountSpan.textContent = maxLen - currentLen;
+    if (currentLen > maxLen) {
+      bioCountSpan.classList.add('text-danger');
+    } else {
+      bioCountSpan.classList.remove('text-danger');
+    }
+  });
+  // 初始设置
+  bioCountSpan.textContent = maxLen - bioTextarea.value.length;
+}
+function handleProfileSave(event) {
+  event.preventDefault();
+  var saveBtn = document.getElementById('save-profile-btn');
+  saveBtn.disabled = true;
+  saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i> 正在保存...';
+  // 模拟API调用
+  setTimeout(function () {
+    var form = event.target;
+    var name = form.name.value;
+    var displayName = form.displayName.value;
+
+    // 模拟成功
+    showNotification('success', '保存成功', "".concat(name, "\u7684\u4E2A\u4EBA\u4FE1\u606F\u5DF2\u66F4\u65B0\u3002"));
+    document.getElementById('last-saved').textContent = "\u4E0A\u6B21\u4FDD\u5B58:".concat(new Date().toLocaleTimeString());
+    saveBtn.disabled = false;
+    saveBtn.innerHTML = '<i class="fas fa-save mr-1"></i> 保存更改';
+  }, 1500);
+}
+function handleAvatarUpload(input) {
+  if (input.files && input.files[0]) {
+    var file = input.files[0];
+    if (file.size > 2 * 1024 * 1024) {
+      showNotification('error', '上传失败', '文件大小不能超过2MB。');
+      input.value = ''; // 清空文件选择
+      return;
+    }
+    var reader = new FileReader();
+    reader.onload = function (e) {
+      var imgElement = document.querySelector('.w-32.h-32.rounded-full');
+      imgElement.src = e.target.result;
+      showNotification('info', '头像上传', '头像已更换，请点击“保存更改”以确认。');
+    };
+    reader.readAsDataURL(file);
+  }
+}
+function toggleEmailEdit(show) {
+  var editArea = document.getElementById('email-edit-area');
+  var statusDiv = document.getElementById('email-status');
+  if (show) {
+    editArea.classList.remove('hidden');
+    statusDiv.classList.add('hidden');
+  } else {
+    editArea.classList.add('hidden');
+    statusDiv.classList.remove('hidden');
+  }
+}
+function sendEmailCode() {
+  showNotification('info', '验证码已发送', '请检查您的邮箱查收验证码。');
+}
+function handleEmailUpdate() {
+  var newEmail = document.getElementById('new-email').value;
+  var code = document.getElementById('verification-code').value;
+  if (!newEmail || !code) {
+    showNotification('warning', '输入不完整', '新邮箱和验证码不能为空。');
+    return;
+  }
+  // 模拟验证和更新
+  var btn = document.querySelector('#email-edit-area button.btn-primary');
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i> 验证中...';
+  setTimeout(function () {
+    showNotification('success', '邮箱更新成功', "\u90AE\u7BB1\u5DF2\u66F4\u65B0\u4E3A".concat(newEmail, "\u3002"));
+    document.getElementById('email').value = newEmail;
+    toggleEmailEdit(false);
+    btn.disabled = false;
+    btn.innerHTML = '确认修改';
+  }, 1500);
+}
+// =========================================================================
+// 2. 账户安全模块逻辑
+// =========================================================================
+var loginDevicesData = [{
+  id: 1,
+  icon: 'fa-desktop',
+  type: 'Windows PC',
+  browser: 'Chrome 120',
+  ip: '223.10.15.201',
+  time: '2024-01-16 10:05'
+}, {
+  id: 2,
+  icon: 'fa-mobile-alt',
+  type: 'iPhone 14',
+  browser: 'Safari 17',
+  ip: '114.114.114.114',
+  time: '2024-01-15 18:45'
+}, {
+  id: 3,
+  icon: 'fa-laptop-code',
+  type: 'MacBook Pro',
+  browser: 'VSCode Remote',
+  ip: '192.168.1.100',
+  time: '2024-01-14 09:12'
+}];
+function renderLoginDevices() {
+  var tbody = document.getElementById('login-devices-body');
+  tbody.innerHTML = '';
+  loginDevicesData.forEach(function (device) {
+    var row = document.createElement('tr');
+    row.className = 'hover:bg-light/50 transition-colors duration-150';
+    row.innerHTML = "<td class='px-4 py-3 whitespace-nowrap'>\n                        <i class=\"fas".concat(device.icon, "text-lg text-text-secondary\"></i>\n                    </td>\n                    <td class='px-4 py-3 whitespace-nowrap text-sm'>").concat(device.type, "</td>\n                    <td class='px-4 py-3 whitespace-nowrap text-sm'>").concat(device.browser, "</td>\n                    <td class='px-4 py-3 whitespace-nowrap text-sm'>").concat(device.ip, "</td>\n                    <td class='px-4 py-3 whitespace-nowrap text-sm'>").concat(device.time, "</td>\n                    <td class='px-4 py-3 whitespace-nowrap'>\n                        <button type=\"button\" onclick=\"handleDeviceLogout(").concat(device.id, ")\" class='btn text-danger hover:bg-danger-light/50 p-1'>\n                            \u6CE8\u9500\u6B64\u8BBE\u5907\n                        </button>\n                    </td>");
+    tbody.appendChild(row);
+  });
+}
+function handleSecurityAction(type) {
+  var action = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '修改';
+  if (type === 'password') {
+    showNotification('info', '修改密码', '跳转到密码修改流程...');
+  } else if (type === 'phone') {
+    showNotification('info', "".concat(action, "\u624B\u673A\u53F7"), "\u5F00\u59CB".concat(action, "\u624B\u673A\u7ED1\u5B9A\u7684\u6D41\u7A0B..."));
+  } else if (type === '2fa') {
+    var status = document.getElementById('2fa-switch').checked;
+    if (status) {
+      showNotification('info', '管理2FA', '打开2FA管理界面...');
+    } else {
+      showNotification('info', '开启2FA', '引导用户扫描二维码设置2FA...');
+    }
+  }
+}
+function handle2FASwitch(checkbox) {
+  var actionBtn = document.getElementById('2fa-action-btn');
+  var statusText = checkbox.checked ? '管理' : '立即开启';
+  actionBtn.textContent = statusText;
+
+  // 模拟实时同步
+  showNotification('info', '状态同步', "\u53CC\u91CD\u8BA4\u8BC1\u5DF2".concat(checkbox.checked ? '开启' : '关闭', "\uFF0C\u6B63\u5728\u540C\u6B65\u670D\u52A1\u5668..."));
+
+  // 模拟异步操作，如果失败则回滚
+  setTimeout(function () {
+    if (!checkbox.checked) {
+      // 模拟服务器拒绝开启
+      // checkbox.checked = true; 
+      // showNotification('error', '同步失败', '服务器拒绝了该操作，请稍后重试。');
+    }
+  }, 1000);
+}
+function handleDeviceLogout(deviceId) {
+  var device = loginDevicesData.find(function (d) {
+    return d.id === deviceId;
+  });
+  if (confirm("\u786E\u5B9A\u8981\u6CE8\u9500\u8BBE\u5907 [".concat(device.type, "-").concat(device.ip, "] \u5417\uFF1F\u6B64\u64CD\u4F5C\u5C06\u7ACB\u5373\u4F7F\u5176\u65E0\u6CD5\u767B\u5F55\u3002"))) {
+    // 模拟删除
+    var index = loginDevicesData.findIndex(function (d) {
+      return d.id === deviceId;
+    });
+    if (index > -1) {
+      loginDevicesData.splice(index, 1);
+      renderLoginDevices();
+      showNotification('success', '设备注销成功', "\u8BBE\u5907".concat(device.type, "\u5DF2\u88AB\u6210\u529F\u6CE8\u9500\u3002"));
+    }
+  }
+}
+function confirmClearSessions() {
+  if (confirm('警告：您确定要清除所有其他登录会话吗？这将导致您在所有其他设备上立即登出。')) {
+    // 模拟清除
+    loginDevicesData.length = 0; // 清空数组
+    renderLoginDevices();
+    showNotification('success', '会话清除', '所有其他登录会话已被清除。');
+  }
+}
+// =========================================================================
+// 3. API 令牌管理模块逻辑
+// =========================================================================
+var apiTokens = [{
+  id: 1,
+  name: "Frontend Build Hook",
+  scopes: ["write_project", "generate_task"],
+  created: "2023-12-01",
+  lastUsed: "2024-01-10",
+  status: "Active",
+  tokenPrefix: "cm_sk_a1b2c3d4",
+  fullToken: "cm_sk_a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6q7r8s9t0u1v2w3x4y5z6"
+}, {
+  id: 2,
+  name: "CI/CD Runner",
+  scopes: ["read_project"],
+  created: "2023-11-15",
+  lastUsed: "2024-01-16",
+  status: "Active",
+  tokenPrefix: "cm_sk_b2c3d4e5",
+  fullToken: "cm_sk_b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6q7r8s9t0u1v2w3x4y5z6a7"
+}, {
+  id: 3,
+  name: "Legacy Integration",
+  scopes: ["read_project", "manage_settings"],
+  created: "2023-09-20",
+  lastUsed: "N/A",
+  status: "Revoked",
+  tokenPrefix: "cm_sk_c3d4e5f6",
+  fullToken: "cm_sk_c3d4e5f6g7h8i9j0k1l2m3n4o5p6q7r8s9t0u1v2w3x4y5z6b8"
+}];
+function renderTokenList() {
+  var tbody = document.getElementById('token-list-body');
+  tbody.innerHTML = '';
+  document.getElementById('token-count').textContent = apiTokens.length;
+  apiTokens.forEach(function (token, index) {
+    var scopeTags = token.scopes.map(function (scope) {
+      return "<span class='inline-block bg-primary-light text-primary text-xs font-medium mr-1 px-2.5 py-0.5 rounded-full'>".concat(scope.replace('_', ""), "</span>");
+    }).join('');
+    var statusClass = token.status === 'Active' ? 'text-success' : 'text-danger';
+    var row = document.createElement('tr');
+    row.className = 'hover:bg-light/50 transition-colors duration-150';
+    row.innerHTML = "<td class='px-4 py-3 whitespace-nowrap text-sm font-medium'>".concat(token.name, "<div class=\"text-xs text-text-tertiary mt-1 group relative inline-block\">").concat(token.tokenPrefix, "...\n                            <span class=\"absolute bottom-full left-0 mb-1 hidden group-hover:block w-max px-3 py-1 text-xs text-white bg-dark rounded shadow-lg\">\u4EE4\u724C\u521B\u5EFA\u540E\u4EC5\u663E\u793A\u4E00\u6B21</span>\n                        </div>\n                    </td>\n                    <td class='px-4 py-3 whitespace-nowrap text-sm'>").concat(scopeTags, "</td>\n                    <td class='px-4 py-3 whitespace-nowrap text-xs text-text-secondary'>").concat(token.created, "</td>\n                    <td class='px-4 py-3 whitespace-nowrap text-xs text-text-secondary'>").concat(token.lastUsed, "</td>\n                    <td class='px-4 py-3 whitespace-nowrap'>\n                        <span class='text-xs font-medium").concat(statusClass, "'>").concat(token.status, "</span>\n                    </td>\n                    <td class='px-4 py-3 whitespace-nowrap space-x-2'>\n                        <button type=\"button\" onclick=\"viewTokenDetail(").concat(index, ")\" class='btn text-info hover:bg-info-light/50 p-1'>\n                            <i class=\"fas fa-eye\"></i>\n                        </button>\n                        <button type=\"button\" onclick=\"copyTokenPrefix(").concat(index, ")\" class='btn text-primary hover:bg-primary-light/50 p-1'>\n                            <i class=\"fas fa-copy\"></i>\n                        </button>").concat(token.status === 'Active' ? "<button type=\"button\" onclick=\"revokeToken(".concat(index, ")\" class='btn text-danger hover:bg-danger-light/50 p-1'>\n                                <i class=\"fas fa-trash-alt\"></i>\n                            </button>") : '', "</td>");
+    tbody.appendChild(row);
+  });
+}
+function handleTokenCreation(event) {
+  event.preventDefault();
+  var form = event.target;
+  var name = form.tokenName.value;
+  var scopes = Array.from(form.tokenScopes.selectedOptions).map(function (option) {
+    return option.value;
+  });
+  var expiry = form.tokenExpiry.value;
+  var generateBtn = document.getElementById('generate-token-btn');
+  if (!name || scopes.length === 0) {
+    showNotification('warning', '信息不完整', '令牌名称和权限范围是必填项。');
+    return;
+  }
+  generateBtn.disabled = true;
+  generateBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i> 生成中...';
+  // 模拟生成过程，生成一个临时的完整令牌
+  var newId = apiTokens.length + 1;
+  var newPrefix = "cm_sk_".concat(Math.random().toString(36).substring(2, 10));
+  var newFullToken = newPrefix + Math.random().toString(36).substring(2, 30);
+  setTimeout(function () {
+    var newToken = {
+      id: newId,
+      name: name,
+      scopes: scopes,
+      created: new Date().toISOString().split('T')[0],
+      lastUsed: 'N/A',
+      status: 'Active',
+      tokenPrefix: newPrefix,
+      fullToken: newFullToken
+    };
+    apiTokens.unshift(newToken); // 添加到最前面
+    renderTokenList();
+    showNotification('success', '令牌生成成功', "\u65B0\u4EE4\u724C [".concat(name, "] \u5DF2\u521B\u5EFA\u3002\u8BF7\u7ACB\u5373\u590D\u5236\u5E76\u4FDD\u5B58\uFF01"));
+
+    // 弹出模态框显示新生成的令牌（重要安全步骤）
+    showNewTokenModal(newToken);
+    form.reset();
+    generateBtn.disabled = false;
+    generateBtn.innerHTML = '<i class="fas fa-plus mr-1"></i> 生成令牌';
+  }, 1800);
+}
+function showNewTokenModal(token) {
+  document.getElementById('modal-token-name').textContent = token.name;
+  document.getElementById('modal-token-value').textContent = token.fullToken;
+  document.getElementById('modal-token-scopes').textContent = token.scopes.join(",");
+  document.getElementById('modal-token-created').textContent = token.created;
+  document.getElementById('modal-token-last-used').textContent = token.lastUsed;
+
+  // 确保复制按钮点击的是这个新令牌的值
+  var copyBtn = document.querySelector('#token-detail-modal button[onclick*="copyTokenToClipboard"]');
+  copyBtn.setAttribute('onclick', "copyTokenToClipboard('modal-token-value', true)");
+  openModal('token-detail-modal');
+}
+function viewTokenDetail(index) {
+  var token = apiTokens[index];
+  document.getElementById('modal-token-name').textContent = token.name;
+  // 仅显示前缀，并提示完整令牌仅显示一次
+  document.getElementById('modal-token-value').textContent = token.tokenPrefix + '...';
+  document.getElementById('modal-token-scopes').textContent = token.scopes.join(",");
+  document.getElementById('modal-token-created').textContent = token.created;
+  document.getElementById('modal-token-last-used').textContent = token.lastUsed;
+
+  // 确保复制按钮点击的是这个令牌的完整值（如果已存在，则不显示警告）
+  var copyBtn = document.querySelector('#token-detail-modal button[onclick*="copyTokenToClipboard"]');
+  copyBtn.setAttribute('onclick', "copyTokenToClipboard('modal-token-value', false, '".concat(token.fullToken, "')"));
+  openModal('token-detail-modal');
+}
+function copyTokenPrefix(index) {
+  var token = apiTokens[index];
+  navigator.clipboard.writeText(token.tokenPrefix + '...').then(function () {
+    showNotification('success', '复制成功', "\u4EE4\u724C\u524D\u7F00".concat(token.tokenPrefix, "... \u5DF2\u590D\u5236\u5230\u526A\u8D34\u677F\u3002"));
+  }).catch(function (err) {
+    showNotification('error', '复制失败', '浏览器不支持或权限不足。');
+  });
+}
+function copyTokenToClipboard(elementId) {
+  var isNew = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+  var fullToken = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : '';
+  var element = document.getElementById(elementId);
+  var textToCopy = '';
+  if (isNew) {
+    textToCopy = fullToken;
+  } else {
+    // 如果是查看已存在的令牌，我们只能复制前缀，因为完整令牌已隐藏
+    textToCopy = element.textContent.replace('...', ''); // 假设这里是前缀
+  }
+  navigator.clipboard.writeText(textToCopy).then(function () {
+    closeModal('token-detail-modal');
+    showNotification('success', '复制成功', isNew ? '完整的API令牌已复制到剪贴板，请立即保存！' : '令牌前缀已复制到剪贴板。');
+  }).catch(function (err) {
+    showNotification('error', '复制失败', '浏览器不支持或权限不足。');
+  });
+}
+function revokeToken(index) {
+  var token = apiTokens[index];
+  if (confirm("\u786E\u5B9A\u8981\u64A4\u9500\u4EE4\u724C [".concat(token.name, "] \u5417\uFF1F\u64A4\u9500\u540E\u5C06\u7ACB\u5373\u5931\u6548\u3002"))) {
+    // 模拟API调用
+    setTimeout(function () {
+      token.status = 'Revoked';
+      renderTokenList();
+      showNotification('success', '令牌已撤销', "\u4EE4\u724C [".concat(token.name, "] \u5DF2\u6210\u529F\u64A4\u9500\u3002"));
+    }, 500);
+  }
+}
+// =========================================================================
+// 初始化函数
+// =========================================================================
+function initializeAccountSettings() {
+  initializeProfileForm();
+  renderLoginDevices();
+  renderTokenList();
+
+  // 确保iframe高度调整
+  if (typeof ytSendPageSize === 'function') {
+    ytSendPageSize();
+  }
+}</script>  
+ </body>
+</html>

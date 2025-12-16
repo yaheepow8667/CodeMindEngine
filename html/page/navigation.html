@@ -1,0 +1,345 @@
+<!doctype html>
+<html lang="zh-CN">
+ <head> 
+  <meta charset="UTF-8"> 
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+  <title>智码引擎 - AI驱动低代码开发平台</title> 
+  <link href="./navigation/all.min.css" rel="stylesheet"> 
+  <script src="../javascript/reload.js"></script> 
+  <script src="./navigation/resource_12310000.js"></script> 
+  <script>tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        primary: '#1677ff',
+        secondary: '#40a9ff',
+        success: '#52c41a',
+        warning: '#faad14',
+        danger: '#ff4d4f',
+        info: '#1890ff',
+        light: '#f5f5f5',
+        dark: '#141414',
+        'primary-light': '#e6f7ff',
+        'primary-dark': '#0958d9',
+        'text-primary': '#333333',
+        'text-secondary': '#666666',
+        'text-tertiary': '#999999',
+        'border-color': '#e8e8e8'
+      },
+      fontFamily: {
+        inter: ['Inter', 'system-ui', 'sans-serif']
+      },
+      spacing: {
+        '128': '32rem'
+      },
+      boxShadow: {
+        'card': '0 2px 8px rgba(0, 0, 0, 0.09)',
+        'dropdown': '0 4px 16px rgba(0, 0, 0, 0.12)'
+      }
+    }
+  }
+};</script> 
+  <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .scrollbar-hide {
+                -ms-overflow-style: none;
+                scrollbar-width: none;
+            }
+            .scrollbar-hide::-webkit-scrollbar {
+                display: none;
+            }
+            .menu-item-active {
+                @apply bg-primary-light text-primary border-l-4 border-primary;
+            }
+            .transition-all-300 {
+                transition: all 0.3s ease;
+            }
+            .text-balance {
+                text-wrap: balance;
+            }
+        }
+        /* 全局样式 */
+        body {
+            @apply font-inter bg-light text-text-primary;
+        }
+        /* 菜单激活样式 */
+        .active-menu {
+            @apply bg-primary-light text-primary border-l-4 border-primary;
+        }
+        /* 导航栏样式 */
+        .header {
+            @apply bg-white border-b border-border-color shadow-sm z-10;
+        }
+        /* 侧边栏样式 */
+        .sidebar {
+            @apply bg-white border-r border-border-color h-full transition-all duration-300 ease-in-out;
+        }
+        /* 菜单样式 */
+        .menu-item {
+            @apply flex items-center px-4 py-3 text-text-secondary hover:bg-primary-light/50 hover:text-primary transition-all-300 cursor-pointer;
+        }
+        .menu-item i {
+            @apply mr-3 text-lg;
+        }
+        /* 主内容区域样式 */
+        .main-content {
+            @apply flex-1 overflow-hidden flex flex-col;
+        }
+        /* 卡片样式 */
+        .ant-card {
+            @apply bg-white rounded-lg shadow-card p-5 mb-5 transition-all duration-300 hover:shadow-lg;
+        }
+        /* 按钮样式 */
+        .btn {
+            @apply px-4 py-2 rounded-md transition-all duration-200 font-medium focus:outline-none focus:ring-2 focus:ring-offset-2;
+        }
+        .btn-primary {
+            @apply bg-primary text-white hover:bg-primary-dark focus:ring-primary/50;
+        }
+        .btn-outline {
+            @apply border border-primary text-primary hover:bg-primary-light focus:ring-primary/50;
+        }
+        /* 搜索框样式 */
+        .search-input {
+            @apply w-full pl-10 pr-4 py-2 rounded-md border border-border-color focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all duration-200;
+        }
+        /* 通知图标样式 */
+        .notification-icon {
+            @apply relative text-text-secondary hover:text-primary cursor-pointer transition-colors duration-200;
+        }
+        .notification-badge {
+            @apply absolute -top-1 -right-1 bg-danger text-white text-xs rounded-full w-4 h-4 flex items-center justify-center;
+        }
+        /* 用户头像样式 */
+        .user-avatar {
+            @ap
+ply w-8 h-8 rounded-full object-cover border-2 border-transparent hover:border-primary transition-all duration-200 cursor-pointer;
+        }
+    </style> 
+ </head> 
+ <body class="flex h-screen overflow-hidden"> 
+  <!-- 侧边导航栏 --> 
+  <aside class="sidebar w-64 flex-shrink-0 hidden md:block"> 
+   <!-- Logo区域 --> 
+   <div class="flex items-center justify-center h-16 border-b border-border-color"> 
+    <img src="./navigation/5a17265dffb0cb9dd44eca8702f0e2d4.png" alt="智码引擎" class="h-8 w-auto mr-3"> 
+    <h1 class="text-xl font-bold text-primary"> 智码引擎 </h1> 
+   </div> 
+   <!-- 导航菜单 --> 
+   <nav class="py-4 overflow-y-auto h-[calc(100%-4rem)] scrollbar-hide"> 
+    <div class="px-3 mb-2 text-xs text-text-tertiary uppercase font-semibold">
+      主菜单 
+    </div> 
+    <a href="javascript:void(0);" data-uuid="workbench" onclick="ytCustomClickRouter(this, event)" class="menu-item active-menu"> <i class="fas fa-home"> </i> <span> 工作台 </span> </a> 
+    <a href="javascript:void(0);" data-uuid="generationWizard" onclick="ytCustomClickRouter(this, event)" class="menu-item"> <i class="fas fa-magic"> </i> <span> 智能生成 </span> </a> 
+    <a href="javascript:void(0);" data-uuid="projectManagement" onclick="ytCustomClickRouter(this, event)" class="menu-item"> <i class="fas fa-folder-open"> </i> <span> 项目空间 </span> </a> 
+    <a href="javascript:void(0);" data-uuid="templateMarket" onclick="ytCustomClickRouter(this, event)" class="menu-item"> <i class="fas fa-th-large"> </i> <span> 模板市场 </span> </a> 
+    <a href="javascript:void(0);" data-uuid="teamCollaboration" onclick="ytCustomClickRouter(this, event)" class="menu-item"> <i class="fas fa-users"> </i> <span> 团队协作 </span> </a> 
+    <a href="javascript:void(0);" data-uuid="blueprintEditor" onclick="ytCustomClickRouter(this, event)" class="menu-item"> <i class="fas fa-project-diagram"> </i> <span> 蓝图编辑器 </span> </a> 
+    <div class="px-3 mt-8 mb-2 text-xs text-text-tertiary uppercase font-semibold">
+      系统 
+    </div> 
+    <a href="javascript:void(0);" data-uuid="settings" onclick="ytCustomClickRouter(this, event)" class="menu-item active-menu"> <i class="fas fa-cog"> </i> <span> 设置中心 </span> </a> 
+    <!-- 子菜单：设置中心 --> 
+    <div id="settings-submenu" class="pl-6 border-l border-border-color ml-2 mr-2"> 
+     <a href="javascript:void(0);" data-uuid="accountSettings" onclick="ytCustomClickRouter(this, event)" class="menu-item"> <i class="fas fa-user-circle"> </i> <span> 账户设置 </span> </a> 
+     <a href="javascript:void(0);" data-uuid="workspaceSettings" onclick="ytCustomClickRouter(this, event)" class="menu-item"> <i class="fas fa-cogs"> </i> <span> 工作空间设置 </span> </a> 
+     <a href="javascript:void(0);" data-uuid="notificationSettings" onclick="ytCustomClickRouter(this, event)" class="menu-item"> <i class="fas fa-bell"> </i> <span> 通知偏好设置 </span> </a> 
+    </div> 
+    <a href="javascript:void(0);" data-uuid="advancedConfiguration" onclick="ytCustomClickRouter(this, event)" class="menu-item"> <i class="fas fa-sliders-h"> </i> <span> 高级配置 </span> </a> 
+    <a href="javascript:void(0);" data-uuid="helpCenter" onclick="ytCustomClickRouter(this, event)" class="menu-item"> <i class="fas fa-question-circle"> </i> <span> 帮助中心 </span> </a> 
+   </nav> 
+  </aside> 
+  <!-- 主内容区域 --> 
+  <div class="flex-1 flex flex-col overflow-hidden"> 
+   <!-- 顶部导航栏 --> 
+   <header class="header h-16 flex items-center justify-between px
+-6 sticky top-0"> 
+    <!-- 左侧：移动端菜单按钮和Logo --> 
+    <div class="flex items-center md:hidden"> 
+     <button class="mr-4 text-text-secondary hover:text-primary" id="mobile-menu-button"> <i class="fas fa-bars text-xl"> </i> </button> 
+     <div class="flex items-center"> 
+      <img src="./navigation/6b41a0fd0290949ee9629cb6af31d431.png" alt="智码引擎" class="h-6 w-auto mr-2"> 
+      <h1 class="text-lg font-bold text-primary"> 智码引擎 </h1> 
+     </div> 
+    </div> 
+    <!-- 中间：搜索框 --> 
+    <div class="hidden md:block flex-1 max-w-md mx-8"> 
+     <div class="relative"> 
+      <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-text-tertiary"> </i> 
+      <input type="text" placeholder="全局搜索项目、模板、文档..." class="search-input"> 
+     </div> 
+    </div> 
+    <!-- 右侧：通知、用户信息 --> 
+    <div class="flex items-cente
+r space-x-5"> 
+     <div class="notification-icon"> 
+      <i class="fas fa-bell text-xl"> </i> 
+      <span class="notification-badge"> 3 </span> 
+     </div> 
+     <div class="flex items-center cursor-pointer group"> 
+      <img src="./navigation/c64a69abbf862e3d43aaf3b6e8b20395.png" alt="用户头像" class="user-avatar"> 
+      <div class="hidden md:block ml-2 text-left group-hover:text-primary transition-colors duration-200"> 
+       <div class="text-sm font-medium">
+         张开发 
+       </div> 
+       <div class="text-xs text-text-tertiary">
+         高级工程师 
+       </div> 
+      </div> 
+      <i class="fas fa-chevron-down ml-1 text-xs text-text-tertiary hidden md:block group-hover:text-primary transition-colors duration-200"> </i> 
+     </div> 
+    </div> 
+   </header> 
+   <!-- 内容区域 --> 
+   <div class="flex-1 overflow-hidden"> 
+    <iframe id="navigation" src class width="100%" height="100%"> </iframe> 
+   </div> 
+  </div> 
+  <script>// 页面加载时初始化渲染
+document.addEventListener('DOMContentLoaded', function () {
+  // 监听子页面大小变化，调整iframe的高度
+  ytGetIframeResize(document.getElementById('navigation'));
+  // 监听设置中心子菜单的点击事件，用于高亮显示
+  setupSettingsSubMenuHighlight();
+  // 移动端菜单切换
+  var mobileMenuButton = document.getElementById('mobile-menu-button');
+  var sidebar = document.querySelector('.sidebar');
+  if (mobileMenuButton && sidebar) {
+    mobileMenuButton.addEventListener('click', function () {
+      sidebar.classList.toggle('hidden');
+      sidebar.classList.toggle('fixed');
+      sidebar.classList.toggle('z-50');
+      sidebar.classList.toggle('h-full');
+      sidebar.classList.toggle('w-64');
+    });
+  }
+  // 点击页面其他区域关闭移动端菜单
+  document.addEventListener('click', function (e) {
+    if (window.innerWidth < 768 && !sidebar.classList.contains('hidden') && !sidebar.contains(e.target) && !mobileMenuButton.contains(e.target)) {
+      sidebar.classList.add('hidden');
+    }
+  });
+  // 窗口大小变化时处理移动端菜单
+  window.addEventListener('resize', function () {
+    if (window.innerWidth >= 768) {
+      sidebar.classList.remove('hidden', 'fixed', 'z-50');
+    } else if (!sidebar.classList.contains('hidden')) {
+      sidebar.classList.add('fixed', 'z-50');
+    }
+  });
+// 设置中心子菜单高亮逻辑
+  function setupSettingsSubMenuHighlight() {
+    const sidebar = document.querySelector('.sidebar');
+    const settingsParent = sidebar.querySelector('[data-uuid="settings"]');
+    const settingsSubMenu = document.getElementById('settings-submenu');
+    if (!settingsParent || !settingsSubMenu) return;
+    // 初始状态：如果当前iframe加载的是设置中心下的页面，则父菜单高亮
+    const currentHash = window.location.hash.substring(1);
+    const settingsUuids = ['accountSettings', 'workspaceSettings', 'notificationSettings'];
+    
+    if (settingsUuids.includes(currentHash)) {
+        setti
+ngsParent.classList.add('active-menu');
+        settingsSubMenu.style.display = 'b
+lock'; // 确保初始可见
+    } else {
+        settingsParent.classList.remove('active-menu');
+        settingsSubMenu.style.display = 'none';
+    }
+    // 切换父菜单时，默认激活第一个子菜单并显示子菜单
+    settingsParent.addEventListener('click', function(e) {
+        // 阻止父菜单直接跳转，因为我们主要通过子菜单跳转
+        e.preventDefault(); 
+        
+        if (settingsSubMenu.style.display === 'none' || settingsSubMenu.style.display === '') {
+            // 展开
+            settingsSubMenu.style.display = 'block';
+            // 激活第一个子菜单（账户设置）
+            const firstChild = settingsSubMenu.querySelector('.menu-item');
+            if (firstChild) {
+                // 移除所有兄弟节点的active-menu，然后给第一个添加
+                settingsSubMenu.querySelectorAll('.menu-item').forEach(item => item.classList.remove('active-menu'));
+                firstChild.classList.add('active-menu');
+                ytCustomClickRouter(firstChild, e); // 导航到默认页面
+            }
+        } else {
+            // 折叠（可选，这里保持展开，因为是设置项）
+            // settingsSubMenu.style.display = 'none';
+        }
+        // 确保父菜单高亮
+        settingsParent.classList.add('active-menu');
+    });
+    // 监听子菜单点击，处理高亮
+    settingsSubMenu.querySelectorAll('.menu-item').forEach(item => {
+        item.addEventListener('click', function(e) {
+            // 移除所有子菜单的高亮
+            settingsSubMenu.querySelectorAll('.menu-item').forEach(subItem => subItem.classList.remove('active-menu'));
+            // 添加当前点击项的高亮
+            this.classList.add('active-menu');
+            
+            // 确保父菜单也高亮
+            settingsParent.classList.add('active-menu');
+            
+            // 确保子菜单可见
+            settingsSubMenu.style.display = 'block';
+            
+            // 执行路由跳转（ytCustomClickRouter 会处理 iframe src 的设置）
+            ytCustomClickRouter(this, e);
+        });
+    });
+  }
+  // 初始隐藏设置子菜单，除非当前页面是设置子页面之一
+  document.addEventListener('DOMContentLoaded', function () {
+    const settingsParent = document.querySelector('.sidebar').querySelector('[data-uuid="settings"]');
+    const settingsSubMenu = document.getElementById('settings-submenu');
+    
+    if (settingsParent && settingsSubMenu) {
+        // 检查当前是否是设置子页面，如果是，则显示子菜单
+        const currentUuid = window.frames['navigation'].contentWindow.location.hash.substring(1); // 假设iframe加载后会设置hash
+        const settingsUuids = ['accountSettings', 'workspaceSettings', 'notificationSettings'];
+        
+        if (settingsUuids.includes(currentUuid)) {
+            settingsSubMenu.style.display = 'block';
+        } else {
+            settingsSubMenu.style.display = 'none';
+        }
+    }
+    
+    // 监听子页面大小变化，调整iframe的高度
+    ytGetIframeResize(document.getElementById('navigation'));
+    // 移动端菜单切换
+    var mobileMenuButton = document.getElementById('mobile-menu-button');
+    var sidebar = document.querySelector('.sidebar');
+    if (mobileMenuButton && sidebar) {
+      mobileMenuButton.addEventListener('click', function () {
+        sidebar.classList.toggle('hidden');
+        sidebar.classList.toggle('fixed');
+        sidebar.classList.toggle('z-50');
+        sidebar.classList.toggle('h-full');
+        sidebar.classList.toggle('w-64');
+      });
+    }
+    // 点击页面其他区域关闭移动端菜单
+    document.addEventListener('click', function (e) {
+      if (window.innerWidth < 768 && !sidebar.classList.contains('hidden') && !sidebar.contains(e.target) && !mobileMenuButton.contains(e.target)) {
+        sidebar.classList.add('hidden');
+      }
+    });
+    // 窗口大小变化时处理移动端菜单
+    window.addEventListener('resize', function () {
+      if (window.innerWidth >= 768) {
+        sidebar.classList.remove('hidden', 'fixed', 'z-50');
+      } else if (!sidebar.classList.contains('hidden')) {
+        sidebar.classList.add('fixed', 'z-50');
+      }
+    });
+    
+    // 重新调用设置子菜单高亮逻辑，确保初始状态正确
+    setupSettingsSubMenuHighlight();
+  });</script>  
+ </body>
+</html>

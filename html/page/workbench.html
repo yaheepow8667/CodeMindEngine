@@ -1,0 +1,312 @@
+<!doctype html>
+<html lang="zh-CN">
+ <head> 
+  <meta charset="UTF-8"> 
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+  <title>工作台 - 智码引擎</title> 
+  <link href="./workbench/all.min.css" rel="stylesheet"> 
+  <script src="../javascript/reload.js"></script> 
+  <script src="./workbench/resource_1654810000.js"></script> 
+  <script>tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        primary: '#1677ff',
+        secondary: '#40a9ff',
+        success: '#52c41a',
+        warning: '#faad14',
+        danger: '#ff4d4f',
+        info: '#1890ff',
+        light: '#f5f5f5',
+        dark: '#141414',
+        'primary-light': '#e6f7ff',
+        'primary-dark': '#0958d9',
+        'text-primary': '#333333',
+        'text-secondary': '#666666',
+        'text-tertiary': '#999999',
+        'border-color': '#e8e8e8'
+      },
+      fontFamily: {
+        inter: ['Inter', 'system-ui', 'sans-serif']
+      }
+    }
+  }
+};</script> 
+  <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .scrollbar-hide {
+                -ms-overflow-style: none;
+                scrollbar-width: none;
+            }
+            .scrollbar-hide::-webkit-scrollbar {
+                display: none;
+            }
+            .transition-all-300 {
+                transition: all 0.3s ease;
+            }
+            .text-balance {
+                text-wrap: balance;
+            }
+        }
+        /* 全局样式 */
+        body {
+            @apply font-inter bg-light text-text-primary;
+        }
+        /* 卡片样式 */
+        .ant-card {
+            @apply bg-white rounded-lg shadow-[0_2px_8px_rgba(0,0,0,0.09)] p-5 mb-5 transition-all duration-300 hover:shadow-lg;
+        }
+        /* 按钮样式 */
+        .btn {
+            @apply px-4 py-2 rounded-md transition-all duration-200 font-medium focus:outline-none focus:ring-2 focus:ring-offset-2;
+        }
+        .btn-primary {
+            @apply bg-primary text-white hover:bg-primary-dark focus:ring-primary/50;
+        }
+        .btn-outline {
+            @apply border border-primary text-primary hover:bg-primary-light focus:ring-primary/50;
+        }
+    </style> 
+ </head> 
+ <body class="p-4 md:p-6"> 
+  <!-- 欢迎区 --> 
+  <div class="mb-6"> 
+   <h1 class="text-[clamp(1.5rem,3vw,2.5rem)] font-bold text-text-primary mb-2"> 欢迎回来，张开发 </h1> 
+   <p class="text-text-secondary"> 今天是 <span id="current-date"> </span> ，这是您的工作台概览 </p> 
+  </div> 
+  <!-- 数据卡片区域 --> 
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mb-6"> 
+   <!-- 我的项目数 --> 
+   <div class="ant-card"> 
+    <div class="flex items-center justify-between"> 
+     <div> 
+      <p class="text-text-tertiary text-sm mb-1"> 我的项目数 </p> 
+      <h3 class="text-2xl font-bold"> 12 </h3> 
+     </div> 
+     <div class="w-12 h-12 rounded-full bg-primary-light flex items-center justify-center text-primary"> 
+      <i class="fas fa-folder-open text-xl"> </i> 
+     </div> 
+    </div> 
+    <div class="mt-4 flex items-center text-success text-sm"> 
+     <i class="fas fa-arrow-up mr-1"> </i> 
+     <span> 2 个项目 (本月新增) </span> 
+    </div> 
+   </div> 
+   <!-- 今日生成次数 --> 
+   <div class="ant-card"> 
+    <div class="flex items-center justify-between"> 
+     <div> 
+      <p class="text-text-tertiary text-sm mb-1"> 今日生成次数 </p> 
+      <h3 class="text-2xl font-bold"> 5 </h3> 
+     </div> 
+     <div class="w-12 h-12 rounded-full bg-secondary/10 flex items-center justify-center text-secondary"> 
+      <i class="fas fa-magic text-xl"> </i> 
+     </div> 
+    </div> 
+    <div class="mt-4 flex items-center text-text-tertiary text-sm"> 
+     <span> 本月累计: 32 次 </span> 
+    </div> 
+   </div> 
+   <!-- 团队活跃度 --> 
+   <div class="ant-card"> 
+    <div class="flex items-center justify-between"> 
+     <div> 
+      <p class="text-text-tertiary text-sm mb-1"> 团队活跃度 </p> 
+      <h3 class="text-2xl font-bold"> 87% </h3> 
+     </div> 
+     <div class="w-12 h-12 rounded-full bg-success/10 flex items-center justify-center text-success"> 
+      <i class="fas fa-users text-xl"> </i> 
+     </div> 
+    </div> 
+    <div class="mt-4 flex items-center text-success text-sm"> 
+     <i class="fas fa-arrow-up mr-1"> </i> 
+     <span> 较上周提升 12% </span> 
+    </div> 
+   </div> 
+   <!-- 代码质量评分 --> 
+   <div class="ant-card"> 
+    <div class="flex items-center justify-between"> 
+     <div> 
+      <p class="text-text-tertiary text-sm mb-1"> 代码质量评分 </p> 
+      <h3 class="text-2xl font-bold"> 92 </h3> 
+     </div> 
+     <div class="w-12 h-12 rounded-full bg-warning/10 flex items-center justify-center text-warning"> 
+      <i class="fas fa-code text-xl"> </i> 
+     </div> 
+    </div> 
+    <div class="mt-4 flex items-center text-danger text-sm"> 
+     <i class="fas fa-arrow-down mr-1"> </i> 
+     <span> 较上次下降 3 分 </span> 
+    </div> 
+   </div> 
+  </div> 
+  <!-- 快速开始卡片 --> 
+  <div class="ant-card mb-6"> 
+   <div class="flex flex-col md:flex-row items-center justify-between"> 
+    <div class="mb-4 md:mb-0 md:mr-6 text-center md:text-left"> 
+     <h2 class="text-xl font-bold mb-2"> 开始您的智能开发之旅 </h2> 
+     <p class="text-text-secondary max-w-md text-balance"> 用自然语言描述，生成完整应用。AI将自动理解您的需求并生成高质量代码。 </p> 
+    </div> 
+    <button class="btn btn-primary text-lg px-8 py-6" onclick="window.parent.ytCustomClickRouter(null, null, &quot;generationWizard&quot;)"> <i class="fas fa-rocket mr-2"> </i> 开始生成 </button> 
+   </div> 
+  </div> 
+  <!-- 最近项目列表和动态通知区域 --> 
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6"> 
+   <!-- 最近项目列表 --> 
+   <div class="lg:col-span-2"> 
+    <div class="ant-card"> 
+     <div class="flex items-center justify-between mb-5"> 
+      <h2 class="text-lg font-bold"> 最近项目 </h2> 
+      <a href="javascript:void(0);" class="text-primary hover:underline flex items-center" onclick="window.parent.ytCustomClickRouter(null, null, &quot;projectManagement&quot;)"> 查看全部 <i class="fas fa-angle-right ml-1"> </i> </a> 
+     </div> 
+     <div class="overflow-x-auto"> 
+      <table class="min-w-full"> 
+       <thead> 
+        <tr class="border-b border-border-color"> 
+         <th class="text-left py-3 px-2 text-text-secondary font-medium"> 项目名称 </th> 
+         <th class="text-left py-3 px-2 text-text-secondary font-medium"> 最后修改 </th> 
+         <th class="text-left py-3 px-2 text-text-secondary font-medium"> 技术栈 </th> 
+         <th class="text-left py-3 px-2 text-text-secondary font-medium"> 状态 </th> 
+         <th class="text-right py-3 px-2 text-text-secondary font-medium"> 操作 </th> 
+        </tr> 
+       </thead> 
+       <tbody> 
+        <tr class="border-b border-border-color hover:bg-light/50 transition-all-300"> 
+         <td class="py-3 px-2"> 
+          <div class="flex items-center"> 
+           <div class="w-8 h-8 rounded bg-primary/10 flex items-center justify-center text-primary mr-3"> 
+            <i class="fas fa-shopping-cart"> </i> 
+           </div> 
+           <span> 电商管理系统 </span> 
+          </div> </td> 
+         <td class="py-3 px-2 text-text-secondary"> 今天 14:30 </td> 
+         <td class="py-3 px-2"> 
+          <div class="flex flex-wrap gap-1"> 
+           <span class="bg-primary/10 text-primary text-xs px-2 py-1 rounded-full"> Vue3 </span> 
+           <span class="bg-secondary/10 text-secondary text-xs px-2 py-1 rounded-full"> NestJS </span> 
+          </div> </td> 
+         <td class="py-3 px-2"> <span class="bg-success/10 text-success text-xs px-2 py-1 rounded-full"> 生成成功 </span> </td> 
+         <td class="py-3 px-2 text-right"> 
+          <div class="flex justify-end space-x-2"> 
+           <button class="text-text-secondary hover:text-primary" title="打开"> <i class="fas fa-edit"> </i> </button> 
+           <div class="relative group"> 
+            <button class="text-text-secondary hover:text-primary" title="更多操作"> <i class="fas fa-ellipsis-v"> </i> </button> 
+            <div class="absolute right-0 mt-2 w-48 bg-white shadow-dropdown rounded-md py-1 z-10 hidden group-hover:block"> 
+             <a href="javascript:void(0);" class="block px-4 py-2 text-sm text-text-secondary hover:bg-primary-light hover:text-primary"> 复制项目 </a> 
+             <a href="javascript:void(0);" class="block px-4 py-2 text-sm text-text-secondary hover:bg-primary-light hover:text-primary"> 导出代码 </a> 
+             <a href="javascript:void(0);" class="block px-4 py-2 text-sm text-text-secondary hover:bg-primary-light hover:text-primary"> 删除 </a> 
+            </div> 
+           </div> 
+          </div> </td> 
+        </tr> 
+        <tr class="border-b border-border-color hover:bg-light/50 transition-all-300"> 
+         <td class="py-3 px-2"> 
+          <div class="flex items-center"> 
+           <div class="w-8 h-8 rounded bg-secondary/10 flex items-center justify-center text-secondary mr-3"> 
+            <i class="fas fa-user"> </i> 
+           </div> 
+           <span> 用户管理系统 </span> 
+          </div> </td> 
+         <td class="py-3 px-2 text-text-secondary"> 昨天 09:15 </td> 
+         <td class="py-3 px-2"> 
+          <div class="flex flex-wrap gap-1"> 
+           <span class="bg-primary/10 text-primary text-xs px-2 py-1 rounded-full"> React </span> 
+           <span class="bg-secondary/10 text-secondary text-xs px-2 py-1 rounded-full"> Spring Boot </span> 
+          </div> </td> 
+         <td class="py-3 px-2"> <span class="bg-warning/10 text-warning text-xs px-2 py-1 rounded-full"> 需审查 </span> </td> 
+         <td class="py-3 px-2 text-right"> 
+          <div class="flex justify-end space-x-2"> 
+           <button class="text-text-secondary hover:text-primary" title="打开"> <i class="fas fa-edit"> </i> </button> 
+           <div class="relative group"> 
+            <button class="text-text-secondary hover:text-primary" title="更多操作"> <i class="fas fa-ellipsis-v"> </i> </button> 
+            <div class="absolute right-0 mt-2 w-48 bg-white shadow-dropdown rounded-md py-1 z-10 hidden group-hover:block"> 
+             <a href="javascript:void(0);" class="block px-4 py-2 text-sm text-text-secondary hover:bg-primary-light hover:text-primary"> 复制项目 </a> 
+             <a href="javascript:void(0);" class="block px-4 py-2 text-sm text-text-secondary hover:bg-primary-light hover:text-primary"> 导出代码 </a> 
+             <a href="javascript:void(0);" class="block px-4 py-2 text-sm text-text-secondary hover:bg-primary-light hover:text-primary"> 删除 </a> 
+            </div> 
+           </div> 
+          </div> </td> 
+        </tr> 
+        <tr class="border-b border-border-color hover:bg-light/50 transition-all-300"> 
+         <td class="py-3 px-2"> 
+          <div class="flex items-center"> 
+           <div class="w-8 h-8 rounded bg-warning/10 flex items-center justify-center text-warning mr-3"> 
+            <i class="fas fa-chart-line"> </i> 
+           </div> 
+           <span> 数据分析平台 </span> 
+          </div> </td> 
+         <td class="py-3 px-2 text-text-secondary"> 2023-06-18 16:45 </td> 
+         <td class="py-3 px-2"> 
+          <div class="flex flex-wrap gap-1"> 
+           <span class="bg-primary/10 text-primary text-xs px-2 py-1 rounded-full"> React </span> 
+           <span class="bg-danger/10 text-danger text-xs px-2 py-1 rounded-full"> Node.js </span> 
+          </div> </td> 
+         <td class="py-3 px-2"> <span class="bg-primary/10 text-primary text-xs px-2 py-1 rounded-full"> 开发中 </span> </td> 
+         <td class="py-3 px-2 text-right"> 
+          <div class="flex justify-end space-x-2"> 
+           <button class="text-text-secondary hover:text-primary" title="打开"> <i class="fas fa-edit"> </i> </button> 
+           <div class="relative group"> 
+            <button class="text-text-secondary hover:text-primary" title="更多操作"> <i class="fas fa-ellipsis-v"> </i> </button> 
+            <div class="absolute right-0 mt-2 w-48 bg-white shadow-dropdown rounded-md py-1 z-10 hidden group-hover:block"> 
+             <a href="javascript:void(0);" class="block px-4 py-2 text-sm text-text-secondary hover:bg-primary-light hover:text-primary"> 复制项目 </a> 
+             <a href="javascript:void(0);" class="block px-4 py-2 text-sm text-text-secondary hover:bg-primary-light hover:text-primary"> 导出代码 </a> 
+             <a href="javascript:void(0);" class="block px-4 py-2 text-sm text-text-secondary hover:bg-primary-light hover:text-primary"> 删除 </a> 
+            </div> 
+           </div> 
+          </div> </td> 
+        </tr> 
+        <tr class="hover:bg-light/50 transition-all-300"> 
+         <td class="py-3 px-2"> 
+          <div class="flex items-center"> 
+           <div class="w-8 h-8 rounded bg-danger/10 flex items-center justify-center text-danger mr-3"> 
+            <i class="fas fa-tasks"> </i> 
+           </div> 
+           <span> 任务管理系统 </span> 
+          </div> </td> 
+         <td class="py-3 px-2 text-text-secondary"> 2023-06-15 10:20 </td> 
+         <td class="py-3 px-2"> 
+          <div class="flex flex-wrap gap-1"> 
+           <span class="bg-primary/10 text-primary text-xs px-2 py-1 rounded-full"> Vue3 </span> 
+           <span class="bg-secondary/10 text-secondary text-xs px-2 py-1 rounded-full"> NestJS </span> 
+          </div> </td> 
+         <td class="py-3 px-2"> <span class="bg-info/10 text-info text-xs px-2 py-1 rounded-full"> 已部署 </span> </td> 
+         <td class="py-3 px-2 text-right"> 
+          <div class="flex justify-end space-x-2"> 
+           <button class="text-text-secondary hover:text-primary" title="打开"> <i class="fas fa-edit"> </i> </button> 
+           <div class="relative group"> 
+            <button class="text-text-secondary hover:text-primary" title="更多操作"> <i class="fas fa-ellipsis-v"> </i> </button> 
+            <div class="absolute right-0 mt-2 w-48 bg-white shadow-dropdown rounded-md py-1 z-10 hidden group-hover:block"> 
+             <a href="javascript:void(0);" class="block px-4 py-2 text-sm text-text-secondary hover:bg-primary-light hover:text-primary"> 复制项目 </a> 
+             <a href="javascript:void(0);" class="block px-4 py-2 text-sm text-text-secondary hover:bg-primary-light hover:text-primary"> 导出代码 </a> 
+             <a href="javascript:void(0);" class="block px-4 py-2 text-sm text-text-secondary hover:bg-primary-light hover:text-primary"> 删除 </a> 
+            </div> 
+           </div> 
+          </div> </td> 
+        </tr> 
+       </tbody> 
+      </table> 
+     </div> 
+    </div> 
+   </div> 
+  </div> 
+  <script>// 设置当前日期
+document.addEventListener('DOMContentLoaded', function () {
+  var now = new Date();
+  var options = {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    weekday: 'long'
+  };
+  document.getElementById('current-date').textContent = now.toLocaleDateString('zh-CN', options);
+
+  // 通知父窗口调整iframe大小
+  ytSendPageSize();
+});
+// 当页面大小或者内容发生变化时，通知导航页面跳转iframe高度
+ytSendPageSize();</script>  
+ </body>
+</html>

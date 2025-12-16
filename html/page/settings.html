@@ -1,0 +1,664 @@
+<!doctype html>
+<html lang="zh-CN">
+ <head> 
+  <meta charset="UTF-8"> 
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+  <title>设置中心 - 智码引擎</title> 
+  <link href="./settings/all.min.css" rel="stylesheet"> 
+  <script src="../javascript/reload.js"></script> 
+  <script src="./settings/resource_1864810000.js"></script> 
+  <script>tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        primary: '#1677ff',
+        secondary: '#40a9ff',
+        success: '#52c41a',
+        warning: '#faad14',
+        danger: '#ff4d4f',
+        info: '#1890ff',
+        light: '#f5f5f5',
+        dark: '#141414',
+        'primary-light': '#e6f7ff',
+        'primary-dark': '#0958d9',
+        'text-primary': '#333333',
+        'text-secondary': '#666666',
+        'text-tertiary': '#999999',
+        'border-color': '#e8e8e8'
+      },
+      fontFamily: {
+        inter: ['Inter', 'system-ui', 'sans-serif']
+      },
+      spacing: {
+        '128': '32rem'
+      },
+      boxShadow: {
+        'card': '0 2px 8px rgba(0, 0, 0, 0.09)',
+        'dropdown': '0 4px 16px rgba(0, 0, 0, 0.12)'
+      }
+    }
+  }
+};</script> 
+  <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .scrollbar-hide {
+                -ms-overflow-style: none;
+                scrollbar-width: none;
+            }
+            .scrollbar-hide::-webkit-scrollbar {
+                display: none;
+            }
+            .menu-item-active {
+                @apply bg-primary-light text-primary border-l-4 border-primary;
+            }
+            .transition-all-300 {
+                transition: all 0.3s ease;
+            }
+            .text-balance {
+                text-wrap: balance;
+            }
+        }
+        /* 全局样式 */
+        body {
+            @apply font-inter bg-light text-text-primary;
+        }
+        /* 菜单激活样式 */
+        .active-menu {
+            @apply bg-primary-light text-primary border-l-4 border-primary;
+        }
+        /* 卡片样式 */
+        .ant-card {
+            @apply bg-white rounded-lg shadow-card p-5 mb-5 transition-all duration-300 hover:shadow-lg;
+        }
+        /* 按钮样式 */
+        .btn {
+            @apply px-4 py-2 rounded-md transition-all duration-200 font-medium focus:outline-none focus:ring-2 focus:ring-offset-2;
+        }
+        .btn-primary {
+            @apply bg-primary text-white hover:bg-primary-dark focus:ring-primary/50;
+        }
+        .btn-outline {
+            @apply border border-primary text-primary hover:bg-primary-light focus:ring-primary/50;
+        }
+        /* 表单样式 */
+        .form-label {
+            @apply block text-sm font-medium text-text-secondary mb-1;
+        }
+        .form-control {
+            @apply w-full px-3 py-2 border border-border-color rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all duration-200;
+        }
+        /* 导航菜单样式 */
+        .setting-nav-item {
+            @apply flex items-center px-4 py-3 text-text-secondary hover:bg-primary-light/50 hover:text-primary transition-all-300 cursor-pointer;
+        }
+        .setting-nav-item i {
+            @apply mr-3 text-lg;
+        }
+        .setting-nav-item.active {
+            @apply bg-primary-light text-primary border-l-4 border-primary;
+        }
+    </style> 
+ </head> 
+ <body class="p-4 md:p-6"> 
+  <div class="flex flex-col md:flex-row gap-6"> 
+   <!-- 左侧导航菜单 --> 
+   <div class="w-full md:w-64 flex-shrink-0"> 
+    <div class="ant-card p-0 sticky top-4"> 
+     <div class="px-4 py-4 border-b border-border-color"> 
+      <h2 class="text-lg font-semibold"> 设置中心 </h2> 
+     </div> 
+     <nav class="py-2"> 
+      <a href="javascript:void(0);" class="setting-nav-item active" data-uuid="accountSettings" onclick="handleMenuClick(this)"> <i class="fas fa-user"> </i> <span> 账户设置 </span> </a> 
+      <a href="javascript:void(0);" class="setting-nav-item" data-uuid="workspaceSettings" onclick="handleMenuClick(this)"> <i class="fas fa-desktop"> </i> <span> 工作空间设置 </span> </a> 
+      <a href="javascript:void(0);" class="setting-nav-item" data-uuid="notificationSettings" onclick="handleMenuClick(this)"> <i class="fas fa-bell"> </i> <span> 通知偏好设置 </span> </a> 
+      <a href="javascript:void(0);" class="setting-nav-item" data-tab="team"> <i class="fas fa-users"> </i> <span> 团队管理 </span> </a> 
+      <a href="javascript:void(0);" class="setting-nav-item" data-tab="system"> <i class="fas fa-cogs"> </i> <span> 系统配置 </span> </a> 
+      <a href="javascript:void(0);" class="setting-nav-item" data-tab="about"> <i class="fas fa-info-circle"> </i> <span> 关于 </span> </a> 
+     </nav> 
+    </div> 
+   </div> 
+   <!-- 右侧主内容区 --> 
+   <div class="flex-1"> 
+    <!-- 账户设置 --> 
+    <div class="setting-content active" id="account"> 
+     <div class="ant-card"> 
+      <h3 class="text-xl font-semibold mb-6"> 账户设置 </h3> 
+      <!-- 个人信息 --> 
+      <div class="mb-8"> 
+       <h4 class="text-lg font-medium mb-4"> 个人信息 </h4> 
+       <div class="flex flex-col md:flex-row gap-6"> 
+        <!-- 头像上传 --> 
+        <div class="w-full md:w-32 flex flex-col items-center"> 
+         <div class="relative mb-3"> 
+          <img src="./settings/8cda41a084d5db2f669546a3dd9efe41.png" alt="用户头像" class="w-24 h-24 rounded-full object-cover border-2 border-border-color"> 
+          <div class="absolute bottom-0 right-0 bg-primary rounded-full p-1 cursor-pointer hover:bg-primary-dark transition-colors duration-200"> 
+           <i class="fas fa-camera text-white text-sm"> </i> 
+          </div> 
+         </div> 
+         <p class="text-sm text-text-tertiary text-center"> 点击更换头像 </p> 
+         <p class="text-xs text-text-tertiary text-center mt-1"> 支持 JPG, PNG 格式，最大 2MB </p> 
+        </div> 
+        <!-- 个人信息表单 --> 
+        <div class="flex-1"> 
+         <div class="grid grid-cols-1 md:grid-cols-2 gap-4"> 
+          <div> 
+           <label class="form-label"> 姓名 </label> 
+           <input type="text" class="form-control" value="张开发"> 
+          </div> 
+          <div> 
+           <label class="form-label"> 显示名称 </label> 
+           <input type="text" class="form-control" value="dev_zhang"> 
+          </div> 
+          <div> 
+           <label class="form-label"> 邮箱 </label> 
+           <div class="relative"> 
+            <input type="email" class="form-control" value="zhang@example.com" readonly> 
+            <span class="absolute right-3 top-1/2 transform -translate-y-1/2 text-success text-xs"> 已验证 </span> 
+           </div> 
+          </div> 
+          <div> 
+           <label class="form-label"> 职位 </label> 
+           <input type="text" class="form-control" value="高级工程师"> 
+          </div> 
+          <div class="md:col-span-2"> 
+           <label class="form-label"> 个人简介 </label> 
+           <textarea class="form-control h-24" rows="4">
+        热爱编程的前端工程师，专注于低代码平台开发与应用。
+    </textarea> 
+          </div> 
+         </div> 
+         <div class="mt-6 flex justify-end"> 
+          <button class="btn btn-primary"> 保存更改 </button> 
+         </div> 
+        </div> 
+       </div> 
+      </div> 
+      <!-- 账户安全 --> 
+      <div class="mb-8"> 
+       <h4 class="text-lg font-medium mb-4"> 账户安全 </h4> 
+       <div class="space-y-4"> 
+        <div class="flex items-center justify-between p-4 border border-border-color rounded-lg"> 
+         <div> 
+          <h5 class="font-medium"> 登录密码 </h5> 
+          <p class="text-sm text-text-tertiary"> 已设置，最后修改于 2023-10-15 </p> 
+         </div> 
+         <button class="btn btn-outline"> 修改 </button> 
+        </div> 
+        <div class="flex items-center justify-between p-4 border border-border-color rounded-lg"> 
+         <div> 
+          <h5 class="font-medium"> 绑定手机 </h5> 
+          <p class="text-sm text-text-tertiary"> 已绑定: 138****5678 </p> 
+         </div> 
+         <div class="flex gap-2"> 
+          <button class="btn btn-outline"> 更换 </button> 
+          <button class="btn btn-outline"> 解绑 </button> 
+         </div> 
+        </div> 
+        <div class="flex items-center justify-between p-4 border border-border-color rounded-lg"> 
+         <div> 
+          <h5 class="font-medium"> 绑定邮箱 </h5> 
+          <p class="text-sm text-text-tertiary"> 已绑定: zhang***@example.com </p> 
+         </div> 
+         <div class="flex gap-2"> 
+          <button class="btn btn-outline"> 更换 </button> 
+          <button class="btn btn-outline"> 解绑 </button> 
+         </div> 
+        </div> 
+        <div class="flex items-center justify-between p-4 border border-border-color rounded-lg"> 
+         <div> 
+          <h5 class="font-medium"> 双重认证（2FA） </h5> 
+          <p class="text-sm text-text-tertiary"> 未开启 </p> 
+         </div> 
+         <button class="btn btn-primary"> 立即开启 </button> 
+        </div> 
+       </div> 
+      </div> 
+      <!-- 登录设备管理 --> 
+      <div> 
+       <div class="flex items-center justify-between mb-4"> 
+        <h4 class="text-lg font-medium"> 登录设备管理 </h4> 
+        <button class="text-primary text-sm hover:underline"> 查看全部 </button> 
+       </div> 
+       <div class="overflow-x-auto"> 
+        <table class="min-w-full divide-y divide-border-color"> 
+         <thead> 
+          <tr> 
+           <th class="px-4 py-3 bg-gray-50 text-left text-xs font-medium text-text-tertiary uppercase tracking-wider"> 设备类型 </th> 
+           <th class="px-4 py-3 bg-gray-50 text-left text-xs font-medium text-text-tertiary uppercase tracking-wider"> 浏览器 </th> 
+           <th class="px-4 py-3 bg-gray-50 text-left text-xs font-medium text-text-tertiary uppercase tracking-wider"> IP地址 </th> 
+           <th class="px-4 py-3 bg-gray-50 text-left text-xs font-medium text-text-tertiary uppercase tracking-wider"> 最后活动时间 </th> 
+           <th class="px-4 py-3 bg-gray-50 text-left text-xs font-medium text-text-tertiary uppercase tracking-wider"> 操作 </th> 
+          </tr> 
+         </thead> 
+         <tbody class="bg-white divide-y divide-border-color"> 
+          <tr> 
+           <td class="px-4 py-4 whitespace-nowrap"> 
+            <div class="flex items-center"> 
+             <i class="fas fa-laptop mr-2 text-text-tertiary"> </i> 
+             <span> Windows PC </span> 
+            </div> </td> 
+           <td class="px-4 py-4 whitespace-nowrap"> Chrome 114.0.5735.199 </td> 
+           <td class="px-4 py-4 whitespace-nowrap"> 192.168.1.100 </td> 
+           <td class="px-4 py-4 whitespace-nowrap text-text-tertiary"> 今天 10:23 </td> 
+           <td class="px-4 py-4 whitespace-nowrap"> <button class="text-text-tertiary hover:text-danger"> 注销 </button> </td> 
+          </tr> 
+          <tr> 
+           <td class="px-4 py-4 whitespace-nowrap"> 
+            <div class="flex items-center"> 
+             <i class="fas fa-mobile-alt mr-2 text-text-tertiary"> </i> 
+             <span> iPhone </span> 
+            </div> </td> 
+           <td class="px-4 py-4 whitespace-nowrap"> Safari Mobile </td> 
+           <td class="px-4 py-4 whitespace-nowrap"> 10.0.0.5 </td> 
+           <td class="px-4 py-4 whitespace-nowrap text-text-tertiary"> 昨天 18:45 </td> 
+           <td class="px-4 py-4 whitespace-nowrap"> <button class="text-text-tertiary hover:text-danger"> 注销 </button> </td> 
+          </tr> 
+         </tbody> 
+        </table> 
+       </div> 
+      </div> 
+     </div> 
+     <!-- API访问令牌 --> 
+     <div class="ant-card"> 
+      <div class="flex items-center justify-between mb-6"> 
+       <h3 class="text-lg font-medium"> API访问令牌 </h3> 
+       <button class="btn btn-primary" id="create-token-btn"> 创建新令牌 </button> 
+      </div> 
+      <div class="overflow-x-auto"> 
+       <table class="min-w-full divide-y divide-border-color"> 
+        <thead> 
+         <tr> 
+          <th class="px-4 py-3 bg-gray-50 text-left text-xs font-medium text-text-tertiary uppercase tracking-wider"> 令牌名称 </th> 
+          <th class="px-4 py-3 bg-gray-50 text-left text-xs font-medium text-text-tertiary uppercase tracking-wider"> 权限 </th> 
+          <th class="px-4 py-3 bg-gray-50 text-left text-xs font-medium text-text-tertiary uppercase tracking-wider"> 创建时间 </th> 
+          <th class="px-4 py-3 bg-gray-50 text-left text-xs font-medium text-text-tertiary uppercase tracking-wider"> 最后使用 </th> 
+          <th class="px-4 py-3 bg-gray-50 text-left text-xs font-medium text-text-tertiary uppercase tracking-wider"> 状态 </th> 
+          <th class="px-4 py-3 bg-gray-50 text-left text-xs font-medium text-text-tertiary uppercase tracking-wider"> 操作 </th> 
+         </tr> 
+        </thead> 
+        <tbody class="bg-white divide-y divide-border-color"> 
+         <tr> 
+          <td class="px-4 py-4 whitespace-nowrap"> 项目管理API </td> 
+          <td class="px-4 py-4 whitespace-nowrap"> 项目读、项目写 </td> 
+          <td class="px-4 py-4 whitespace-nowrap text-text-tertiary"> 2023-09-20 </td> 
+          <td class="px-4 py-4 whitespace-nowrap text-text-tertiary"> 今天 09:15 </td> 
+          <td class="px-4 py-4 whitespace-nowrap"> <span class="px-2 py-1 text-xs rounded-full bg-success/10 text-success"> 活跃 </span> </td> 
+          <td class="px-4 py-4 whitespace-nowrap"> 
+           <div class="flex space-x-3"> 
+            <button class="text-text-tertiary hover:text-primary"> 复制 </button> 
+            <button class="text-text-tertiary hover:text-primary"> 详情 </button> 
+            <button class="text-text-tertiary hover:text-danger"> 撤销 </button> 
+           </div> </td> 
+         </tr> 
+         <tr> 
+          <td class="px-4 py-4 whitespace-nowrap"> CI/CD集成 </td> 
+          <td class="px-4 py-4 whitespace-nowrap"> 生成任务触发 </td> 
+          <td class="px-4 py-4 whitespace-nowrap text-text-tertiary"> 2023-08-15 </td> 
+          <td class="px-4 py-4 whitespace-nowrap text-text-tertiary"> 3天前 </td> 
+          <td class="px-4 py-4 whitespace-nowrap"> <span class="px-2 py-1 text-xs rounded-full bg-success/10 text-success"> 活跃 </span> </td> 
+          <td class="px-4 py whitespace-nowrap"> 
+           <div class="flex space-x-3"> 
+            <button class="text-text-tertiary hover:text-primary"> 复制 </button> 
+            <button class="text-text-tertiary hover:text-primary"> 详情 </button> 
+            <button class="text-text-tertiary hover:text-danger"> 撤销 </button> 
+           </div> </td> 
+         </tr> 
+         <tr> 
+          <td class="px-4 py whitespace-nowrap"> 数据分析 </td> 
+          <td class="px-4 py-4 whitespace-nowrap"> 项目读 </td> 
+          <td class="px-4 py-4 whitespace-nowrap text-text-tertiary"> 2023-07-05 </td> 
+          <td class="px-4 py-4 whitespace-nowrap text-text-tertiary"> 从未使用 </td> 
+          <td class="px-4 py-4 whitespace-nowrap"> <span class="px-2 py-1 text-xs rounded-full bg-warning/10 text-warning"> 即将过期 </span> </td> 
+          <td class="px-4 py-4 whitespace-nowrap"> 
+           <div class="flex space-x-3"> 
+            <button class="text-text-tertiary hover:text-primary"> 复制 </button> 
+            <button class="text-text-tertiary hover:text-primary"> 详情 </button> 
+            <button class="text-text-tertiary hover:text-danger"> 撤销 </button> 
+           </div> </td> 
+         </tr> 
+        </tbody> 
+       </table> 
+      </div> 
+     </div> 
+    </div> 
+    <!-- 工作空间设置 --> 
+    <div class="setting-content hidden" id="workspace"> 
+     <div class="ant-card"> 
+      <h3 class="text-xl font-semibold mb-6"> 工作空间设置 </h3> 
+      <!-- 编辑器偏好 --> 
+      <div class="mb-8"> 
+       <h4 class="text-lg font-medium mb-4"> 编辑器偏好 </h4> 
+       <div class="grid grid-cols-1 md:grid-cols-2 gap-6"> 
+        <div> 
+         <label class="form-label"> 编辑器主题 </label> 
+         <select class="form-control"> <option> 浅色主题 </option> <option> 深色主题 </option> <option> 跟随系统 </option> </select> 
+        </div> 
+        <div> 
+         <label class="form-label"> 字体大小 </label> 
+         <select class="form-control"> <option> 12px </option> <option selected> 14px </option> <option> 16px </option> <option> 18px </option> </select> 
+        </div> 
+        <div> 
+         <label class="form-label"> 缩进方式 </label> 
+         <div class="flex space-x-4"> 
+          <label class="inline-flex items-center"> <input type="radio" name="indent" value="space" checked class="mr-2"> <span> 空格 </span> </label> 
+          <label class="inline-flex items-center"> <input type="radio" name="indent" value="tab" class="mr-2"> <span> 制表符 </span> </label> 
+         </div> 
+        </div> 
+        <div> 
+         <label class="form-label"> 缩进大小 </label> 
+         <select class="form-control"> <option> 2 </option> <option selected> 4 </option> <option> 8 </option> </select> 
+        </div> 
+        <div> 
+         <label class="form-label"> 自动保存 </label> 
+         <div class="flex items-center justify-between"> 
+          <span> 启用自动保存 </span> 
+          <label class="relative inline-flex items-center cursor-pointer"> <input type="checkbox" checked class="sr-only peer"> 
+           <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full after:content-[&quot;&quot;] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"> 
+           </div> </label> 
+         </div> 
+        </div> 
+        <div> 
+         <label class="form-label"> 自动保存间隔 </label> 
+         <select class="form-control"> <option> 10秒 </option> <option selected> 30秒 </option> <option> 1分钟 </option> <option> 5分钟 </option> </select> 
+        </div> 
+       </div> 
+      </div> 
+      <!-- 生成默认项 --> 
+      <div class="mb-8"> 
+       <h4 class="text-lg font-medium mb-4"> 生成默认项 </h4> 
+       <div class="grid grid-cols-1 md:grid-cols-2 gap-6"> 
+        <div> 
+         <label class="form-label"> 默认技术栈 </label> 
+         <select class="form-control"> <option> React + TypeScript + Ant Design </option> <option selected> Vue 3 + TypeScript + Element Plus </option> <option> Angular + TypeScript + Material </option> </select> 
+        </div> 
+        <div> 
+         <label class="form-label"> 代码规范模板 </label> 
+         <select class="form-control"> <option selected> Airbnb JavaScript Style Guide </option> <option> Standard JavaScript Style </option> <option> Google JavaScript Style Guide </option> </select> 
+        </div> 
+        <div> 
+         <label class="form-label"> 默认部署环境 </label> 
+         <select class="form-control"> <option selected> 开发环境 </option> <option> 测试环境 </option> <option> 生产环境 </option> </select> 
+        </div> 
+       </div> 
+      </div> 
+      <!-- 文件存储位置 --> 
+      <div> 
+       <h4 class="text-lg font-medium mb-4"> 文件存储位置 </h4> 
+       <div class="border border-border-color rounded-lg p-4 mb-4"> 
+        <div class="flex items-center justify-between"> 
+         <div class="flex items-center"> 
+          <input type="radio" name="storage" value="local" checked class="mr-2"> 
+          <label class="font-medium"> 下载到本地 </label> 
+         </div> 
+         <div class="text-text-tertiary text-sm">
+           生成的项目源代码将下载到本地计算机 
+         </div> 
+        </div> 
+       </div> 
+       <div class="border border-border-color rounded-lg p-4"> 
+        <div class="flex items-center justify-between"> 
+         <div class="flex items-center"> 
+          <input type="radio" name="storage" value="git" class="mr-2"> 
+          <label class="font-medium"> 自动上传到Git仓库 </label> 
+         </div> 
+         <div class="text-text-tertiary text-sm">
+           需要预先配置GitHub/GitLab集成 
+         </div> 
+        </div> 
+        <div class="mt-4 ml-6 grid grid-cols-1 md:grid-cols-2 gap-4"> 
+         <div> 
+          <label class="form-label"> Git服务提供商 </label> 
+          <select class="form-control"> <option> GitHub </option> <option> GitLab </option> <option> Gitea </option> </select> 
+         </div> 
+         <div> 
+          <label class="form-label"> 默认仓库 </label> 
+          <select class="form-control"> <option> 无默认仓库 </option> <option> my-projects </option> <option> lowcode-apps </option> </select> 
+         </div> 
+        </div> 
+       </div> 
+      </div> 
+      <div class="mt-6 flex justify-end"> 
+       <button class="btn btn-primary"> 保存设置 </button> 
+      </div> 
+     </div> 
+    </div> 
+    <!-- 通知偏好设置 --> 
+    <div class="setting-content hidden" id="notifications"> 
+     <div class="ant-card"> 
+      <h3 class="text-xl font-semibold mb-6"> 通知偏好 </h3> 
+      <!-- 项目通知 --> 
+      <div class="mb-8"> 
+       <h4 class="text-lg font-medium mb-4"> 项目通知 </h4> 
+       <div class="space-y-4"> 
+        <div class="flex flex-col md:flex-row md:items-center justify-between p-4 border border-border-color rounded-lg"> 
+         <div> 
+          <h5 class="font-medium"> 生成任务完成 </h5> 
+          <p class="text-sm text-text-tertiary"> 当AI代码生成任务完成时通知我 </p> 
+         </div> 
+         <div class="flex items-center space-x-6 mt-3 md:mt-0"> 
+          <label class="inline-flex items-center"> <input type="checkbox" checked class="mr-2"> <span> 站内信 </span> </label> 
+          <label class="inline-flex items-center"> <input type="checkbox" checked class="mr-2"> <span> 邮件 </span> </label> 
+          <label class="inline-flex items-center"> <input type="checkbox" class="mr-2"> <span> 钉钉 </span> </label> 
+         </div> 
+        </div> 
+        <div class="flex flex-col md:flex-row md:items-center justify-between p-4 border border-border-color rounded-lg"> 
+         <div> 
+          <h5 class="font-medium"> 代码合并请求 </h5> 
+          <p class="text-sm text-text-tertiary"> 当有代码合并请求时通知我 </p> 
+         </div> 
+         <div class="flex items-center space-x-6 mt-3 md:mt-0"> 
+          <label class="inline-flex items-center"> <input type="checkbox" checked class="mr-2"> <span> 站内信 </span> </label> 
+          <label class="inline-flex items-center"> <input type="checkbox" checked class="mr-2"> <span> 邮件 </span> </label> 
+          <label class="inline-flex items-center"> <input type="checkbox" checked class="mr-2"> <span> 钉钉 </span> </label> 
+         </div> 
+        </div> 
+        <div class="flex flex-col md:flex-row md:items-center justify-between p-4 border border-border-color rounded-lg"> 
+         <div> 
+          <h5 class="font-medium"> 部署成功/失败 </h5> 
+          <p class="text-sm text-text-tertiary"> 当项目部署完成或失败时通知我 </p> 
+         </div> 
+         <div class="flex items-center space-x-6 mt-3 md:mt-0"> 
+          <label class="inline-flex items-center"> <input type="checkbox" checked class="mr-2"> <span> 站内信 </span> </label> 
+          <label class="inline-flex items-center"> <input type="checkbox" checked class="mr-2"> <span> 邮件 </span> </label> 
+          <label class="inline-flex items-center"> <input type="checkbox" checked class="mr-2"> <span> 钉钉 </span> </label> 
+         </div> 
+        </div> 
+       </div> 
+      </div> 
+      <!-- 团队协作通知 --> 
+      <div class="mb-8"> 
+       <h4 class="text-lg font-medium mb-4"> 团队协作通知 </h4> 
+       <div class="space-y-4"> 
+        <div class="flex flex-col md:flex-row md:items-center justify-between p-4 border border-border-color rounded-lg"> 
+         <div> 
+          <h5 class="font-medium"> 被邀请加入项目 </h5> 
+          <p class="text-sm text-text-tertiary"> 当被邀请加入项目时通知我 </p> 
+         </div> 
+         <div class="flex items-center space-x-6 mt-3 md:mt-0"> 
+          <label class="inline-flex items-center"> <input type="checkbox" checked class="mr-2"> <span> 站内信 </span> </label> 
+          <label class="inline-flex items-center"> <input type="checkbox" checked class="mr-2"> <span> 邮件 </span> </label> 
+          <label class="inline-flex items-center"> <input type="checkbox" checked class="mr-2"> <span> 钉钉 </span> </label> 
+         </div> 
+        </div> 
+        <div class="flex flex-col md:flex-row md:items-center justify-between p-4 border border-border-color rounded-lg"> 
+         <div> 
+          <h5 class="font-medium"> 团队成员@提及 </h5> 
+          <p class="text-sm text-text-tertiary"> 当被团队成员@提及时通知我 </p> 
+         </div> 
+         <div class="flex items-center space-x-6 mt-3 md:mt-0"> 
+          <label class="inline-flex items-center"> <input type="checkbox" checked class="mr-2"> <span> 站内信 </span> </label> 
+          <label class="inline-flex items-center"> <input type="checkbox" checked class="mr-2"> <span> 邮件 </span> </label> 
+          <label class="inline-flex items-center"> <input type="checkbox" checked class="mr-2"> <span> 钉钉 </span> </label> 
+         </div> 
+        </div> 
+        <div class="flex flex-col md:flex-row md:items-center justify-between p-4 border border-border-color rounded-lg"> 
+         <div> 
+          <h5 class="font-medium"> 评论回复 </h5> 
+          <p class="text-sm text-text-tertiary"> 当我的评论被回复时通知我 </p> 
+         </div> 
+         <div class="flex items-center space-x-6 mt-3 md:mt-0"> 
+          <label class="inline-flex items-center"> <input type="checkbox" checked class="mr-2"> <span> 站内信 </span> </label> 
+          <label class="inline-flex items-center"> <input type="checkbox" class="mr-2"> <span> 邮件 </span> </label> 
+          <label class="inline-flex items-center"> <input type="checkbox" checked class="mr-2"> <span> 钉钉 </span> </label> 
+         </div> 
+        </div> 
+       </div> 
+      </div> 
+      <!-- 系统公告 --> 
+      <div class="mb-8"> 
+       <h4 class="text-lg font-medium mb-4"> 系统公告 </h4> 
+       <div class="space-y-4"> 
+        <div class="flex flex-col md:flex-row md:items-center justify-between p-4 border border-border-color rounded-lg"> 
+         <div> 
+          <h5 class="font-medium"> 产品更新通知 </h5> 
+          <p class="text-sm text-text-tertiary"> 接收产品新功能和更新通知 </p> 
+         </div> 
+         <div class="flex items-center space-x-6 mt-3 md:mt-0"> 
+          <label class="inline-flex items-center"> <input type="checkbox" checked class="mr-2"> <span> 站内信 </span> </label> 
+          <label class="inline-flex items-center"> <input type="checkbox" checked class="mr-2"> <span> 邮件 </span> </label> 
+         </div> 
+        </div> 
+        <div class="flex flex-col md:flex-row md:items-center justify-between p-4 border border-border-color rounded-lg"> 
+         <div> 
+          <h5 class="font-medium"> 维护通知 </h5> 
+          <p class="text-sm text-text-tertiary"> 接收系统维护和停机通知 </p> 
+         </div> 
+         <div class="flex items-center space-x-6 mt-3 md:mt-0"> 
+          <label class="inline-flex items-center"> <input type="checkbox" checked class="mr-2"> <span> 站内信 </span> </label> 
+          <label class="inline-flex items-center"> <input type="checkbox" checked class="mr-2"> <span> 邮件 </span> </label> 
+          <label class="inline-flex items-center"> <input type="checkbox" checked class="mr-2"> <span> 钉钉 </span> </label> 
+         </div> 
+        </div> 
+       </div> 
+      </div> 
+      <!-- 营销资讯 --> 
+      <div> 
+       <h4 class="text-lg font-medium mb-4"> 营销资讯 </h4> 
+       <div class="space-y-4"> 
+        <div class="flex flex-col md:flex-row md:items-center justify-between p-4 border border-border-color rounded-lg"> 
+         <div> 
+          <h5 class="font-medium"> 新产品功能 </h5> 
+          <p class="text-sm text-text-tertiary"> 接收关于新产品功能的资讯 </p> 
+         </div> 
+         <div class="flex items-center space-x-6 mt-3 md:mt-0"> 
+          <label class="inline-flex items-center"> <input type="checkbox" class="mr-2"> <span> 站内信 </span> </label> 
+          <label class="inline-flex items-center"> <input type="checkbox" class="mr-2"> <span> 邮件 </span> </label> 
+         </div> 
+        </div> 
+        <div class="flex flex-col md:flex-row md:items-center justify-between p-4 border border-border-color rounded-lg"> 
+         <div> 
+          <h5 class="font-medium"> 市场活动 </h5> 
+          <p class="text-sm text-text-tertiary"> 接收关于市场活动和促销的资讯 </p> 
+         </div> 
+         <div class="flex items-center space-x-6 mt-3 md:mt-0"> 
+          <label class="inline-flex items-center"> <input type="checkbox" class="mr-2"> <span> 站内信 </span> </label> 
+          <label class="inline-flex items-center"> <input type="checkbox" class="mr-2"> <span> 邮件 </span> </label> 
+         </div> 
+        </div> 
+       </div> 
+      </div> 
+      <div class="mt-6 flex justify-end"> 
+       <button class="btn btn-primary"> 保存设置 </button> 
+      </div> 
+     </div> 
+    </div> 
+   </div> 
+  </div> 
+  <!-- 创建API令牌模态框 --> 
+  <div id="create-token-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden"> 
+   <div class="bg-white rounded-lg w-full max-w-md mx-4 transform transition-all"> 
+    <div class="p-5 border-b border-border-color"> 
+     <h3 class="text-lg font-medium"> 创建API访问令牌 </h3> 
+     <button id="close-modal" class="absolute top-5 right-5 text-text-tertiary hover:text-text-primary"> <i class="fas fa-times"> </i> </button> 
+    </div> 
+    <div class="p-5"> 
+     <form> 
+      <div class="mb-4"> 
+       <label class="form-label"> 令牌名称 </label> 
+       <input type="text" class="form-control" placeholder="请输入令牌名称"> 
+      </div> 
+      <div class="mb-4"> 
+       <label class="form-label"> 权限范围 </label> 
+       <select class="form-control" multiple size="4"> <option> 项目读 </option> <option> 项目写 </option> <option> 生成任务触发 </option> <option> 模板管理 </option> <option> 用户管理 </option> <option> 系统配置 </option> </select> 
+       <p class="text-xs text-text-tertiary mt-1"> 按住Ctrl键可多选 </p> 
+      </div> 
+      <div class="mb-4"> 
+       <label class="form-label"> 过期时间 </label> 
+       <select class="form-control"> <option> 7天 </option> <option selected> 30天 </option> <option> 90天 </option> <option> 180天 </option> <option> 365天 </option> <option> 永不过期 </option> </select> 
+      </div> 
+     </form> 
+    </div> 
+    <div class="p-5 border-t border-border-color flex justify-end space-x-3"> 
+     <button id="cancel-token" class="btn btn-outline"> 取消 </button> 
+     <button class="btn btn-primary"> 创建 </button> 
+    </div> 
+   </div> 
+  </div> 
+  <script>// 页面加载时初始化
+document.addEventListener('DOMContentLoaded', function () {
+  // 导航菜单切换
+  var navItems = document.querySelectorAll('.setting-nav-item');
+  var contentItems = document.querySelectorAll('.setting-content');
+  navItems.forEach(function (item) {
+    // 为非跳转页面的导航项添加点击事件
+    if (!item.hasAttribute('data-uuid')) {
+      item.addEventListener('click', function () {
+        // 移除所有激活状态
+        navItems.forEach(function (nav) {
+          return nav.classList.remove('active');
+        });
+        contentItems.forEach(function (content) {
+          return content.classList.add('hidden');
+        });
+        // 设置当前激活状态
+        item.classList.add('active');
+        var tabId = item.getAttribute('data-tab');
+        document.getElementById(tabId).classList.remove('hidden');
+        // 通知iframe调整大小
+        ytSendPageSize();
+      });
+    }
+  });
+  // API令牌模态框
+  var createTokenBtn = document.getElementById('create-token-btn');
+  var createTokenModal = document.getElementById('create-token-modal');
+  var closeModal = document.getElementById('close-modal');
+  var cancelToken = document.getElementById('cancel-token');
+  if (createTokenBtn && createTokenModal && closeModal && cancelToken) {
+    var hideModal = function hideModal() {
+      createTokenModal.classList.add('hidden');
+    };
+    createTokenBtn.addEventListener('click', function () {
+      createTokenModal.classList.remove('hidden');
+    });
+    closeModal.addEventListener('click', hideModal);
+    cancelToken.addEventListener('click', hideModal);
+    // 点击模态框外部关闭
+    createTokenModal.addEventListener('click', function (e) {
+      if (e.target === createTokenModal) {
+        hideModal();
+      }
+    });
+  }
+  // 通知iframe调整大小
+  ytSendPageSize();
+});
+// 页面跳转处理函数
+function handleMenuClick(element) {
+  var uuid = element.getAttribute('data-uuid');
+  if (uuid) {
+    window.top.postMessage(uuid, '*'); // 发送跳转页面的uuid给父窗口
+
+    // 更新导航激活状态
+    var navItems = document.querySelectorAll('.setting-nav-item');
+    navItems.forEach(function (nav) {
+      nav.classList.remove('active');
+    });
+    element.classList.add('active');
+  }
+}</script>  
+ </body>
+</html>

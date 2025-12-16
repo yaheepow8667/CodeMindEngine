@@ -1,0 +1,557 @@
+<!doctype html>
+<html lang="zh-CN">
+ <head> 
+  <meta charset="UTF-8"> 
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+  <title>蓝图编辑器 - 智码引擎</title> 
+  <link href="./blueprintEditor/all.min.css" rel="stylesheet"> 
+  <script src="../javascript/reload.js"></script> 
+  <script src="./blueprintEditor/resource_6470210000.js"></script> 
+  <script>tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        primary: '#1677ff',
+        secondary: '#40a9ff',
+        success: '#52c41a',
+        warning: '#faad14',
+        danger: '#ff4d4f',
+        info: '#1890ff',
+        light: '#f5f5f5',
+        dark: '#141414',
+        'primary-light': '#e6f7ff',
+        'primary-dark': '#0958d9',
+        'text-primary': '#333333',
+        'text-secondary': '#666666',
+        'text-tertiary': '#999999',
+        'border-color': '#e8e8e8',
+        'canvas-bg': '#fbfbfb',
+        'panel-bg': '#ffffff',
+        'toolbar-bg': '#fafafa',
+        'active-item': '#e6f7ff',
+        'grid-color': '#e8e8e8'
+      },
+      fontFamily: {
+        inter: ['Inter', 'system-ui', 'sans-serif']
+      },
+      spacing: {
+        '15': '3.75rem',
+        '72': '18rem',
+        '80': '20rem',
+        '96': '24rem'
+      },
+      boxShadow: {
+        'panel': '0 1px 4px rgba(0, 0, 0, 0.05)',
+        'dropdown': '0 4px 16px rgba(0, 0, 0, 0.12)',
+        'toolbar': '0 1px 2px rgba(0, 0, 0, 0.05)'
+      }
+    }
+  }
+};</script> 
+  <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .scrollbar-thin {
+                scrollbar-width: thin;
+            }
+            .scrollbar-thin::-webkit-scrollbar {
+                width: 4px;
+                height: 4px;
+            }
+            .scrollbar-thin::-webkit-scrollbar-thumb {
+                background-color: rgba(156, 163, 175, 0.5);
+                border-radius: 2px;
+            }
+            .transition-all-300 {
+                transition: all 0.3s ease;
+            }
+            .canvas-grid {
+                background-size: 20px 20px;
+                background-image: 
+                    linear-gradient(to right, rgba(232, 232, 232, 0.3) 1px, transparent 1px),
+                    linear-gradient(to bottom, rgba(232, 232, 232, 0.3) 1px, transparent 1px);
+            }
+            .resize-handle {
+                @apply absolute w-3 h-3 bg-primary rounded-full -bottom-1.5 -right-1.5 cursor-se-resize border-2 border-white shadow-sm;
+            }
+            .node-selected {
+                @apply ring-2 ring-primary ring-offset-2;
+            }
+            .draggable-item {
+                @apply cursor-move transition-all duration-200 hover:bg-primary-light/30;
+            }
+            .toolbar-btn {
+                @apply p-2 rounded hover:bg-gray-200 transition-colors duration-200 flex items-center justify-center;
+            }
+            .toolbar-btn-active {
+                @apply bg-primary-light text-primary;
+            }
+            .panel-title {
+                @apply font-medium text-text-primary text-sm px-4 py-3 border-b border-border-color;
+            }
+            .property-group {
+                @apply mb-4;
+            }
+            .property-label {
+                @apply text-xs text-text-tertiary mb-1.5 block;
+            }
+            .property-value {
+                @apply text-sm text-text-primary;
+            }
+        }
+    </style> 
+ </head> 
+ <body class="font-inter bg-light text-text-primary p-0 m-0 flex flex-col h-full"> 
+  <!-- 顶部工具栏 --> 
+  <header class="bg-toolbar-bg border-b border-border-color shadow-toolbar flex items-center h-12 px-4 z-10"> 
+   <div class="flex items-center space-x-1"> 
+    <button class="toolbar-btn" title="保存蓝图"> <i class="fas fa-save"> </i> </button> 
+    <button class="toolbar-btn" title="导出蓝图"> <i class="fas fa-download"> </i> </button> 
+    <div class="h-6 border-r border-border-color mx-1"> 
+    </div> 
+    <bu tton class="toolbar-btn" title="撤销"> 
+     <i class="fas fa-undo"> </i> 
+     <button class="toolbar-btn" title="重做"> <i class="fas fa-redo"> </i> </button> 
+     <div class="h-6 border-r border-border-color mx-1"> 
+     </div> 
+     <button class="toolbar-btn" title="验证蓝图"> <i class="fas fa-check-circle"> </i> </button> 
+    </bu> 
+   </div> 
+   <div class="ml-6 flex items-center space-x-1"> 
+    <div class="text-sm text-text-secondary mr-2">
+      视图: 
+    </div> 
+    <button class="toolbar-btn toolbar-btn-active px-3" title="页面流视图"> <i class="fas fa-project-diagram mr-1.5"> </i> <span class="text-xs"> 页面流 </span> </button> 
+    <button class="toolbar-btn px-3" title="UI编排视图"> <i class="fas fa-th-large mr-1.5"> </i> <span class="text-xs"> UI编排 </span> </button> 
+    <button class="toolbar-btn px-3" title="数据模型视图"> <i class="fas fa-database mr-1.5"> </i> <span class="text-xs"> 数据模型 </span> </button> 
+   </div> 
+   <div class="ml-auto flex items-center space-x-1"> 
+    <button class="toolbar-btn" title="缩放"> <i class="fas fa-search-minus mr-1"> </i> <span class="text-xs"> 100% </span> <i class="fas fa-search-plus ml-1"> </i> </button> 
+    <button class="toolbar-btn" title="网格"> <i class="fas fa-th"> </i> </button> 
+    <button class="toolbar-btn" title="对齐"> <i class="fas fa-align-left"> </i> </button> 
+    <div class="h-6 border-r border-border-color mx-1"> 
+    </div> 
+    <button class="btn btn-primary text-sm h-8 px-3 mr-2"> <i class="fas fa-magic mr-1.5"> </i> 生成代码 </button> 
+    <button class="btn btn-secondary text-sm h-8 px-3 ml-2" data-uuid="advancedConfiguration" onclick="handleMenuClick(this)"> <i class="fas fa-sliders-h mr-1.5"> </i> 高级选项 </button> 
+   </div> 
+  </header> 
+  <!-- 主内容区域 --> 
+  <div class="flex flex-1 overflow-hidden"> 
+   <!-- 左侧组件库 --> 
+   <aside class="w-64 bg-panel-bg border-r border-border-color flex flex-col h-full"> 
+    <!-- 组件库标签页 --> 
+    <div class="flex border-b border-border-color"> 
+     <button class="flex-1 py-3 text-sm font-medium text-primary border-b-2 border-primary"> 组件库 </button> 
+     <button class="flex-1 py-3 text-sm font-medium text-text-tertiary"> 数据模型 </button> 
+    </div> 
+    <!-- 组件搜索 --> 
+    <div class="px-3 py-2"> 
+     <div class="relative"> 
+      <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-text-tertiary text-sm"> </i> 
+      <input type="text" placeholder="搜索组件..." class="w-full pl-9 pr-3 py-1.5 text-sm border border-border-color rounded-md focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary"> 
+     </div> 
+    </div> 
+    <!-- 组件分类 --> 
+    <div class="overflow-y-auto flex-1 scrollbar-thin"> 
+     <!-- 布局组件 --> 
+     <div class="mt-1"> 
+      <div class="panel-title flex items-center justify-between"> 
+       <span> 布局组件 </span> 
+       <i class="fas fa-chevron-down text-xs text-text-tertiary"> </i> 
+      </div> 
+      <div class="p-2"> 
+       <div class="draggable-item rounded-md p-2 mb-1.5 flex items-center"> 
+        <div class="w-8 h-8 bg-primary-light rounded flex items-center justify-center text-primary mr-2.5"> 
+         <i class="fas fa-columns"> </i> 
+        </div> 
+        <span class="text-sm"> 基础布局 </span> 
+       </div> 
+       <div class="draggable-item rounded-md p-2 mb-1.5 flex items-center"> 
+        <div class="w-8 h-8 bg-primary-light rounded flex items-center justify-center text-primary mr-2.5"> 
+         <i class="fas fa-th-large"> </i> 
+        </div> 
+        <span class="text-sm"> 卡片布局 </span> 
+       </div> 
+       <div class="draggable-item rounded-md p-2 mb-1.5 flex items-center"> 
+        <div class="w-8 h-8 bg-primary-light rounded flex items-center justify-center text-primary mr-2.5"> 
+         <i class="fas fa-layer-group"> </i> 
+        </div> 
+        <span class="text-sm"> 分栏布局 </span> 
+       </div> 
+      </div> 
+     </div> 
+     <!-- 数据展示 --> 
+     <div class="mt-1"> 
+      <div class="panel-title flex items-center justify-between"> 
+       <span> 数据展示 </span> 
+       <i class="fas fa-chevron-down text-xs text-text-tertiary"> </i> 
+      </div> 
+      <div class="p-2"> 
+       <div class="draggable-item rounded-md p-2 mb-1.5 flex items-center"> 
+        <div class="w-8 h-8 bg-primary-light rounded flex items-center justify-center text-primary mr-2.5"> 
+         <i class="fas fa-table"> </i> 
+        </div> 
+        <span class="text-sm"> 高级表格 </span> 
+       </div> 
+       <div class="draggable-item rounded-md p-2 mb-1.5 flex items-center"> 
+        <div class="w-8 h-8 bg-primary-light rounded flex items-center justify-center text-primary mr-2.5"> 
+         <i class="fas fa-chart-bar"> </i> 
+        </div> 
+        <span class="text-sm"> 图表卡片 </span> 
+       </div> 
+       <div class="draggable-item rounded-md p-2 mb-1.5 flex items-center"> 
+        <div class="w-8 h-8 bg-primary-light rounded flex items-center justify-center text-primary mr-2.5"> 
+         <i class="fas fa-list"> </i> 
+        </div> 
+        <span class="text-sm"> 数据列表 </span> 
+       </div> 
+       <div class="draggable-item rounded-md p-2 mb-1.5 flex items-center"> 
+        <div class="w-8 h-8 bg-primary-light rounded flex items-center justify-center text-primary mr-2.5"> 
+         <i class="fas fa-user-circle"> </i> 
+        </div> 
+        <span class="text-sm"> 详情卡片 </span> 
+       </div> 
+      </div> 
+     </div> 
+     <!-- 表单组件 --> 
+     <div class="mt-1"> 
+      <div class="panel-title flex items-center justify-between"> 
+       <span> 表单组件 </span> 
+       <i class="fas fa-chevron-down text-xs text-text-tertiary"> </i> 
+      </div> 
+      <div class="p-2"> 
+       <div class="draggable-item rounded-md p-2 mb-1.5 flex items-center"> 
+        <div class="w-8 h-8 bg-primary-light rounded flex items-center justify-center text-primary mr-2.5"> 
+         <i class="fas fa-search"> </i> 
+        </div> 
+        <span class="text-sm"> 查询表单 </span> 
+       </div> 
+       <div class="draggable-item rounded-md p-2 mb-1.5 flex items-center"> 
+        <div class="w-8 h-8 bg-primary-light rounded flex items-center justify-center text-primary mr-2.5"> 
+         <i class="fas fa-edit"> </i> 
+        </div> 
+        <span class="text-sm"> 基础表单 </span> 
+       </div> 
+       <div class="draggable-item rounded-md p-2 mb-1.5 flex items-center"> 
+        <div class="w-8 h-8 bg-primary-light rounded flex items-center justify-center text-primary mr-2.5"> 
+         <i class="fas fa-sort-numeric-up"> </i> 
+        </div> 
+        <span class="text-sm"> 步骤表单 </span> 
+       </div> 
+      </div> 
+     </div> 
+     <!-- 导航组件 --> 
+     <div class="mt-1"> 
+      <div class="panel-title flex items-center justify-between"> 
+       <span> 导航组件 </span> 
+       <i class="fas fa-chevron-right text-xs text-text-tertiary"> </i> 
+      </div> 
+     </div> 
+    </div> 
+   </aside> 
+   <!-- 中央画布区域 --> 
+   <main class="flex-1 bg-canvas-bg overflow-hidden relative flex flex-col"> 
+    <!-- 页面流工具栏 --> 
+    <div class="bg-white border-b border-border-color px-4 py-2 flex items-center"> 
+     <div class="text-sm text-text-secondary mr-3">
+       页面流视图 
+     </div> 
+     <button class="text-xs text-primary flex items-center"> <i class="fas fa-plus-circle mr-1.5"> </i> 添加页面 </button> 
+     <div class="ml-auto flex items-center space-x-3"> 
+      <button class="text-xs text-text-secondary flex items-center"> <i class="fas fa-arrows-alt mr-1.5"> </i> 自动排列 </button> 
+      <button class="text-xs text-text-secondary flex items-center"> <i class="fas fa-link mr-1.5"> </i> 添加连接 </button> 
+     </div> 
+    </div> 
+    <!-- 画布容器 --> 
+    <div class="flex-1 overflow-auto relative"> 
+     <div class="absolute inset-0 canvas-grid flex items-center justify-center"> 
+      <!-- 画布内容 --> 
+      <div class="relative w-[1200px] h-[800px]"> 
+       <!-- 首页节点 --> 
+       <div class="absolute left-[100px] top-[100px] w-48 bg-white border-2 border-primary rounded-lg shadow-md p-3 cursor-move node-selected"> 
+        <div class="flex items-start justify-between mb-2"> 
+         <div class="flex items-center"> 
+          <i class="fas fa-home text-primary mr-2"> </i> 
+          <span class="font-medium text-sm"> 首页 </span> 
+         </div> 
+         <div class="text-xs text-text-tertiary">
+           / 
+         </div> 
+        </div> 
+        <div class="text-xs text-text-tertiary mb-2">
+          Dashboard 
+        </div> 
+        <div class="flex justify-end"> 
+         <div class="w-2 h-2 bg-success rounded-full mr-1.5"> 
+         </div> 
+         <span class="text-xs text-text-tertiary"> 已生成 </span> 
+        </div> 
+        <div class="absolute -bottom-1.5 -right-1.5 w-4 h-4 bg-primary rounded-full text-white text-xs flex items-center justify-center">
+          1 
+        </div> 
+        <div class="resize-handle"> 
+        </div> 
+       </div> 
+       <!-- 用户列表页节点 --> 
+       <div class="absolute left-[300px] top-[80px] w-48 bg-white border border-border-color rounded-lg shadow-md p-3 cursor-move"> 
+        <div class="flex items-start justify-between mb-2"> 
+         <div class="flex items-center"> 
+          <i class="fas fa-users text-info mr-2"> </i> 
+          <span class="font-medium text-sm"> 用户列表 </span> 
+         </div> 
+         <div class="text-xs text-text-tertiary">
+           /users 
+         </div> 
+        </div> 
+        <div class="text-xs text-text-tertiary mb-2">
+          UserList 
+        </div> 
+        <div class="flex justify-end"> 
+         <div class="w-2 h-2 bg-success rounded-full mr-1.5"> 
+         </div> 
+         <span class="text-xs text-text-tertiary"> 已生成 </span> 
+        </div> 
+        <div class="resize-handle"> 
+        </div> 
+       </div> 
+       <!-- 用户详情页节点 --> 
+       <div class="absolute left-[500px] top-[80px] w-48 bg-white border border-border-color rounded-lg shadow-md p-3 cursor-move"> 
+        <div class="flex items-start justify-between mb-2"> 
+         <div class="flex items-center"> 
+          <i class="fas fa-user text-info mr-2"> </i> 
+          <span class="font-medium text-sm"> 用户详情 </span> 
+         </div> 
+         <div class="text-xs text-text-tertiary">
+           /users/:id 
+         </div> 
+        </div> 
+        <div class="text-xs text-text-tertiary mb-2">
+          UserDetail 
+        </div> 
+        <div class="flex justify-end"> 
+         <div class="w-2 h-2 bg-warning rounded-full mr-1.5"> 
+         </div> 
+         <span class="text-xs text-text-tertiary"> 待优化 </span> 
+        </div> 
+        <div class="resize-handle"> 
+        </div> 
+       </div> 
+       <!-- 角色管理页节点 --> 
+       <div class="absolute left-[300px] top-[220px] w-48 bg-white border border-border-color rounded-lg shadow-md p-3 cursor-move"> 
+        <div class="flex items-start justify-between mb-2"> 
+         <div class="flex items-center"> 
+          <i class="fas fa-shield-alt text-info mr-2"> </i> 
+          <span class="font-medium text-sm"> 角色管理 </span> 
+         </div> 
+         <div class="text-xs text-text-tertiary">
+           /roles 
+         </div> 
+        </div> 
+        <div class="text-xs text-text-tertiary mb-2">
+          RoleManagement 
+        </div> 
+        <div class="flex justify-end"> 
+         <div class="w-2 h-2 bg-danger rounded-full mr-1.5"> 
+         </div> 
+         <span class="text-xs text-text-tertiary"> 未生成 </span> 
+        </div> 
+        <div class="resize-handle"> 
+        </div> 
+       </div> 
+       <!-- 连接线（使用SVG绘制） --> 
+       <svg class="absolute inset-0 w-full h-full pointer-events-none" xmlns="http://www.w3.org/2000/svg"> 
+        <!-- 首页 -> 用户列表 --> 
+        <path d="M148,120 C198,120 250,120 250,120 L250,120" stroke="#ccc" stroke-width="1.5" fill="none" marker-end="url(#arrowhead)"> 
+        </path> 
+        <!-- 用户列表 -> 用户详情 --> 
+        <path d="M348,120 C398,120 450,120 450,120 L450,120" stroke="#ccc" stroke-width="1.5" fill="none" marker-end="url(#arrowhead)"> 
+        </path> 
+        <!-- 首页 -> 角色管理 --> 
+        <path d="M148,160 C198,160 250,180 250,180 L250,180" stroke="#ccc" stroke-width="1.5" fill="none" marker-end="url(#arrowhead)"> 
+        </path> 
+        <!-- 箭头标记定义 --> 
+        <defs> 
+         <marker id="arrowhead" markerwidth="10" markerheight="7" refx="9" refy="3.5" orient="auto"> 
+          <polygon points="0 0, 10 3.5, 0 7" fill="#ccc"> 
+          </polygon> 
+         </marker> 
+        </defs> 
+       </svg> 
+      </div> 
+     </div> 
+    </div> 
+   </main> 
+   <!-- 右侧属性面板 --> 
+   <aside class="w-72 bg-panel-bg border-l border-border-color flex flex-col h-full"> 
+    <!-- 选中状态提示 --> 
+    <div id="no-selection" class="hidden flex-1 flex items-center justify-center text-text-tertiary text-sm">
+      未选择任何元素 
+    </div> 
+    <!-- 属性面板内容 --> 
+    <div id="property-panel"> 
+     <!-- 页面信息 --> 
+     <div class="panel-title">
+       页面属性 
+     </div> 
+     <div class="p-4 space-y-4"> 
+      <div class="property-group"> 
+       <label class="property-label"> 页面名称 </label> 
+       <input type="text" value="首页" class="w-full border border-border-color rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary"> 
+      </div> 
+      <div class="property-group"> 
+       <label class="property-label"> 页面路径 </label> 
+       <input type="text" value="/" class="w-full border border-border-color rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary"> 
+      </div> 
+      <div class="property-group"> 
+       <label class="property-label"> 组件名称 </label> 
+       <input type="text" value="Dashboard" class="w-full border border-border-color rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary"> 
+      </div> 
+      <div class="property-group"> 
+       <label class="property-label"> 页面标题 </label> 
+       <input type="text" value="系统首页" class="w-full border border-border-color rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary"> 
+      </div> 
+      <div class="property-group"> 
+       <label class="property-label"> 布局类型 </label> 
+       <select class="w-full border border-border-color rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary bg-white"> <option> BasicLayout (基础布局) </option> <option> AdminLayout (管理后台布局) </option> <option> BlankLayout (空白布局) </option> </select> 
+      </div> 
+     </div> 
+     <!-- 数据配置 --> 
+     <div class="panel-title">
+       数据配置 
+     </div> 
+     <div class="p-4 space-y-4"> 
+      <div class="property-group"> 
+       <label class="property-label"> 数据接口 </label> 
+       <div class="flex"> 
+        <input type="text" value="/api/dashboard/statistics" class="flex-1 border border-border-color rounded-l-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary"> 
+        <select class="border-l-0 border border-border-color rounded-r-md px-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary bg-white"> <option> GET </option> <option> POST </option> <option> PUT </option> <option> DELETE </option> </select> 
+       </div> 
+      </div> 
+      <div class="property-group"> 
+       <label class="property-label"> 缓存策略 </label> 
+       <select class="w-full border border-border-color rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary bg-white"> <option> 不缓存 </option> <option> 临时缓存 (页面会话) </option> <option> 长期缓存 (1小时) </option> </select> 
+      </div> 
+      <div class="property-group"> 
+       <label class="property-label"> 权限控制 </label> 
+       <select class="w-full border border-border-color rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary bg-white"> <option> 无需权限 </option> <option> 登录用户可访问 </option> <option> 指定角色可访问 </option> </select> 
+      </div> 
+     </div> 
+     <!-- 高级设置 --> 
+     <div class="panel-title">
+       高级设置 
+     </div> 
+     <div class="p-4 space-y-4"> 
+      <div class="flex items-center justify-between"> 
+       <div> 
+        <div class="property-label">
+          页面动画 
+        </div> 
+        <div class="property-value text-xs text-text-tertiary">
+          页面切换动画效果 
+        </div> 
+       </div> 
+       <label class="relative inline-flex items-center cursor-pointer"> <input type="checkbox" checked class="sr-only peer"> 
+        <div class="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full after:content-[&quot;&quot;] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary"> 
+        </div> </label> 
+      </div> 
+      <div class="flex items-center justify-between"> 
+       <div> 
+        <div class="property-label">
+          面包屑导航 
+        </div> 
+        <div class="property-value text-xs text-text-tertiary">
+          显示页面层级导航 
+        </div> 
+       </div> 
+       <label class="relative inline-flex items-center cursor-pointer"> <input type="checkbox" checked class="sr-only peer"> 
+        <div class="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full after:content-[&quot;&quot;] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary"> 
+        </div> </label> 
+      </div> 
+      <div class="flex items-center justify-between"> 
+       <div> 
+        <div class="property-label">
+          页面缓存 
+        </div> 
+        <div class="property-value text-xs text-text-tertiary">
+          路由切换时缓存页面状态 
+        </div> 
+       </div> 
+       <label class="relative inline-flex items-center cursor-pointer"> <input type="checkbox" class="sr-only peer"> 
+        <div class="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full after:content-[&quot;&quot;] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary"> 
+        </div> </label> 
+      </div> 
+     </div> 
+    </div> 
+   </aside> 
+  </div> 
+  <script>// 当页面大小或者内容发生变化时，通知导航页面跳转iframe高度
+ytSendPageSize();
+// 简单的交互功能示例
+document.addEventListener('DOMContentLoaded', function () {
+  // 节点选择功能
+  var nodes = document.querySelectorAll('.cursor-move');
+  nodes.forEach(function (node) {
+    node.addEventListener('click', function (e) {
+      // 阻止事件冒泡，避免选中画布
+      e.stopPropagation();
+      // 移除其他节点的选中状态
+      nodes.forEach(function (n) {
+        return n.classList.remove('node-selected', 'border-primary');
+      });
+      nodes.forEach(function (n) {
+        return n.classList.add('border-border-color');
+      });
+      // 添加当前节点的选中状态
+      this.classList.add('node-selected', 'border-primary');
+      this.classList.remove('border-border-color');
+      // 显示属性面板，隐藏未选择提示
+      document.getElementById('no-selection').classList.add('hidden');
+      document.getElementById('property-panel').classList.remove('hidden');
+    });
+  });
+  // 点击画布空白处取消选择
+  document.querySelector('.canvas-grid').addEventListener('click', function () {
+    // 移除所有节点的选中状态
+    nodes.forEach(function (n) {
+      n.classList.remove('node-selected', 'border-primary');
+      n.classList.add('border-border-color');
+    });
+    // 隐藏属性面板，显示未选择提示
+    document.getElementById('no-selection').classList.remove('hidden');
+    document.getElementById('property-panel').classList.add('hidden');
+  });
+  // 视图切换按钮
+  var viewButtons = document.querySelectorAll('.toolbar-btn.px-3');
+  viewButtons.forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      // 移除其他按钮的激活状态
+      viewButtons.forEach(function (b) {
+        return b.classList.remove('toolbar-btn-active');
+      });
+      // 添加当前按钮的激活状态
+      this.classList.add('toolbar-btn-active');
+      // 这里可以添加视图切换的逻辑
+    });
+  });
+  // 组件库分类折叠/展开功能
+  var categoryToggles = document.querySelectorAll('.panel-title .fa-chevron-down, .panel-title .fa-chevron-right');
+  categoryToggles.forEach(function (toggle) {
+    toggle.addEventListener('click', function () {
+      var isExpanded = this.classList.contains('fa-chevron-down');
+      // 切换图标
+      if (isExpanded) {
+        this.classList.remove('fa-chevron-down');
+        this.classList.add('fa-chevron-right');
+        // 这里可以添加折叠分类的逻辑
+      } else {
+        this.classList.remove('fa-chevron-right');
+        this.classList.add('fa-chevron-down');
+        // 这里可以添加展开分类的逻辑
+      }
+    });
+  });
+});</script>  
+ </body>
+</html>

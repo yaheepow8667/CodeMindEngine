@@ -1,0 +1,418 @@
+<!doctype html>
+<html lang="zh-CN">
+ <head> 
+  <meta charset="UTF-8"> 
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+  <title>项目管理空间 - 智码引擎</title> 
+  <link href="./projectManagement/all.min.css" rel="stylesheet"> 
+  <script src="../javascript/reload.js"></script> 
+  <script src="./projectManagement/resource_8796410000.js"></script> 
+  <script>tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        primary: '#1677ff',
+        secondary: '#40a9ff',
+        success: '#52c41a',
+        warning: '#faad14',
+        danger: '#ff4d4f',
+        info: '#1890ff',
+        light: '#f5f5f5',
+        dark: '#141414',
+        'primary-light': '#e6f7ff',
+        'primary-dark': '#0958d9',
+        'text-primary': '#333333',
+        'text-secondary': '#666666',
+        'text-tertiary': '#999999',
+        'border-color': '#e8e8e8'
+      },
+      fontFamily: {
+        inter: ['Inter', 'system-ui', 'sans-serif']
+      },
+      spacing: {
+        '128': '32rem'
+      },
+      boxShadow: {
+        'card': '0 2px 8px rgba(0, 0, 0, 0.09)',
+        'dropdown': '0 4px 16px rgba(0, 0, 0, 0.12)'
+      }
+    }
+  }
+};</script> 
+  <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .scrollbar-hide {
+                -ms-overflow-style: none;
+                scrollbar-width: none;
+            }
+            .scrollbar-hide::-webkit-scrollbar {
+                display: none;
+            }
+            .transition-all-300 {
+                transition: all 0.3s ease;
+            }
+            .text-balance {
+                text-wrap: balance;
+            }
+            .tab-active {
+                @apply text-primary border-primary font-medium;
+            }
+            .badge {
+                @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+            }
+        }
+        /* 全局样式 */
+        body {
+            @apply font-inter bg-light text-text-primary;
+        }
+        /* 卡片样式 */
+        .ant-card {
+            @apply bg-white rounded-lg shadow-card p-5 mb-5 transition-all duration-300 hover:shadow-lg;
+        }
+        /* 按钮样式 */
+        .btn {
+            @apply px-4 py-2 rounded-md transition-all duration-200 font-medium focus:outline-none focus:ring-2 focus:ring-offset-2;
+        }
+        .btn-primary {
+            @apply bg-primary text-white hover:bg-primary-dark focus:ring-primary/50;
+        }
+        .btn-outline {
+            @apply border border-primary text-primary hover:bg-primary-light focus:ring-primary/50;
+        }
+        /* 标签页样式 */
+        .ant-tabs-tab {
+            @apply py-3 px-4 text-text-secondary border-b-2 border-transparent transition-all duration-200 hover:text-primary;
+        }
+        .ant-tabs-tab-active {
+            @apply text-primary border-primary font-medium;
+        }
+        /* 项目卡片样式 */
+        .project-card {
+            @apply bg-white rounded-lg shadow-card overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1 cursor-pointer;
+        }
+        .project-card:hover .project-actions {
+            @apply opacity-100;
+        }
+        .project-actions {
+            @apply absolute top-2 right-2 opacity-0 transition-opacity duration-200 flex space-x-1;
+        }
+        .project-action-btn {
+            @apply w-7 h-7 flex items-center justify-center rounded-full bg-white/80 text-text-secondary hover:bg-primary hover:text-white transition-all duration-200 shadow-sm;
+        }
+        /* 技术栈标签样式 */
+        .tech-tag {
+            @apply bg-primary-light/30 text-primary text-xs px-2 py-1 rounded-full mr-1 mb-1 inline-block;
+        }
+    </style> 
+ </head> 
+ <body class="p-4 md:p-6"> 
+  <!-- 页面标题和操作区 --> 
+  <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-6"> 
+   <div> 
+    <h1 class="text-[clamp(1.5rem,3vw,2rem)] font-bold text-text-primary mb-1"> 项目管理空间 </h1> 
+    <p class="text-text-tertiary"> 管理和维护您的所有AI生成项目 </p> 
+   </div> 
+   <div class="mt-4 md:mt-0 flex space-x-3"> 
+    <button class="btn btn-outline flex items-center"> <i class="fas fa-filter mr-2"> </i> 筛选 </button> 
+    <button class="btn btn-primary flex items-center"> <i class="fas fa-plus mr-2"> </i> 新建项目 </button> 
+   </div> 
+  </div> 
+  <!-- 项目列表视图和详情视图切换 --> 
+  <div class="bg-white rounded-lg shadow-card mb-6"> 
+   <div class="flex border-b border-border-color"> 
+    <button id="list-view-btn" class="flex-1 py-4 text-center font-medium text-primary border-b-2 border-primary"> <i class="fas fa-th-large mr-2"> </i> 项目列表 </button> 
+    <button id="detail-view-btn" class="flex-1 py-4 text-center font-medium text-text-secondary border-b-2 border-transparent hover:text-primary transition-all duration-200"> <i class="fas fa-chart-line mr-2"> </i> 项目详情 </button> 
+   </div> 
+   <!-- 项目列表视图 --> 
+   <div id="project-list-view" class="p-5"> 
+    <!-- 搜索框 --> 
+    <div class="relative mb-6"> 
+     <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-text-tertiary"> </i> 
+     <input type="text" placeholder="搜索项目名称、描述或技术栈..." class="w-full pl-10 pr-4 py-2 rounded-md border border-border-color focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all duration-200"> 
+    </div> 
+    <!-- 项目卡片网格 --> 
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5"> 
+     <!-- 项目卡片 1 --> 
+     <div class="project-card relative"> 
+      <div class="project-actions"> 
+       <button class="project-action-btn" title="打开项目"> <i class="fas fa-external-link-alt"> </i> </button> 
+       <button class="project-action-btn" title="项目设置"> <i class="fas fa-cog"> </i> </button> 
+       <button class="project-action-btn" title="更多选项"> <i class="fas fa-ellipsis-v"> </i> </button> 
+      </div> 
+      <img src="./projectManagement/0f8d61df5c7b5450e65d5f067c391d2a.png" alt="用户管理系统" class="w-full h-40 object-cover"> 
+      <div class="p-4"> 
+       <h3 class="font-semibold text-lg mb-1 line-clamp-1"> 用户管理系统 </h3> 
+       <p class="text-text-tertiary text-sm mb-3 line-clamp-2"> 完整的用户管理解决方案，包含权限控制和数据分析功能 </p> 
+       <div class="flex flex-wrap mb-3"> 
+        <span class="tech-tag"> Vue3 </span> 
+        <span class="tech-tag"> Ant Design Vue </span> 
+        <span class="tech-tag"> NestJS </span> 
+       </div> 
+       <div class="flex justify-between items-center text-xs text-text-tertiary"> 
+        <span> <i class="far fa-clock mr-1"> </i> 2023-11-15 </span> 
+        <span class="badge bg-success/10 text-success"> 已部署 </span> 
+       </div> 
+      </div> 
+     </div> 
+     <!-- 项目卡片 2 --> 
+     <div class="project-card relative"> 
+      <div class="project-actions"> 
+       <button class="project-action-btn" title="打开项目"> <i class="fas fa-external-link-alt"> </i> </button> 
+       <button class="project-action-btn" title="项目设置"> <i class="fas fa-cog"> </i> </button> 
+       <button class="project-action-btn" title="更多选项"> <i class="fas fa-ellipsis-v"> </i> </button> 
+      </div> 
+      <img src="./projectManagement/b00c5e3bd796d6927740e195b862b5db.png" alt="电商管理平台" class="w-full h-40 object-cover"> 
+      <div class="p-4"> 
+       <h3 class="font-semibold text-lg mb-1 line-clamp-1"> 电商管理平台 </h3> 
+       <p class="text-text-tertiary text-sm mb-3 line-clamp-2"> 商品管理、订单处理和客户分析的一体化电商解决方案 </p> 
+       <div class="flex flex-wrap mb-3"> 
+        <span class="tech-tag"> React </span> 
+        <span class="tech-tag"> Ant Design Pro </span> 
+        <span class="tech-tag"> Node.js </span> 
+       </div> 
+       <div class="flex justify-between items-center text-xs text-text-tertiary"> 
+        <span> <i class="far fa-clock mr-1"> </i> 2023-11-10 </span> 
+        <span class="badge bg-warning/10 text-warning"> 开发中 </span> 
+       </div> 
+      </div> 
+     </div> 
+     <!-- 项目卡片 3 --> 
+     <div class="project-card relative"> 
+      <div class="project-actions"> 
+       <button class="project-action-btn" title="打开项目"> <i class="fas fa-external-link-alt"> </i> </button> 
+       <button class="project-action-btn" title="项目设置"> <i class="fas fa-cog"> </i> </button> 
+       <button class="project-action-btn" title="更多选项"> <i class="fas fa-ellipsis-v"> </i> </button> 
+      </div> 
+      <img src="./projectManagement/d0749de2275fdbd9af68a185ef725fa8.png" alt="数据分析仪表盘" class="w-full h-40 object-cover"> 
+      <div class="p-4"> 
+       <h3 class="font-semibold text-lg mb-1 line-clamp-1"> 数据分析仪表盘 </h3> 
+       <p class="text-text-tertiary text-sm mb-3 line-clamp-2"> 多维度数据可视化分析工具，支持自定义报表生成 </p> 
+       <div class="flex flex-wrap mb-3"> 
+        <span class="tech-tag"> React </span> 
+        <span class="tech-tag"> ECharts </span> 
+        <span class="tech-tag"> Express </span> 
+       </div> 
+       <div class="flex justify-between items-center text-xs text-text-tertiary"> 
+        <span> <i class="far fa-clock mr-1"> </i> 2023-11-05 </span> 
+        <span class="badge bg-success/10 text-success"> 已部署 </span> 
+       </div> 
+      </div> 
+     </div> 
+     <!-- 项目卡片 4 --> 
+     <div class="project-card relative"> 
+      <div class="project-actions"> 
+       <button class="project-action-btn" title="打开项目"> <i class="fas fa-external-link-alt"> </i> </button> 
+       <button class="project-action-btn" title="项目设置"> <i class="fas fa-cog"> </i> </button> 
+       <button class="project-action-btn" title="更多选项"> <i class="fas fa-ellipsis-v"> </i> </button> 
+      </div> 
+      <img src="./projectManagement/83a70c23df7ce2fc97cd973c12a4acfb.png" alt="任务管理系统" class="w-full h-40 object-cover"> 
+      <div class="p-4"> 
+       <h3 class="font-semibold text-lg mb-1 line-clamp-1"> 任务管理系统 </h3> 
+       <p class="text-text-tertiary text-sm mb-3 line-clamp-2"> 基于看板的团队协作工具，支持任务分配和进度跟踪 </p> 
+       <div class="flex flex-wrap mb-3"> 
+        <span class="tech-tag"> Vue3 </span> 
+        <span class="tech-tag"> Element Plus </span> 
+        <span class="tech-tag"> NestJS </span> 
+       </div> 
+       <div class="flex justify-between items-center text-xs text-text-tertiary"> 
+        <span> <i class="far fa-clock mr-1"> </i> 2023-10-28 </span> 
+        <span class="badge bg-danger/10 text-danger"> 需优化 </span> 
+       </div> 
+      </div> 
+     </div> 
+     <!-- 项目卡片 - 新建项目占位符 --> 
+     <div class="border-2 border-dashed border-border-color rounded-lg flex flex-col items-center justify-center h-full p-6 hover:border-primary hover:text-primary transition-all duration-300 cursor-pointer"> 
+      <div class="w-16 h-16 rounded-full bg-primary-light/30 flex items-center justify-center mb-4"> 
+       <i class="fas fa-plus text-2xl"> </i> 
+      </div> 
+      <h3 class="font-medium text-lg mb-1"> 创建新项目 </h3> 
+      <p class="text-text-tertiary text-sm text-center"> 使用AI生成全新的应用项目 </p> 
+     </div> 
+    </div> 
+   </div> 
+   <!-- 项目详情视图 --> 
+   <div id="project-detail-view" class="hidden"> 
+    <!-- 项目头部信息 --> 
+    <div class="p-5 border-b border-border-color"> 
+     <div class="flex flex-col md:flex-row md:items-center md:justify-between"> 
+      <div> 
+       <div class="flex items-center"> 
+        <h2 class="text-xl font-bold mr-3"> 用户管理系统 </h2> 
+        <span class="badge bg-success/10 text-success"> 已部署 </span> 
+       </div> 
+       <p class="text-text-tertiary mt-1"> 完整的用户管理解决方案，包含权限控制和数据分析功能 </p> 
+      </div> 
+      <div class="mt-4 md:mt-0 flex space-x-3"> 
+       <button class="btn btn-outline flex items-center"> <i class="fas fa-code mr-2"> </i> 生成新版本 </button> 
+       <button class="btn btn-primary flex items-center"> <i class="fas fa-external-link-alt mr-2"> </i> 打开项目 </button> 
+      </div> 
+     </div> 
+     <!-- 技术栈标签 --> 
+     <div class="mt-4 flex flex-wrap"> 
+      <span class="tech-tag"> Vue3 </span> 
+      <span class="tech-tag"> Ant Design Vue </span> 
+      <span class="tech-tag"> NestJS </span> 
+      <span class="tech-tag"> MySQL </span> 
+      <span class="tech-tag"> JWT认证 </span> 
+     </div> 
+    </div> 
+    <!-- 项目详情标签页 --> 
+    <div class="border-b border-border-color"> 
+     <div class="flex overflow-x-auto scrollbar-hide"> 
+      <button class="ant-tabs-tab ant-tabs-tab-active"> 概览 </button> 
+      <button class="ant-tabs-tab"> 代码仓库 </button> 
+      <button class="ant-tabs-tab"> 蓝图历史 </button> 
+      <button class="ant-tabs-tab"> 环境部署 </button> 
+      <button class="ant-tabs-tab"> 文档API </button> 
+      <button class="ant-tabs-tab"> 成员管理 </button> 
+     </div> 
+    </div> 
+    <!-- 概览标签内容 --> 
+    <div class="p-5"> 
+     <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-6"> 
+      <div class="ant-card p-4"> 
+       <div class="flex items-center justify-between"> 
+        <div> 
+         <p class="text-text-tertiary text-sm"> 生成次数 </p> 
+         <h3 class="text-2xl font-bold mt-1"> 12 </h3> 
+        </div> 
+        <div class="w-12 h-12 rounded-full bg-primary-light/30 flex items-center justify-center text-primary"> 
+         <i class="fas fa-magic text-xl"> </i> 
+        </div> 
+       </div> 
+       <div class="mt-4 text-xs text-success flex items-center"> 
+        <i class="fas fa-arrow-up mr-1"> </i> 较上月增长 20% 
+       </div> 
+      </div> 
+      <div class="ant-card p-4"> 
+       <div class="flex items-center justify-between"> 
+        <div> 
+         <p class="text-text-tertiary text-sm"> 代码行数 </p> 
+         <h3 class="text-2xl font-bold mt-1"> 15.8k </h3> 
+        </div> 
+        <div class="w-12 h-12 rounded-full bg-primary-light/30 flex items-center justify-center text-primary"> 
+         <i class="fas fa-file-code text-xl"> </i> 
+        </div> 
+       </div> 
+       <div class="mt-4 text-xs text-success flex items-center"> 
+        <i class="fas fa-arrow-up mr-1"> </i> 较上次生成 8.5% 
+       </div> 
+      </div> 
+      <div class="ant-card p-4"> 
+       <div class="flex items-center justify-between"> 
+        <div> 
+         <p class="text-text-tertiary text-sm"> 质量评分 </p> 
+         <h3 class="text-2xl font-bold mt-1"> 96 <span class="text-base font-normal text-text-tertiary"> /100 </span> </h3> 
+        </div> 
+        <div class="w-12 h-12 rounded-full bg-primary-light/30 flex items-center justify-center text-primary"> 
+         <i class="fas fa-check-circle text-xl"> </i> 
+        </div> 
+       </div> 
+       <div class="mt-4 text-xs text-text-tertiary flex items-center"> 
+        <i class="fas fa-check mr-1"> </i> 优秀代码质量 
+       </div> 
+      </div> 
+     </div> 
+     <!-- 项目活动时间线 --> 
+     <div class="ant-card"> 
+      <h3 class="text-lg font-semibold mb-4"> 项目活动 </h3> 
+      <div class="space-y-5"> 
+       <div class="flex"> 
+        <div class="flex-shrink-0 w-8 h-8 rounded-full bg-success/10 flex items-center justify-center text-success"> 
+         <i class="fas fa-cloud-upload-alt"> </i> 
+        </div> 
+        <div class="ml-4"> 
+         <div class="flex items-center"> 
+          <span class="font-medium"> 部署到生产环境 </span> 
+          <span class="text-text-tertiary text-sm ml-3"> 今天 14:30 </span> 
+         </div> 
+         <p class="text-text-secondary mt-1"> 版本 v1.2.0 已成功部署到生产环境 </p> 
+        </div> 
+       </div> 
+       <div class="flex"> 
+        <div class="flex-shrink-0 w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary"> 
+         <i class="fas fa-code"> </i> 
+        </div> 
+        <div class="ml-4"> 
+         <div class="flex items-center"> 
+          <span class="font-medium"> 代码生成完成 </span> 
+          <span class="text-text-tertiary text-sm ml-3"> 昨天 09:15 </span> 
+         </div> 
+         <p class="text-text-secondary mt-1"> 根据最新蓝图生成了前端和后端代码 </p> 
+        </div> 
+       </div> 
+       <div class="flex"> 
+        <div class="flex-shrink-0 w-8 h-8 rounded-full bg-warning/10 flex items-center justify-center text-warning"> 
+         <i class="fas fa-edit"> </i> 
+        </div> 
+        <div class="ml-4"> 
+         <div class="flex items-center"> 
+          <span class="font-medium"> 更新项目蓝图 </span> 
+          <span class="text-text-tertiary text-sm ml-3"> 2023-11-14 </span> 
+         </div> 
+         <p class="text-text-secondary mt-1"> 修改了用户数据模型，添加了新的角色字段 </p> 
+        </div> 
+       </div> 
+       <div class="flex"> 
+        <div class="flex-shrink-0 w-8 h-8 rounded-full bg-info/10 flex items-center justify-center text-info"> 
+         <i class="fas fa-plus-circle"> </i> 
+        </div> 
+        <div class="ml-4"> 
+         <div class="flex items-center"> 
+          <span class="font-medium"> 项目创建 </span> 
+          <span class="text-text-tertiary text-sm ml-3"> 2023-11-01 </span> 
+         </div> 
+         <p class="text-text-secondary mt-1"> 通过AI生成创建了新项目 </p> 
+        </div> 
+       </div> 
+      </div> 
+     </div> 
+    </div> 
+   </div> 
+  </div>  
+  <script>// 当页面大小或者内容发生变化时，通知导航页面跳转iframe高度
+ytSendPageSize();
+// 页面加载完成后初始化
+document.addEventListener('DOMContentLoaded', function () {
+  // 列表视图和详情视图切换
+  var listViewBtn = document.getElementById('list-view-btn');
+  var detailViewBtn = document.getElementById('detail-view-btn');
+  var listView = document.getElementById('project-list-view');
+  var detailView = document.getElementById('project-detail-view');
+  listViewBtn.addEventListener('click', function () {
+    listViewBtn.classList.add('text-primary', 'border-primary');
+    listViewBtn.classList.remove('text-text-secondary', 'border-transparent');
+    detailViewBtn.classList.add('text-text-secondary', 'border-transparent');
+    detailViewBtn.classList.remove('text-primary', 'border-primary');
+    listView.classList.remove('hidden');
+    detailView.classList.add('hidden');
+    ytSendPageSize();
+  });
+  detailViewBtn.addEventListener('click', function () {
+    detailViewBtn.classList.add('text-primary', 'border-primary');
+    detailViewBtn.classList.remove('text-text-secondary', 'border-transparent');
+    listViewBtn.classList.add('text-text-secondary', 'border-transparent');
+    listViewBtn.classList.remove('text-primary', 'border-primary');
+    detailView.classList.remove('hidden');
+    listView.classList.add('hidden');
+    ytSendPageSize();
+  });
+  // 标签页切换
+  var tabButtons = document.querySelectorAll('.ant-tabs-tab');
+  tabButtons.forEach(function (button) {
+    button.addEventListener('click', function () {
+      // 移除所有标签的激活状态
+      tabButtons.forEach(function (btn) {
+        btn.classList.remove('ant-tabs-tab-active');
+      });
+      // 添加当前标签的激活状态
+      button.classList.add('ant-tabs-tab-active');
+      ytSendPageSize();
+    });
+  });
+});</script> 
+ </body>
+</html>
