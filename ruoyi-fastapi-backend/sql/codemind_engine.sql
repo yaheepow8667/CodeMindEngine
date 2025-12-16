@@ -9,7 +9,7 @@ ADD COLUMN display_name VARCHAR(100) COMMENT '显示名称',
 ADD COLUMN avatar_url TEXT COMMENT '头像地址',
 ADD COLUMN role VARCHAR(50) DEFAULT 'user' COMMENT '用户角色 (user, admin, super_admin)',
 ADD COLUMN email_verified BOOLEAN DEFAULT FALSE COMMENT '邮箱是否验证',
-ADD COLUMN uuid CHAR(36) UNIQUE DEFAULT (UUID()) COMMENT 'UUID 标识',
+ADD COLUMN uuid CHAR(36) UNIQUE COMMENT 'UUID 标识',
 ADD COLUMN last_login_at DATETIME COMMENT '最后登录时间';
 
 -- ===========================================
@@ -18,7 +18,7 @@ ADD COLUMN last_login_at DATETIME COMMENT '最后登录时间';
 
 -- 团队表
 CREATE TABLE teams (
-    id CHAR(36) PRIMARY KEY DEFAULT (UUID()),
+    id bigint(20) NOT NULL AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(200) NOT NULL COMMENT '团队名称',
     slug VARCHAR(100) UNIQUE NOT NULL COMMENT '团队URL标识',
     description TEXT COMMENT '团队描述',
@@ -36,8 +36,8 @@ CREATE TABLE teams (
 
 -- 团队成员表
 CREATE TABLE team_members (
-    id CHAR(36) PRIMARY KEY DEFAULT (UUID()),
-    team_id CHAR(36) NOT NULL COMMENT '团队ID',
+    id bigint(20) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    team_id bigint(20) NOT NULL COMMENT '团队ID',
     user_id BIGINT(20) NOT NULL COMMENT '用户ID',
     role VARCHAR(50) DEFAULT 'member' COMMENT '成员角色 (owner, admin, member, viewer)',
     joined_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '加入时间',
@@ -53,8 +53,8 @@ CREATE TABLE team_members (
 
 -- 邀请表
 CREATE TABLE invitations (
-    id CHAR(36) PRIMARY KEY DEFAULT (UUID()),
-    team_id CHAR(36) NOT NULL COMMENT '团队ID',
+    id bigint(20) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    team_id bigint(20) NOT NULL COMMENT '团队ID',
     email VARCHAR(255) NOT NULL COMMENT '邀请邮箱',
     token VARCHAR(255) UNIQUE NOT NULL COMMENT '邀请令牌',
     role VARCHAR(50) DEFAULT 'member' COMMENT '邀请角色',
@@ -73,8 +73,8 @@ CREATE TABLE invitations (
 
 -- 项目表
 CREATE TABLE projects (
-    id CHAR(36) PRIMARY KEY DEFAULT (UUID()),
-    team_id CHAR(36) NOT NULL COMMENT '团队ID',
+    id bigint(20) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    team_id bigint(20) NOT NULL COMMENT '团队ID',
     name VARCHAR(200) NOT NULL COMMENT '项目名称',
     slug VARCHAR(100) NOT NULL COMMENT '项目标识（团队内唯一）',
     description TEXT COMMENT '项目描述',
@@ -95,15 +95,15 @@ CREATE TABLE projects (
 
 -- 蓝图表
 CREATE TABLE blueprints (
-    id CHAR(36) PRIMARY KEY DEFAULT (UUID()),
-    project_id CHAR(36) NOT NULL COMMENT '项目ID',
+    id bigint(20) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    project_id bigint(20) NOT NULL COMMENT '项目ID',
     name VARCHAR(200) NOT NULL COMMENT '蓝图名称',
     description TEXT COMMENT '蓝图描述',
     version_tag VARCHAR(50) NOT NULL COMMENT '版本标签（如 v1.0.0, draft-1）',
     spec_document_id VARCHAR(100) COMMENT '独立文档存储中的文档ID',
     spec_summary JSON COMMENT '蓝图摘要信息',
     is_draft BOOLEAN DEFAULT TRUE COMMENT '是否为草稿',
-    parent_blueprint_id CHAR(36) COMMENT '父蓝图ID',
+    parent_blueprint_id bigint(20) COMMENT '父蓝图ID',
     created_by_user_id BIGINT(20) COMMENT '创建者用户ID',
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
@@ -118,8 +118,8 @@ CREATE TABLE blueprints (
 
 -- 蓝图变更记录表
 CREATE TABLE blueprint_changes (
-    id CHAR(36) PRIMARY KEY DEFAULT (UUID()),
-    blueprint_id CHAR(36) NOT NULL COMMENT '蓝图ID',
+    id bigint(20) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    blueprint_id bigint(20) NOT NULL COMMENT '蓝图ID',
     change_type VARCHAR(50) COMMENT '变更类型 (create, update, delete)',
     field_path VARCHAR(500) COMMENT '变更字段路径 如 "dataModels.User.fields"',
     old_value JSON COMMENT '旧值',
@@ -137,9 +137,9 @@ CREATE TABLE blueprint_changes (
 
 -- 生成任务表
 CREATE TABLE generation_jobs (
-    id CHAR(36) PRIMARY KEY DEFAULT (UUID()),
-    project_id CHAR(36) NOT NULL COMMENT '项目ID',
-    blueprint_id CHAR(36) NOT NULL COMMENT '蓝图ID',
+    id bigint(20) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    project_id bigint(20) NOT NULL COMMENT '项目ID',
+    blueprint_id bigint(20) NOT NULL COMMENT '蓝图ID',
     status VARCHAR(50) DEFAULT 'pending' COMMENT '任务状态 (pending, generating, qa, success, failed)',
     target_tech_stack JSON COMMENT '目标技术栈配置',
     trigger_type VARCHAR(50) DEFAULT 'manual' COMMENT '触发类型 (manual, api, webhook, schedule)',
@@ -160,8 +160,8 @@ CREATE TABLE generation_jobs (
 
 -- 生成产物表
 CREATE TABLE generated_artifacts (
-    id CHAR(36) PRIMARY KEY DEFAULT (UUID()),
-    job_id CHAR(36) NOT NULL COMMENT '生成任务ID',
+    id bigint(20) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    job_id bigint(20) NOT NULL COMMENT '生成任务ID',
     artifact_type VARCHAR(50) NOT NULL COMMENT '产物类型 (source_zip, qa_report, deploy_config, api_docs)',
     artifact_name VARCHAR(255) NOT NULL COMMENT '产物名称',
     storage_type VARCHAR(50) DEFAULT 'local' COMMENT '存储类型 (s3, oss, local)',
@@ -178,13 +178,13 @@ CREATE TABLE generated_artifacts (
 
 -- 部署配置表
 CREATE TABLE deployment_configs (
-    id CHAR(36) PRIMARY KEY DEFAULT (UUID()),
-    project_id CHAR(36) NOT NULL COMMENT '项目ID',
+    id bigint(20) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    project_id bigint(20) NOT NULL COMMENT '项目ID',
     name VARCHAR(200) NOT NULL COMMENT '配置名称',
     environment VARCHAR(50) NOT NULL COMMENT '部署环境 (development, staging, production)',
     config JSON NOT NULL COMMENT '部署配置内容',
     is_active BOOLEAN DEFAULT TRUE COMMENT '是否启用',
-    deployed_job_id CHAR(36) COMMENT '已部署的任务ID',
+    deployed_job_id bigint(20) COMMENT '已部署的任务ID',
     deployed_at DATETIME NULL COMMENT '部署时间',
     deployed_by_user_id BIGINT(20) COMMENT '部署者用户ID',
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
@@ -201,7 +201,7 @@ CREATE TABLE deployment_configs (
 
 -- 模板表
 CREATE TABLE templates (
-    id CHAR(36) PRIMARY KEY DEFAULT (UUID()),
+    id bigint(20) NOT NULL AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(200) NOT NULL COMMENT '模板名称',
     slug VARCHAR(100) UNIQUE NOT NULL COMMENT '模板标识',
     description TEXT COMMENT '模板描述',
@@ -225,8 +225,8 @@ CREATE TABLE templates (
 
 -- 模板版本表
 CREATE TABLE template_versions (
-    id CHAR(36) PRIMARY KEY DEFAULT (UUID()),
-    template_id CHAR(36) NOT NULL COMMENT '模板ID',
+    id bigint(20) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    template_id bigint(20) NOT NULL COMMENT '模板ID',
     version VARCHAR(50) NOT NULL COMMENT '版本号',
     changelog TEXT COMMENT '更新日志',
     template_content JSON NOT NULL COMMENT '模板JSON定义',
@@ -242,7 +242,7 @@ CREATE TABLE template_versions (
 
 -- 插件表
 CREATE TABLE plugins (
-    id CHAR(36) PRIMARY KEY DEFAULT (UUID()),
+    id bigint(20) NOT NULL AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(200) NOT NULL COMMENT '插件名称',
     plugin_type VARCHAR(50) NOT NULL COMMENT '插件类型 (code_generator, qa_checker, deployer)',
     target_framework VARCHAR(100) COMMENT '目标框架',
@@ -262,9 +262,9 @@ CREATE TABLE plugins (
 
 -- API访问令牌表
 CREATE TABLE api_tokens (
-    id CHAR(36) PRIMARY KEY DEFAULT (UUID()),
+    id bigint(20) NOT NULL AUTO_INCREMENT PRIMARY KEY,
     user_id BIGINT(20) NOT NULL COMMENT '用户ID',
-    team_id CHAR(36) COMMENT '团队ID',
+    team_id bigint(20) COMMENT '团队ID',
     name VARCHAR(200) NOT NULL COMMENT '令牌名称',
     token_hash VARCHAR(255) UNIQUE NOT NULL COMMENT '令牌哈希值',
     token_prefix VARCHAR(10) NOT NULL COMMENT '令牌前缀',
@@ -280,8 +280,8 @@ CREATE TABLE api_tokens (
 
 -- 文件资源表
 CREATE TABLE resources (
-    id CHAR(36) PRIMARY KEY DEFAULT (UUID()),
-    project_id CHAR(36) NOT NULL COMMENT '项目ID',
+    id bigint(20) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    project_id bigint(20) NOT NULL COMMENT '项目ID',
     name VARCHAR(255) NOT NULL COMMENT '资源名称',
     resource_type VARCHAR(50) NOT NULL COMMENT '资源类型 (image, file, json, sql)',
     storage_path TEXT NOT NULL COMMENT '存储路径',
@@ -295,8 +295,8 @@ CREATE TABLE resources (
 
 -- 订阅与支付表
 CREATE TABLE subscriptions (
-    id CHAR(36) PRIMARY KEY DEFAULT (UUID()),
-    team_id CHAR(36) NOT NULL COMMENT '团队ID',
+    id bigint(20) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    team_id bigint(20) NOT NULL COMMENT '团队ID',
     plan VARCHAR(50) NOT NULL COMMENT '订阅计划',
     status VARCHAR(20) DEFAULT 'active' COMMENT '订阅状态',
     current_period_start DATETIME NULL COMMENT '当前订阅周期开始时间',
@@ -317,12 +317,12 @@ CREATE TABLE subscriptions (
 
 -- 系统日志表
 CREATE TABLE system_logs (
-    id CHAR(36) PRIMARY KEY DEFAULT (UUID()),
+    id bigint(20) NOT NULL AUTO_INCREMENT PRIMARY KEY,
     level VARCHAR(20) NOT NULL COMMENT '日志级别 (info, warn, error, debug)',
     service_name VARCHAR(100) COMMENT '服务名称',
     user_id BIGINT(20) COMMENT '用户ID',
-    team_id CHAR(36) COMMENT '团队ID',
-    project_id CHAR(36) COMMENT '项目ID',
+    team_id bigint(20) COMMENT '团队ID',
+    project_id bigint(20) COMMENT '项目ID',
     action VARCHAR(200) NOT NULL COMMENT '操作描述',
     details JSON COMMENT '操作详情',
     ip_address VARCHAR(45) COMMENT 'IP地址',
@@ -338,8 +338,8 @@ CREATE TABLE system_logs (
 
 -- API请求日志表
 CREATE TABLE api_logs (
-    id CHAR(36) PRIMARY KEY DEFAULT (UUID()),
-    api_token_id CHAR(36) COMMENT 'API令牌ID',
+    id bigint(20) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    api_token_id bigint(20) COMMENT 'API令牌ID',
     endpoint VARCHAR(500) NOT NULL COMMENT '请求端点',
     method VARCHAR(10) NOT NULL COMMENT '请求方法',
     status_code INTEGER COMMENT '响应状态码',
@@ -357,12 +357,12 @@ CREATE TABLE api_logs (
 
 -- 审计日志表
 CREATE TABLE audit_logs (
-    id CHAR(36) PRIMARY KEY DEFAULT (UUID()),
+    id bigint(20) NOT NULL AUTO_INCREMENT PRIMARY KEY,
     user_id BIGINT(20) COMMENT '用户ID',
-    team_id CHAR(36) COMMENT '团队ID',
+    team_id bigint(20) COMMENT '团队ID',
     action_type VARCHAR(100) NOT NULL COMMENT '操作类型 (create, update, delete, login, logout)',
     resource_type VARCHAR(100) NOT NULL COMMENT '资源类型 (project, blueprint, user, team)',
-    resource_id CHAR(36) COMMENT '资源ID',
+    resource_id bigint(20) COMMENT '资源ID',
     old_values JSON COMMENT '旧值',
     new_values JSON COMMENT '新值',
     ip_address VARCHAR(45) COMMENT 'IP地址',
@@ -380,7 +380,7 @@ CREATE TABLE audit_logs (
 
 -- 通知表
 CREATE TABLE notifications (
-    id CHAR(36) PRIMARY KEY DEFAULT (UUID()),
+    id bigint(20) NOT NULL AUTO_INCREMENT PRIMARY KEY,
     user_id BIGINT(20) NOT NULL COMMENT '用户ID',
     type VARCHAR(50) NOT NULL COMMENT '通知类型 (system, team, project, generation)',
     title VARCHAR(200) NOT NULL COMMENT '通知标题',
@@ -397,14 +397,14 @@ CREATE TABLE notifications (
 
 -- 站内消息表
 CREATE TABLE messages (
-    id CHAR(36) PRIMARY KEY DEFAULT (UUID()),
+    id bigint(20) NOT NULL AUTO_INCREMENT PRIMARY KEY,
     sender_user_id BIGINT(20) NOT NULL COMMENT '发送者用户ID',
     recipient_user_id BIGINT(20) COMMENT '接收者用户ID',
-    recipient_team_id CHAR(36) COMMENT '接收者团队ID',
+    recipient_team_id bigint(20) COMMENT '接收者团队ID',
     subject VARCHAR(200) COMMENT '消息主题',
     content TEXT NOT NULL COMMENT '消息内容',
     is_read BOOLEAN DEFAULT FALSE COMMENT '是否已读',
-    parent_message_id CHAR(36) COMMENT '父消息ID',
+    parent_message_id bigint(20) COMMENT '父消息ID',
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     INDEX idx_messages_recipient_user (recipient_user_id),
     INDEX idx_messages_recipient_team (recipient_team_id),
@@ -420,7 +420,7 @@ CREATE TABLE messages (
 -- ===========================================
 /*
 MySQL适配要点：
-1. 主键类型：使用CHAR(36)存储UUID，默认值使用UUID()函数生成
+1. 主键类型：使用bigint(20)作为主键类型，支持自增(AUTO_INCREMENT)和非空约束
 2. JSON类型：MySQL 5.7+支持JSON类型，用于存储结构化配置数据
 3. 时间戳：使用DATETIME类型，ON UPDATE CURRENT_TIMESTAMP自动更新
 4. 字符集：使用utf8mb4支持完整的Unicode字符（包括emoji）

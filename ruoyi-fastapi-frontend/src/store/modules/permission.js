@@ -4,6 +4,7 @@ import { getRouters } from '@/api/menu'
 import Layout from '@/layout/index'
 import ParentView from '@/components/ParentView'
 import InnerLink from '@/layout/components/InnerLink'
+import { isHttp } from '@/utils/validate'
 
 // 匹配views里面所有的.vue文件
 const modules = import.meta.glob('./../../views/**/*.vue')
@@ -71,6 +72,16 @@ function filterAsyncRouter(asyncRouterMap, lastRouter = false, type = false) {
         route.component = InnerLink
       } else {
         route.component = loadView(route.component)
+      }
+    }
+    // 处理路由名称，确保唯一性，特别是对于外部链接
+    if (route.path && isHttp(route.path)) {
+      // 如果路径是HTTP链接，确保名称不是完整URL，避免重复
+      if (!route.name || isHttp(route.name)) {
+        // 生成唯一名称
+        const urlParts = route.path.split('/')
+        const domain = urlParts[2] || 'external'
+        route.name = `external-${domain}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
       }
     }
     if (route.children != null && route.children && route.children.length) {

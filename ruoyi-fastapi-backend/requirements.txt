@@ -17,3 +17,4 @@ redis==6.4.0
 SQLAlchemy[asyncio]==2.0.43
 sqlglot[rs]==27.8.0
 user-agents==2.2.0
+uvicorn==0.38.0

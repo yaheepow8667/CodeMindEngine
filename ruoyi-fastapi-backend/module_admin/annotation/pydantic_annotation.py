@@ -16,12 +16,14 @@ def as_query(cls: Type[BaseModelVar]) -> Type[BaseModelVar]:
 
     for field_name, model_field in cls.model_fields.items():
         model_field: FieldInfo  # type: ignore
+        # 确保参数名不为None，使用field_name作为备选
+        param_name = model_field.alias or field_name
 
         if not model_field.is_required():
             new_parameters.append(
                 inspect.Parameter(
-                    model_field.alias,
-                    inspect.Parameter.POSITIONAL_ONLY,
+                    param_name,
+                    inspect.Parameter.KEYWORD_ONLY,
                     default=Query(default=model_field.default, description=model_field.description),
                     annotation=model_field.annotation,
                 )
@@ -29,8 +31,8 @@ def as_query(cls: Type[BaseModelVar]) -> Type[BaseModelVar]:
         else:
             new_parameters.append(
                 inspect.Parameter(
-                    model_field.alias,
-                    inspect.Parameter.POSITIONAL_ONLY,
+                    param_name,
+                    inspect.Parameter.KEYWORD_ONLY,
                     default=Query(..., description=model_field.description),
                     annotation=model_field.annotation,
                 )
@@ -54,12 +56,14 @@ def as_form(cls: Type[BaseModelVar]) -> Type[BaseModelVar]:
 
     for field_name, model_field in cls.model_fields.items():
         model_field: FieldInfo  # type: ignore
+        # 确保参数名不为None，使用field_name作为备选
+        param_name = model_field.alias or field_name
 
         if not model_field.is_required():
             new_parameters.append(
                 inspect.Parameter(
-                    model_field.alias,
-                    inspect.Parameter.POSITIONAL_ONLY,
+                    param_name,
+                    inspect.Parameter.KEYWORD_ONLY,
                     default=Form(default=model_field.default, description=model_field.description),
                     annotation=model_field.annotation,
                 )
@@ -67,8 +71,8 @@ def as_form(cls: Type[BaseModelVar]) -> Type[BaseModelVar]:
         else:
             new_parameters.append(
                 inspect.Parameter(
-                    model_field.alias,
-                    inspect.Parameter.POSITIONAL_ONLY,
+                    param_name,
+                    inspect.Parameter.KEYWORD_ONLY,
                     default=Form(..., description=model_field.description),
                     annotation=model_field.annotation,
                 )

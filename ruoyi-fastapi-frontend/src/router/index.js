@@ -88,7 +88,7 @@ export const constantRoutes = [
 
 // 动态路由，基于用户权限动态去加载
 export const dynamicRoutes = [
-  {    path: '/workbench',    component: Layout,    name: 'Workbench',    meta: { title: '工作台', icon: 'dashboard' },    children: [      {        path: '',        component: () => import('@/views/workbench'),        name: 'Workbench',        meta: { title: '工作台', icon: 'dashboard', affix: true }      }    ]  },
+  {    path: '/workbench',    component: Layout,    name: 'Workbench',    meta: { title: '工作台', icon: 'dashboard' },    children: [      {        path: '',        component: () => import('@/views/workbench'),        name: 'WorkbenchIndex',        meta: { title: '工作台', icon: 'dashboard', affix: true }      }    ]  },
   {    path: '/generation',    component: Layout,    name: 'Generation',    meta: { title: '智能生成', icon: 'magic' },    children: [      {        path: 'generationWizard',        component: () => import('@/views/generationWizard'),        name: 'GenerationWizard',        meta: { title: '智能生成向导', icon: 'magic' }      }    ]  },
   {    path: '/project',    component: Layout,    name: 'Project',    meta: { title: '项目空间', icon: 'folder-open' },    children: [      {        path: 'projectManagement',        component: () => import('@/views/projectManagement'),        name: 'ProjectManagement',        meta: { title: '项目管理', icon: 'folder-open' }      }    ]  },
   {    path: '/template',    component: Layout,    name: 'Template',    meta: { title: '模板市场', icon: 'th-large' },    children: [      {        path: 'templateMarket',        component: () => import('@/views/templateMarket'),        name: 'TemplateMarket',        meta: { title: '模板市场', icon: 'th-large' }      }    ]  },

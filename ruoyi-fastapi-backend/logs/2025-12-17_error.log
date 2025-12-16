@@ -1,0 +1,14 @@
+2025-12-17 00:40:02.287 |  | INFO     | server:lifespan:54 - ⏰️ RuoYi-FastAPI开始启动
+2025-12-17 00:40:02.287 |  | INFO     | config.get_db:init_create_table:21 - 🔎 初始化数据库连接...
+2025-12-17 00:40:02.913 |  | INFO     | config.get_db:init_create_table:24 - ✅️ 数据库连接成功
+2025-12-17 00:40:02.914 |  | INFO     | config.get_redis:create_redis_pool:22 - 🔎 开始连接redis...
+2025-12-17 00:40:02.953 |  | INFO     | config.get_redis:create_redis_pool:35 - ✅️ redis连接成功
+2025-12-17 00:40:03.168 |  | INFO     | config.get_scheduler:init_system_scheduler:134 - 🔎 开始启动定时任务...
+2025-12-17 00:40:03.261 |  | INFO     | config.get_scheduler:init_system_scheduler:142 - ✅️ 系统初始定时任务加载成功
+2025-12-17 00:40:03.262 |  | INFO     | server:lifespan:61 - 🚀 RuoYi-FastAPI启动成功
+2025-12-17 00:40:15.872 | 55d8c75e8c8b42a0adbc8f04d52bcf1a | WARNING  | module_admin.service.login_service:get_current_user:267 - 用户token已失效，请重新登录
+2025-12-17 00:40:16.002 | 8e2dabfe02ce4f3fb1234b1e64e2f305 | INFO     | module_admin.controller.login_controller:logout:149 - 退出成功
+2025-12-17 00:40:16.660 | f6395301271449248ccf65ad51b262ee | INFO     | module_admin.controller.captcha_controller:get_captcha_image:34 - 编号为44d185e4-06d0-4526-8058-5e7634d6e789的会话获取图片验证码成功
+2025-12-17 00:40:21.682 | 2026c45e49df43149b125733a7ab84fa | INFO     | module_admin.controller.login_controller:login:71 - 登录成功
+2025-12-17 00:40:21.759 | 7209705fa3914b849b80796e1ef151af | INFO     | module_admin.controller.login_controller:get_login_user_info:84 - 获取成功
+2025-12-17 00:40:21.817 | 425d6b103c90490c82355798cdcdf2b3 | INFO     | module_admin.controller.login_controller:get_login_user_routers:95 - 获取成功

@@ -34,14 +34,23 @@ router.beforeEach((to, from, next) => {
         useUserStore().getInfo().then(() => {
           isRelogin.show = false
           usePermissionStore().generateRoutes().then(accessRoutes => {
-            // 根据roles权限生成可访问的路由表
-            accessRoutes.forEach(route => {
-              if (!isHttp(route.path)) {
-                router.addRoute(route) // 动态添加可访问路由表
+          // 根据roles权限生成可访问的路由表
+          accessRoutes.forEach(route => {
+            if (!isHttp(route.path)) {
+              // 确保路由名称唯一
+              if (route.name) {
+                // 检查是否已存在同名路由
+                const existingRoute = router.getRoutes().find(r => r.name === route.name)
+                if (existingRoute) {
+                  // 生成新的唯一名称
+                  route.name = `${route.name}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+                }
               }
-            })
-            next({ ...to, replace: true }) // hack方法 确保addRoutes已完成
+              router.addRoute(route) // 动态添加可访问路由表
+            }
           })
+          next({ ...to, replace: true }) // hack方法 确保addRoutes已完成
+        })
         }).catch(err => {
           useUserStore().logOut().then(() => {
             ElMessage.error(err)
