@@ -88,6 +88,44 @@ export const constantRoutes = [
 
 // 动态路由，基于用户权限动态去加载
 export const dynamicRoutes = [
+  {    path: '/workbench',    component: Layout,    name: 'Workbench',    meta: { title: '工作台', icon: 'dashboard' },    children: [      {        path: '',        component: () => import('@/views/workbench'),        name: 'Workbench',        meta: { title: '工作台', icon: 'dashboard', affix: true }      }    ]  },
+  {    path: '/generation',    component: Layout,    name: 'Generation',    meta: { title: '智能生成', icon: 'magic' },    children: [      {        path: 'generationWizard',        component: () => import('@/views/generationWizard'),        name: 'GenerationWizard',        meta: { title: '智能生成向导', icon: 'magic' }      }    ]  },
+  {    path: '/project',    component: Layout,    name: 'Project',    meta: { title: '项目空间', icon: 'folder-open' },    children: [      {        path: 'projectManagement',        component: () => import('@/views/projectManagement'),        name: 'ProjectManagement',        meta: { title: '项目管理', icon: 'folder-open' }      }    ]  },
+  {    path: '/template',    component: Layout,    name: 'Template',    meta: { title: '模板市场', icon: 'th-large' },    children: [      {        path: 'templateMarket',        component: () => import('@/views/templateMarket'),        name: 'TemplateMarket',        meta: { title: '模板市场', icon: 'th-large' }      }    ]  },
+  {    path: '/team',    component: Layout,    name: 'Team',    meta: { title: '团队协作', icon: 'users' },    children: [      {        path: 'teamCollaboration',        component: () => import('@/views/teamCollaboration'),        name: 'TeamCollaboration',        meta: { title: '团队协作', icon: 'users' }      }    ]  },
+  {    path: '/blueprint',    component: Layout,    name: 'Blueprint',    meta: { title: '蓝图编辑器', icon: 'project-diagram' },    children: [      {        path: 'blueprintEditor',        component: () => import('@/views/blueprintEditor'),        name: 'BlueprintEditor',        meta: { title: '蓝图编辑器', icon: 'project-diagram' }      }    ]  },
+  {
+    path: '/settings',
+    component: Layout,
+    name: 'Settings',
+    meta: { title: '设置', icon: 'user' },
+    children: [
+      {
+        path: 'accountSettings',
+        component: () => import('@/views/settings/accountSettings'),
+        name: 'AccountSettings',
+        meta: { title: '账户设置', icon: 'user' }
+      },
+      {
+        path: 'notificationSettings',
+        component: () => import('@/views/settings/notificationSettings'),
+        name: 'NotificationSettings',
+        meta: { title: '通知偏好设置', icon: 'bell' }
+      },
+      {
+        path: 'workspaceSettings',
+        component: () => import('@/views/settings/workspaceSettings'),
+        name: 'WorkspaceSettings',
+        meta: { title: '工作空间设置', icon: 'settings' }
+      },
+      {
+        path: 'advancedConfiguration',
+        component: () => import('@/views/settings/advancedConfiguration'),
+        name: 'AdvancedConfiguration',
+        meta: { title: '高级配置', icon: 'sliders' }
+      }
+    ]
+  },
   {
     path: '/system/user-auth',
     component: Layout,

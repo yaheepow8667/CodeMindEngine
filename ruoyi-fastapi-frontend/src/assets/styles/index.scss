@@ -5,6 +5,10 @@
 @use './btn.scss';
 @use './ruoyi.scss';
 
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 body {
   height: 100%;
   margin: 0;

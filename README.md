@@ -275,6 +275,10 @@ UAM是静态的"图纸"，核心服务则是动态的"工厂流水线"，包括�
 
 ### 开发
 
+conda activate memory-palace
+
+python app.py --env=prod
+
 ```bash
 # 克隆项目
 git clone https://gitee.com/insistence2022/RuoYi-Vue3-FastAPI.git
