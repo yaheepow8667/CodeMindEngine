@@ -14,6 +14,22 @@
     <img src="https://img.shields.io/badge/AI%20Powered-Yes-brightgreen">
 </p>
 
+<p align="center">
+    <img src="./UI设计图/GemDesign-工作台.png" alt="工作台" width="45%">
+    <img src="./UI设计图/GemDesign-项目管理空间.png" alt="项目管理空间" width="45%">
+</p>
+<p align="center">
+    <img src="./UI设计图/GemDesign-蓝图编辑器.png" alt="蓝图编辑器" width="45%">
+    <img src="./UI设计图/GemDesign-模板市场.png" alt="模板市场" width="45%">
+</p>
+<p align="center">
+    <img src="./UI设计图/GemDesign-智能生成向导.png" alt="智能生成向导" width="45%">
+    <img src="./UI设计图/GemDesign-高级生成配置.png" alt="高级生成配置" width="45%">
+</p>
+<p align="center">
+    <img src="./UI设计图/GemDesign-帮助中心.png" alt="帮助中心" width="45%">
+</p>
+
 ## 平台简介
 
 **智码引擎**是基于RuoYi-Vue3-FastAPI框架进行二次开发的AI驱动低代码开发平台，其终极愿景是成为**软件开发的“编译器”**，将高级的人类意图（自然语言、草图、结构化描述）直接编译成高质量、可维护、全栈可运行的企业级应用。
